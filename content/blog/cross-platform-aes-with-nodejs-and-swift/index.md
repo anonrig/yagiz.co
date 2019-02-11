@@ -3,11 +3,11 @@ title: "Cross platform encryption with AES between Swift and Node.js"
 date: '2019-02-12'
 ---
 
-While working on an application, I've came to a situation where I needed to transfer some highly sensitive data between the backend and the client. Even though theorically, I should have used ECDH to transfer the keys of AES and then to do the decryption process on the mobile application itself, for the sake of simplicity and the delivery, I've ommitted that part right now.
+While working on an application, I've come to a situation where I needed to transfer some highly sensitive data between the backend and the client. Even though theoretically, I should have used ECDH to transfer the keys of AES and then to do the decryption process on the mobile application itself, for the sake of simplicity and the delivery, I've omitted that part right now.
 
 ### The problem
 
-Simply, I wanted to share an object of configuration to the client app from the backend. The request was on SSL, but we all know that MITM attack can be possible. So, I needed to encrypt the data on the backend and decrypt it on the mobile application. I'm trusting the compilation process of iOS for the security of the AES secret and the IV.
+Simply, I wanted to share an object of configuration to the client app from the backend. The request was on SSL, but we all know that a MITM attack can be possible. So, I needed to encrypt the data on the backend and decrypt it on the mobile application. I'm trusting the compilation process of iOS for the security of the AES secret and the IV.
 
 ### The solution
 
@@ -92,4 +92,4 @@ extension String {
 }
 ```
 
-Before running your application, make sure that you've setup a Podfile and added `pod "CryptoSwift"` into it.
+Before running your application, make sure that you've set up a Podfile and added `pod "CryptoSwift"` into it.
