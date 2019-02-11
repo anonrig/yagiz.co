@@ -1,5 +1,5 @@
 ---
-title: "Cordova, React-Native, Swift: Whats really next?"
+title: "Cordova, React-Native, Swift: What is really next?"
 date: '2019-01-03'
 ---
 
@@ -15,7 +15,7 @@ I don't think it's fair for me to write about Cordova since I'm not an active de
 
 Being able to run your website as a mobile application using Cordova was and still is a really interesting and fascinating feature for most of the web developers who just wanted to try the mobile application development.
 
-Additionally, for a team who focuses not only on a specific technology but on JavaScript and it's ecosystems, it's really an interesting investment to write your own PoC using Ionic (Angular). But the very thing it makes Cordova strong does also makes the technology weak compared to others. The web.
+Additionally, for a team who focuses not only on a specific technology but on JavaScript and it's ecosystems, it's really an interesting investment to write your own PoC using Ionic (Angular). But the very thing it makes Cordova strong does also make the technology weak compared to others. The web.
 
 ![Cordova Architecture](./cordovaapparchitecture.png)
 
@@ -33,13 +33,13 @@ When React Native was first released it was quite a hype. The technology was uns
 
 Before continuing to my thoughts on React Native, let's dive into the React Native ecosystem.
 
-Up until October, Facebook was using it's own fork of open-sourced React-Native. Since it came with extra pull backs and effort, they switched to using the open sourced one. (You can see some issues where a Facebook developer doesn't encounter a specific bug, even though the same functionality was used inside Facebook itself, but because of Facebook using it's own fork.)
+Up until October, Facebook was using its own fork of open-sourced React-Native. Since it came with extra pullbacks and effort, they switched to using the open sourced one. (You can see some issues where a Facebook developer doesn't encounter a specific bug, even though the same functionality was used inside Facebook itself, but because of Facebook using its own fork.)
 
 Facebook releases a new version every month, up until September (I guess). After that, they started to release every 2 months (as far as I observe).
 
 ![React Native vs Swift: Performance Comparison](./react-vs-swift.png)
 
-Even the performance comparison with native apps showed a lot of promise both in React-Native and in JavaScript. Even in 2017, we wrote a production ready app all in React-Native. It was going great. Everybody was happy. The code was shipping fast, and since most of our developers had a JavaScript background, we were delivering on time and shipping production quality apps.
+Even the performance comparison with native apps showed a lot of promise both in React-Native and in JavaScript. Even in 2017, we wrote a production ready app all in React-Native. It was going great. Everybody was happy. The code was shipped fast, and since most of our developers had a JavaScript background, we were delivering on time and shipping production quality apps.
 
 Until the time I needed to write my own plugin to communicate with Swift side of the app through the JavaScript bridge, I was quite happy with it. Even, I suggested using it in my latest startup *SchoolApply*.
 
@@ -48,7 +48,7 @@ The breaking changes in React Native caused my native code to misbehave due to u
 #### Main Issues
 
 - It's main dependency React and inconsistencies between the React-Native core and React.
-- React still doesn't follow the Semantic Versioning. From my perspective, a software which is 4 years old, shouldn't be in 0.5X.XX.
+- React still doesn't follow the Semantic Versioning. From my perspective, software which is 4 years old, shouldn't be in 0.5X.XX.
 - Inconsistencies with native modules due to the breaking changes that happen to React-Native core a lot. (This is one of the main reason that React-Native defends of it being in 0.5X version, but this is again the main reason to use Semantic Versioning: to keep track of breaking changes and to inform developers about the ecosystem and deprecation)
 
 ### Swift
@@ -57,8 +57,8 @@ It's quite unfair for me to judge a language by it's cover since I've been writi
 
 I had a quite prejudice since I thought React-Native or Cordova was doing the same exact thing as Swift: A mobile application.
 
-Every code written in Swift has a purpose. Yes, even the UITableView. It creates pain for new developers to get used to it and forces the user to use mainly XCode for development, even though there are solutions in the internet for using VSCode, Sublime or else.
+Every code written in Swift has a purpose. Yes, even the UITableView. It creates pain for new developers to get used to it and forces the user to use mainly XCode for development, even though there are solutions on the internet for using VSCode, Sublime or else.
 
-The auto layout constraints are quite hard for a new developer. There are really great libraries such as SnapKit, Cartography exist which aims to solve this ambiguity, but still not the default way of doing it.
+The auto layout constraints are quite hard for a new developer. There are really great libraries such as SnapKit, Cartography exists which aims to solve this ambiguity, but still not the default way of doing it.
 
-Even through all of the things above, the best experience I had as a developer is with Swift. There's no JavaScript bridge, WebView to get yourself bound into. You can use any library you want, with unlimited access to the device itself.
+Even though all of the things above, the best experience I had as a developer is with Swift. There's no JavaScript bridge, WebView to get yourself bound into. You can use any library you want, with unlimited access to the device itself.
