@@ -1,0 +1,47 @@
+import { Blog } from 'contentlayer/generated'
+import Image from 'next/image'
+import Link from 'next/link'
+import { ArrowLeft, ArrowRight } from 'lucide-react'
+
+export default function BlogFooter({ index, blogs }: { index: number; blogs: Blog[] }) {
+  // Newest blog post is at the 0th index
+  const next = index !== 0 ? blogs.at(index - 1) : undefined
+  const previous = index !== blogs.length - 1 ? blogs.at(index + 1) : undefined
+
+  return (
+    <footer className='mx-auto mt-16 flex w-full max-w-[calc(750px+8vw)] items-center px-[4vw]'>
+      <div className='flex flex-2'>
+        {previous !== undefined && (
+          <Link href={`/${previous.slug}`} aria-label='Previous article'>
+            <ArrowLeft size={20} />
+          </Link>
+        )}
+      </div>
+
+      <div className='flex flex-col'>
+        <div className='flex flex-col items-center gap-y-4'>
+          <h3 className='mb-4 text-2xl font-extrabold tracking-wide text-slate-800'>
+            Published by:
+          </h3>
+          <Link href='/about'>
+            <Image
+              alt='A photo of Yagiz Nizipli'
+              src='/author-image.png'
+              width={50}
+              height={50}
+              className='rounded-full'
+            />
+          </Link>
+        </div>
+      </div>
+
+      <div className='flex flex-2 justify-end'>
+        {next !== undefined && (
+          <Link href={`/${next.slug}`} aria-label='Next article'>
+            <ArrowRight size={20} />
+          </Link>
+        )}
+      </div>
+    </footer>
+  )
+}

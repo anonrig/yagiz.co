@@ -1,0 +1,49 @@
+import Link from "next/link";
+import { MobileNavigationToggle, MobileNavigationContextProvider } from "../mobile-navigation-toggle";
+
+export type HeaderItem = {
+  title: string
+  href: string
+}
+const items: HeaderItem[] = [
+  { title: 'Home', href: '/' },
+  { title: 'About', href: '/about' },
+  { title: 'Press', href: '/press' },
+  { title: 'Contact', href: '/contact' },
+]
+
+export default function LayoutHeader() {
+  return (
+    <MobileNavigationContextProvider>
+      <header className='flex h-navigation-bar items-center px-[4vw] mx-auto w-full max-w-[calc(1130px+8vw)]'>
+        <div className='flex flex-[2] items-center'>
+          <Link href='/' className='text-[1.8rem] font-extrabold text-slate-400'>
+            Yagiz Nizipli
+          </Link>
+        </div>
+
+        <nav className='hidden items-center lg:flex'>
+          {items.map(item => (
+            <Link
+              href={item.href}
+              key={item.href}
+              className='mx-6 font-bold text-slate-800 hover:text-slate-600'
+            >
+              {item.title}
+            </Link>
+          ))}
+        </nav>
+
+        <div className='hidden items-center justify-end lg:flex lg:flex-[2]'>
+          <button className='m-0 font-bold text-orange-400'>
+            Subscribe
+          </button>
+        </div>
+
+        <div className='pointer h-30 w-30 lg:hidden items-center flex'>
+          <MobileNavigationToggle items={items} />
+        </div>
+      </header>
+    </MobileNavigationContextProvider>
+  )
+}

@@ -1,0 +1,124 @@
+---
+title: Timing Attacks on Node.js
+date: '2021-03-24T00:00:00.000+00:00'
+tag: tags/security.mdx
+status: published
+feature_image: /content/stormtrooper-figure.jpeg
+feature_image_caption: Photo by Liam Tucker / Unsplash
+type: Blog
+minute_to_read: 3
+---
+
+I've been working with Node.js for quite a long time. So, believe me when I say there's a library called **eslint-plugin-security** to detect common mistakes and security flaws you make while you're coding. Before discussing timing attacks on node.js, let's start by talking about my Eslint configuration on Socketkit's new privacy & security-oriented tracking API.
+
+With the release of Node 15, I started converting the API to modules and added/improved my usual stack by adding more and more Eslint rulesets to make my code more persistent for outsiders. (if that day comes)
+
+Here's my \`.eslintrc\` configuration for Socketkit's new Tracking API
+
+```json
+{
+  "extends": [
+    "plugin:prettier/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:security/recommended"
+  ],
+  "plugins": ["prettier", "import", "security"],
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "modules": true
+    },
+    "ecmaVersion": 2020
+  },
+  "env": {
+    "node": true,
+    "es6": true
+  },
+  "rules": {
+    "import/extensions": ["error", "always", { "ignorePackages": true }]
+  }
+}
+```
+
+I was in the middle of writing an endpoint for update password action for users of our web page. I didn't want to take the usual approach and use Ory Kratos' redirection loop based authentication flow and convert our browser based forget password flow to node.js based API flow recommended by Ory Kratos. Since our API was based on fastify, we handled our day to day validations using the presupported, awesome library called \`ajv\`.
+
+Here's an example schema by ajv and fastify, which checks for the type of 2 parameters: \`password\` and \`password\_again\` and the existence of it using the required parameter from ajv.
+
+```javascript
+{
+  schema: {
+    body: {
+      type: 'object',
+      properties: {
+        password: { type: 'string' },
+        password_again: { type: 'string' },
+      },
+      required: ['password', 'password_again'],
+    },
+    response: {
+      200: {
+        type: 'object',
+        properties: {
+          state: { type: 'boolean' },
+        },
+      },
+    },
+  },
+}
+```
+
+Since, **password** and **password\_again** should be equal in order to make sure the user didn't want to change their password to a faulty one, we had to make sure that both of them is equal to each other. Our handler should have been this:
+
+```javascript
+{
+  handler: async ({ accounts: [account] }) => {
+    if (password !== password_again) {
+      throw new f.httpErrors.preconditionFailed(`Passwords should match.`)
+    }
+    return { state: true }
+  },
+}
+```
+
+Unfortunately, the following code produces an attack vector called \`Timing attack\`. When searched upon it's clear that \`eslint\` only checks for the name of the variable \`password\` and this is a false positive in terms of security. But for the sake of this article, let's continue on investigating the cause of it and try to improve our code. (Make it hacker proof)
+
+![](https://www.yagiz.co/content/images/2021/10/wp8855503.png)
+
+Hackerman
+
+### Let's start by feeling like a hacker from now on
+
+In cryptography, a timing attack is a side-channel attack in which the attacker attempts to compromise a cryptosystem by analyzing the time taken to executive cryptographic functions.
+
+If we were calculating a SHA hash according to the password we got from the input, the execution time of calculating that particular hash would have been directly correlated with the length of the input.
+
+Additionally, information can leak from a system through measurement of the time it takes to respond to certain queries. (According to Wikipedia)
+
+In order to resolve this side-channel attack method, there is a specific function in \`crypto\` library in Node.js
+
+### Here comes the **crypto.timingSafeEqual(a, b)**
+
+According to the fantastic Node.js contributors and developers, here's the definition of this function:
+
+> This function is based on a constant-time algorithm. Returns true if a is equal to b, without leaking timing information that would allow an attacker to guess one of the values. This is suitable for comparing HMAC digests or secret values like authentication cookies or capability URLs.
+
+So our following code should have been the following:
+
+```javascript
+{
+  handler: async ({ accounts: [account] }) => {
+    if (
+      !crypto.timingSafeEqual(
+        Buffer.from(password),
+        Buffer.from(password_again),
+      )
+    ) {
+      throw new f.httpErrors.preconditionFailed(`Passwords should match.`)
+    }
+    return { state: true }
+  },
+}
+```
+
+**P.S.:** Since we're not comparing two hash values or making any cryptographic calculations, this is absolutely unnecessary and a costly operation.

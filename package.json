@@ -1,0 +1,46 @@
+{
+  "name": "yagiz-co",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "lint-fix": "next lint --fix"
+  },
+  "dependencies": {
+    "@types/node": "18.15.11",
+    "@types/react": "18.0.33",
+    "@types/react-dom": "18.0.11",
+    "@vercel/analytics": "^0.1.11",
+    "clsx": "^1.2.1",
+    "contentlayer": "^0.3.1",
+    "date-fns": "^2.29.3",
+    "eslint-config-next": "13.3.0",
+    "lucide-react": "^0.130.1",
+    "next": "13.2.5-canary.16",
+    "next-contentlayer": "^0.3.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-use": "^17.4.0",
+    "rehype-autolink-headings": "^6.1.1",
+    "rehype-pretty-code": "^0.9.4",
+    "rehype-slug": "^5.1.0",
+    "remark-gfm": "^3.0.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.9",
+    "@typescript-eslint/eslint-plugin": "^5.57.1",
+    "@typescript-eslint/parser": "^5.57.1",
+    "autoprefixer": "^10.4.14",
+    "eslint": "8.37.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
+    "eslint-plugin-tailwindcss": "^3.11.0",
+    "markdown-wasm": "^1.2.0",
+    "postcss": "^8.4.21",
+    "tailwindcss": "^3.3.1",
+    "typescript": "5.0.3"
+  }
+}
