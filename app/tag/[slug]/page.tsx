@@ -1,8 +1,8 @@
-import { allTags, allBlogs, Blog } from 'contentlayer/generated'
-import { compareDesc,format } from 'date-fns'
+import { allBlogs, allTags, Blog } from 'contentlayer/generated'
+import { compareDesc } from 'date-fns'
 import { Metadata } from 'next'
-import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
 
 import BlogRow from '@/ui/components/blog-row'
 
@@ -51,8 +51,8 @@ export default function Blog({ params }: Props) {
 
   return (
     <section>
-      <div className='mx-auto mt-[-1.5rem] w-full max-w-[calc(750px+8vw)] px-[4vw] text-center gap-8 flex flex-col'>
-        <h1 className='text-orange-400 text-4xl font-extrabold leading-[1.3]'>
+      <div className='mx-auto mt-[-1.5rem] flex w-full max-w-[calc(750px+8vw)] flex-col gap-8 px-[4vw] text-center'>
+        <h1 className='text-4xl font-extrabold leading-[1.3] text-orange-400'>
           #{tag.title}
         </h1>
 
@@ -61,12 +61,12 @@ export default function Blog({ params }: Props) {
         </div>
 
         <div>
-          <span className='font-bold text-slate-400 mt-2 mr-2'>More:</span>
+          <span className='mr-2 mt-2 font-bold text-slate-400'>More:</span>
             {otherTags.map(tag => (
               <Link
                 href={`/tag/${tag.slug}`}
                 key={tag.slug}
-                className='ml-1 text-slate-800 font-bold break-keep hover:text-slate-600'
+                className='ml-1 break-keep font-bold text-slate-800 hover:text-slate-600'
               >
                 #{tag.title}
               </Link>

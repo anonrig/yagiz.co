@@ -1,6 +1,7 @@
 import { allBlogs } from 'contentlayer/generated'
 import { compareDesc } from 'date-fns'
 import Image from 'next/image'
+
 import BlogRow from '@/ui/components/blog-row'
 
 export default function Home() {

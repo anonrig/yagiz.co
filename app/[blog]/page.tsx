@@ -6,11 +6,11 @@ import { notFound } from 'next/navigation'
 import Script from 'next/script'
 
 import BlogFooter from '@/ui/components/blog-footer'
+import BlogStickyHeader from '@/ui/components/blog-sticky-header'
 import BlogSuggestion from '@/ui/components/blog-suggestion'
 import Figure from '@/ui/components/figure'
 import Heading from '@/ui/components/heading'
 import Markdown from '@/ui/components/markdown'
-import BlogStickyHeader from '@/ui/components/blog-sticky-header'
 
 type Props = {
   params: { blog: string }
@@ -61,7 +61,7 @@ export default function Blog({ params }: Props) {
   return (
     <>
       <article className='block'>
-        <Script type='application/ld+json'>{JSON.stringify(blog.structuredData)}</Script>
+        <Script id={`blog-${blog.slug}`} type='application/ld+json'>{JSON.stringify(blog.structuredData)}</Script>
 
         <header className='mb-[4.5rem] grid grid-cols-canvas text-center'>
           <div className='col-main mb-4 text-lg font-extrabold uppercase text-slate-400'>
