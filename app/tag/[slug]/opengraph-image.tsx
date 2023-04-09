@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation'
 import { ImageResponse } from 'next/server'
 
 export const size = { width: 1920, height: 1080 }
-export const alt = 'Engineering with Yagiz'
 export const contentType = 'image/png'
 
 export default function og({ params }: { params: { slug: string }}) {
