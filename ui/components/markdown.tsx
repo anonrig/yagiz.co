@@ -23,7 +23,15 @@ function CustomLink(props: LinkHTMLAttributes<HTMLAnchorElement>) {
 }
 
 function RoundedImage({ alt, ...props}: ImageProps) {
-  return <Image alt={alt} className='rounded-lg' {...props} />;
+  return (
+    <Image
+      alt={alt}
+      fill
+      className='rounded-lg object-contain w-full !h-[unset] !relative bg-white col-wide'
+      sizes='100vw'
+      {...props}
+    />
+  )
 }
 
 function Blockquote(props: PropsWithChildren<unknown>) {
@@ -35,7 +43,7 @@ function Blockquote(props: PropsWithChildren<unknown>) {
 }
 
 const components = {
-  Image: RoundedImage,
+  img: RoundedImage,
   a: CustomLink,
   blockquote: Blockquote,
 };

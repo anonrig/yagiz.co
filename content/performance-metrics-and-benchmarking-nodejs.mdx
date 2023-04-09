@@ -16,7 +16,7 @@ Lately, I've found myself worrying more and more about performance and the amoun
 
 Let's first dive into a basic example of calculating the amount of time in milliseconds it takes to execute a specific function:
 
-```javascript
+```js
 import { performance } from 'perf_hooks'
 
 async function hardToSwallowPills() {
@@ -31,7 +31,7 @@ The important part you need to address in this code is, you need to manually mar
 
 In order to log these measurements, you'll need the PerformanceObserver implementation from the **perf\_hooks**.
 
-```javascript
+```js
 import { PerformanceObserver } from 'perf_hooks'
 const performanceObserver = new PerformanceObserver((list) => {
   list.getEntries().forEach((entry) => {
@@ -49,7 +49,7 @@ In order to benchmark N number of implementations, you need to give the same inp
 
 Example implementation is:
 
-```javascript
+```js
 import Benchmark from 'benchmark'
 import { sort, randomArray } from './bubble.js'
 import { sort: quickSort } from './quick.js'
