@@ -1,18 +1,10 @@
-import { allBlogs  } from 'contentlayer/generated'
-import { notFound } from 'next/navigation'
 import { ImageResponse } from 'next/server'
 
 export const size = { width: 1920, height: 1080 }
 export const alt = 'Engineering with Yagiz'
 export const contentType = 'image/png'
 
-export default function og({ params }: { params: { blog: string }}) {
-  const blog = allBlogs.find(b => b.slug === params.blog)
-
-  if (!blog) {
-    notFound()
-  }
-
+export default function og() {
   return new ImageResponse(
     (
       <div
@@ -30,21 +22,22 @@ export default function og({ params }: { params: { blog: string }}) {
         <div
           style={{
             display: 'flex',
-            fontSize: 130,
+            fontSize: 150,
             letterSpacing: '-0.05em',
             fontStyle: 'normal',
             color: 'black',
-            lineHeight: '120px',
+            lineHeight: '150px',
             whiteSpace: 'pre-wrap',
+            fontWeight: 800,
           }}
         >
-          {blog.title}
+          Engineering with Yagiz
         </div>
 
         <div
           style={{
             display: 'flex',
-            marginTop: 100,
+            marginTop: 200,
             fontSize: 55,
             fontStyle: 'normal',
             color: 'black',

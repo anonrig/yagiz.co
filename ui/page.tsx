@@ -15,6 +15,9 @@ export function getPageMetadata({ slug }: Props): Metadata {
   return {
     title: page.title,
     description: page.description,
+    openGraph: {
+      url: `https://yagiz.co/${page.slug}`
+    }
   }
 }
 
