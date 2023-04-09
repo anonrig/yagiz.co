@@ -42,12 +42,6 @@ function Blockquote(props: PropsWithChildren<unknown>) {
   )
 }
 
-const components = {
-  img: RoundedImage,
-  a: CustomLink,
-  blockquote: Blockquote,
-};
-
 export default function Markdown({ code }: { code: string }) {
   const Component = useMDXComponent(code);
   return (
@@ -57,7 +51,13 @@ export default function Markdown({ code }: { code: string }) {
       'prose-h3:text-3xl prose-h3:font-extrabold prose-h3:text-slate-400', // h3
       'prose-strong:pr-2 prose-strong:font-bold', // strong
     )}>
-      <Component components={{ ...components }} />
+      <Component
+        components={{
+          img: RoundedImage,
+          a: CustomLink,
+          blockquote: Blockquote,
+        }}
+      />
     </article>
   );
 }

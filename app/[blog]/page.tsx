@@ -28,6 +28,7 @@ export function generateMetadata({ params }: Props): Metadata {
     }
   }
   return {
+    metadataBase: new URL(`https://yagiz.co/${blog.slug}`),
     title: blog.title,
     // TODO: Handle description
     description: '',

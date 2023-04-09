@@ -2,16 +2,51 @@
 
 import clsx from 'clsx';
 import { Blog } from 'contentlayer/generated'
-import { useMemo } from 'react';
-import { useWindowScroll } from 'react-use';
+import { useMemo, useEffect, useState } from 'react';
 
-export default function BlogStickyHeader({ blog }: { blog: Blog }) {
-  const { y: scrollY } = useWindowScroll()
-  const scrollPercentage = useMemo(() => {
-    if (scrollY === 0) return 100;
+function useWindowScrollPercentage() {
+  const isBrowser = typeof window !== 'undefined'
+  const [state, setState] = useState({
+    x: isBrowser ? window.pageXOffset : 0,
+    y: isBrowser ? window.pageYOffset : 0,
+  })
+
+  useEffect(() => {
+    const handler = () => {
+      setState((state) => {
+        const { pageXOffset, pageYOffset } = window;
+        // Check state for change, return same state if no change happened to prevent rerender
+        //(see useState/setState documentation). useState/setState is used internally in useRafState/setState.
+        return state.x !== pageXOffset || state.y !== pageYOffset
+          ? {
+              x: pageXOffset,
+              y: pageYOffset,
+            }
+          : state;
+      });
+    };
+
+    //We have to update window scroll at mount, before subscription.
+    //Window scroll may be changed between render and effect handler.
+    handler();
+
+    document.addEventListener('scroll', handler, {
+      capture: false,
+      passive: true,
+    })
+
+    return () => document.removeEventListener('scroll', handler)
+  }, []);
+
+  return useMemo(() => {
+    if (state.y === 0) return 100
     const windowHeight = document.documentElement.scrollHeight- document.documentElement.clientHeight
     return 100 - Math.floor((scrollY / windowHeight) * 100)
-  }, [scrollY])
+  }, [state.y])
+}
+
+export default function BlogStickyHeader({ blog }: { blog: Blog }) {
+  const scrollPercentage = useWindowScrollPercentage()
 
   return (
     <header className={clsx(
