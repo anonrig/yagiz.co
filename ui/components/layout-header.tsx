@@ -18,7 +18,7 @@ export default function LayoutHeader() {
     <MobileNavigationContextProvider>
       <header className='flex h-navigation-bar items-center px-[4vw] mx-auto w-full max-w-[calc(1130px+8vw)]'>
         <div className='flex flex-[2] items-center'>
-          <Link href='/' className='text-[1.8rem] font-extrabold text-slate-400'>
+          <Link href='/' className='text-[1.8rem] font-extrabold text-slate-400' aria-label='Navigate to the homepage'>
             Yagiz Nizipli
           </Link>
         </div>
@@ -36,7 +36,10 @@ export default function LayoutHeader() {
         </nav>
 
         <div className='hidden items-center justify-end md:flex md:flex-[2]'>
-          <button className='m-0 font-bold text-orange-400'>
+          <button
+            className='m-0 font-bold text-orange-400'
+            aria-label='Subscribe to the newsletter'
+          >
             Subscribe
           </button>
         </div>

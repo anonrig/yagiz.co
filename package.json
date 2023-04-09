@@ -27,7 +27,8 @@
     "rehype-autolink-headings": "^6.1.1",
     "rehype-pretty-code": "^0.9.4",
     "rehype-slug": "^5.1.0",
-    "remark-gfm": "^3.0.1"
+    "remark-gfm": "^3.0.1",
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.9",

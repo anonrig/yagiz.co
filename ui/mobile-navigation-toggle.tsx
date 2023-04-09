@@ -33,7 +33,7 @@ export function MobileNavigationToggle({ items }: { items: HeaderItem[] }) {
 
   return (
     <>
-      <button onClick={() => setOpen(!open)}>
+      <button onClick={() => setOpen(!open)} aria-label='Toggle mobile navigation menu visibility'>
         {open ? <XIcon size={20} /> : <MenuIcon size={20} />}
       </button>
 

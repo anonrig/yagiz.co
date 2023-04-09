@@ -1,3 +1,5 @@
+import 'server-only'
+
 import { allPages } from 'contentlayer/generated'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'

@@ -53,6 +53,7 @@ export default function ContactForm() {
       </label>
 
       <button
+        aria-label='Submit contact form'
         type='submit'
         disabled={state.submitting}
         className='mt-6 items-center bg-white border-[1px] border-slate-200 hover:border-slate-300 border-solid rounded-md text-orange-400 text-[11px] font-extrabold h-[36px] justify-center tracking-[0.5px] outline-none px-[15px] uppercase'
