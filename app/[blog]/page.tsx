@@ -35,7 +35,7 @@ export function generateMetadata({ params }: Props): Metadata {
       title: blog.title,
       description: '',
       type: 'article',
-      publishedTime: new Date(blog.date).toISOString(),
+      publishedTime: format(new Date(blog.date), 'yyyy-mm-dd'),
     },
     twitter: {
       card: 'summary_large_image',

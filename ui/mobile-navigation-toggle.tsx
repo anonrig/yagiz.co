@@ -48,6 +48,7 @@ export function MobileNavigationToggle({ items }: { items: HeaderItem[] }) {
                 href={item.href}
                 key={item.href}
                 className='text-3xl text-right font-bold'
+                onClick={() => setOpen(false)}
               >
                 {item.title}
               </Link>

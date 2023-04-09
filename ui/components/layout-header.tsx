@@ -5,6 +5,7 @@ export type HeaderItem = {
   title: string
   href: string
 }
+
 const items: HeaderItem[] = [
   { title: 'Home', href: '/' },
   { title: 'About', href: '/about' },
@@ -22,7 +23,7 @@ export default function LayoutHeader() {
           </Link>
         </div>
 
-        <nav className='hidden items-center lg:flex'>
+        <nav className='hidden items-center md:flex'>
           {items.map(item => (
             <Link
               href={item.href}
@@ -34,13 +35,13 @@ export default function LayoutHeader() {
           ))}
         </nav>
 
-        <div className='hidden items-center justify-end lg:flex lg:flex-[2]'>
+        <div className='hidden items-center justify-end md:flex md:flex-[2]'>
           <button className='m-0 font-bold text-orange-400'>
             Subscribe
           </button>
         </div>
 
-        <div className='pointer h-30 w-30 lg:hidden items-center flex'>
+        <div className='pointer h-30 w-30 md:hidden items-center flex'>
           <MobileNavigationToggle items={items} />
         </div>
       </header>

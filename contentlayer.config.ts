@@ -40,6 +40,10 @@ export const Page = defineDocumentType(() => ({
       type: 'string',
       required: true,
     },
+    description: {
+      type: 'string',
+      required: true,
+    },
     feature_image: {
       type: 'string',
     },
