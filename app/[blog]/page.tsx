@@ -28,7 +28,6 @@ export function generateMetadata({ params }: Props): Metadata {
     }
   }
   return {
-    metadataBase: new URL(`https://yagiz.co/${blog.slug}`),
     title: blog.title,
     // TODO: Handle description
     description: '',
@@ -37,7 +36,6 @@ export function generateMetadata({ params }: Props): Metadata {
       description: '',
       type: 'article',
       publishedTime: format(new Date(blog.date), 'yyyy-mm-dd'),
-      url: `https://yagiz.co/${blog.slug}`,
     },
     twitter: {
       card: 'summary_large_image',

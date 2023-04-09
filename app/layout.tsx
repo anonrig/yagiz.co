@@ -21,14 +21,6 @@ export const metadata: Metadata = {
     description,
     url: 'https://yagiz.co',
     siteName: 'Engineering with Yagiz',
-    images: [
-      {
-        // TODO: Add this image.
-        url: 'https://yagiz.co/og.jpg',
-        width: 1920,
-        height: 1080,
-      }
-    ],
     locale: 'en-US',
     type: 'website',
   },
