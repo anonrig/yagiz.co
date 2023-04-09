@@ -16,6 +16,7 @@ export const metadata: Metadata = {
     template: '%s - Yagiz Nizipli',
   },
   description,
+  metadataBase: new URL('https://yagiz.co'),
   openGraph: {
     title: 'Engineering with Yagiz',
     description,

@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import Image, { ImageProps } from 'next/image';
 import Link from 'next/link';
-import { useMDXComponent } from 'next-contentlayer/hooks';
+import { getMDXComponent } from 'next-contentlayer/hooks';
 import { LinkHTMLAttributes, PropsWithChildren } from 'react';
 
 function CustomLink(props: LinkHTMLAttributes<HTMLAnchorElement>) {
@@ -42,22 +42,22 @@ function Blockquote(props: PropsWithChildren<unknown>) {
   )
 }
 
+const components: Record<string, any> = {
+  img: RoundedImage,
+  a: CustomLink,
+  blockquote: Blockquote,
+}
+
 export default function Markdown({ code }: { code: string }) {
-  const Component = useMDXComponent(code);
+  const Component = getMDXComponent(code);
   return (
     <article className={clsx(
-      'prose-quoteless prose prose-neutral text-2xl dark:prose-invert marker:text-black',
+      'prose prose-neutral text-2xl dark:prose-invert marker:text-black',
       'prose-h2:text-4xl prose-h2:font-extrabold', // h2
       'prose-h3:text-3xl prose-h3:font-extrabold prose-h3:text-slate-400', // h3
       'prose-strong:pr-2 prose-strong:font-bold', // strong
     )}>
-      <Component
-        components={{
-          img: RoundedImage,
-          a: CustomLink,
-          blockquote: Blockquote,
-        }}
-      />
+      <Component components={components} />
     </article>
   );
 }

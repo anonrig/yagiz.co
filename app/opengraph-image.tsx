@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { ImageResponse } from 'next/server'
 
 export const size = { width: 1920, height: 1080 }
@@ -48,6 +49,7 @@ export default function og() {
           }}
         >
           <img
+            alt='Yagiz Nizipli'
             width='140'
             height='140'
             src='https:/github.com/anonrig.png'

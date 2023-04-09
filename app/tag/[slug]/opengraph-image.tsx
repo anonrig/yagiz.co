@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { allTags  } from 'contentlayer/generated'
 import { notFound } from 'next/navigation'
 import { ImageResponse } from 'next/server'
@@ -54,6 +55,7 @@ export default function og({ params }: { params: { slug: string }}) {
           }}
         >
           <img
+            alt='Yagiz Nizipli'
             width='140'
             height='140'
             src='https:/github.com/anonrig.png'
