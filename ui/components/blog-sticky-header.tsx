@@ -3,6 +3,7 @@
 import clsx from 'clsx';
 import { Blog } from 'contentlayer/generated'
 import { useMemo, useEffect, useState } from 'react';
+import debounce from 'lodash.debounce'
 
 function useWindowScrollPercentage() {
   const isBrowser = typeof window !== 'undefined'
@@ -12,7 +13,7 @@ function useWindowScrollPercentage() {
   })
 
   useEffect(() => {
-    const handler = () => {
+    const handler = debounce(() => {
       setState((state) => {
         const { pageXOffset, pageYOffset } = window;
         // Check state for change, return same state if no change happened to prevent rerender
@@ -24,7 +25,7 @@ function useWindowScrollPercentage() {
             }
           : state;
       });
-    };
+    }, 100);
 
     //We have to update window scroll at mount, before subscription.
     //Window scroll may be changed between render and effect handler.
@@ -50,7 +51,7 @@ export default function BlogStickyHeader({ blog }: { blog: Blog }) {
 
   return (
     <header className={clsx(
-      'top-0 inset-x-0 items-center backdrop-blur-sm bg-[hsla(0,0%,100%,.8)] dark:bg-white-reversed/20 flex h-[50px] justify-between px-8 fixed z-[90] duration-300 transition-transform ease-in-out',
+      'top-0 inset-x-0 items-center backdrop-blur-sm bg-[hsla(0,0%,100%,.8)] dark:bg-white-reversed/50 flex h-[50px] justify-between px-8 fixed z-[90] duration-300 transition-transform ease-in-out',
       scrollPercentage <= 99 ? 'translate-y-0' : 'translate-y-[-52px]',
     )}>
       <div className='text-slate-800 dark:text-white grow leading-[1.3] mr-4 overflow-hidden overflow-ellipsis whitespace-nowrap text-xl font-bold'>
