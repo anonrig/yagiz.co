@@ -51,15 +51,15 @@ Anywhere in the execution flow, you can set fallback and stop the execution.
 
 * On JavaScript side:
 
-```js
+```js title="Example usage of a javascript user-land function"
 const { divide } = internalBinding('custom_namespace');
 ```
 
-Example usage of a javascript user-land function
+
 
 * On the C++ side:
 
-```cpp
+```cpp title="Example module declaration in C++ with V8"
 #include "v8-fast-api-calls.h"
 
 namespace node {
@@ -116,8 +116,6 @@ NODE_BINDING_EXTERNAL_REFERENCE(
                       custom_namespace,
                       node::custom_namespace::RegisterExternalReferences);
 ```
-
-Example module declaration in C++ with V8
 
 * Update **node\_external\_reference.h**
 
