@@ -52,7 +52,6 @@ export default function Blog({ params }: Props) {
     notFound()
   }
 
-  const spacerClassName = "before:px-[0.7rem] before:font-serif before:leading-[1] before:content-['\\02022']"
   const blog = allBlogs[index]
   const blogs = allBlogs.sort((a, b) => {
     return compareDesc(new Date(a.date), new Date(b.date))
@@ -68,11 +67,11 @@ export default function Blog({ params }: Props) {
             <span>
               <time dateTime={blog.date}>{format(new Date(blog.date), 'MMM dd, yyyy')}</time>
             </span>
-            <span className={spacerClassName}>
+            <span className="before:px-[0.7rem] before:font-serif before:leading-[1] before:content-['\02022']">
               {blog.minute_to_read} min read
             </span>
             {blog.tag !== undefined && (
-              <span className={spacerClassName}>
+              <span className="before:px-[0.7rem] before:font-serif before:leading-[1] before:content-['\02022']">
                 <Link href={`/tag/${blog.tag.slug}`} className='text-orange-400 hover:text-orange-300'>
                   {blog.tag.title}
                 </Link>
