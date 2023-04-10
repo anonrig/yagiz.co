@@ -15,7 +15,7 @@ With the release of Node 15, I started converting the API to modules and added/i
 
 Here's my \`.eslintrc\` configuration for Socketkit's new Tracking API
 
-```json
+```json title="Example .eslintrc configuration"
 {
   "extends": [
     "plugin:prettier/recommended",
@@ -45,7 +45,7 @@ I was in the middle of writing an endpoint for update password action for users 
 
 Here's an example schema by ajv and fastify, which checks for the type of 2 parameters: \`password\` and \`password\_again\` and the existence of it using the required parameter from ajv.
 
-```javascript
+```javascript title="Example schema using AJV and Fastify"
 {
   schema: {
     body: {
@@ -70,7 +70,7 @@ Here's an example schema by ajv and fastify, which checks for the type of 2 para
 
 Since, **password** and **password\_again** should be equal in order to make sure the user didn't want to change their password to a faulty one, we had to make sure that both of them is equal to each other. Our handler should have been this:
 
-```javascript
+```javascript title="Example implementation"
 {
   handler: async ({ accounts: [account] }) => {
     if (password !== password_again) {
@@ -105,7 +105,7 @@ According to the fantastic Node.js contributors and developers, here's the defin
 
 So our following code should have been the following:
 
-```javascript
+```javascript title="The correct implementation"
 {
   handler: async ({ accounts: [account] }) => {
     if (
