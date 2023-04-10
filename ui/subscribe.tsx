@@ -30,10 +30,12 @@ const subscribeButtonVariants = cva(
 
 export interface SubscribeButtonProps
   extends ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof subscribeButtonVariants> {}
+    VariantProps<typeof subscribeButtonVariants> {
+      label?: string
+    }
 
 const SubscribeButton = forwardRef<HTMLButtonElement, SubscribeButtonProps>(
-  ({ className, variant, size }, ref) => {
+  ({ className, variant, size, label }, ref) => {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
@@ -78,7 +80,7 @@ const SubscribeButton = forwardRef<HTMLButtonElement, SubscribeButtonProps>(
           className={clsx(subscribeButtonVariants({ variant, size, className }))}
           aria-label='Subscribe to the newsletter'
         >
-          Subscribe
+          {label ?? 'Subscribe'}
         </button>
       </Dialog.Trigger>
       <Dialog.Portal>
