@@ -29,11 +29,10 @@ export function generateMetadata({ params }: Props): Metadata {
   }
   return {
     title: blog.title,
-    // TODO: Handle description
-    description: '',
+    description: blog.description,
     openGraph: {
       title: blog.title,
-      description: '',
+      description: blog.description,
       type: 'article',
       publishedTime: format(new Date(blog.date), 'yyyy-mm-dd'),
       tags: blog.tag ? [blog.tag.title] : [],
@@ -41,7 +40,7 @@ export function generateMetadata({ params }: Props): Metadata {
     twitter: {
       card: 'summary_large_image',
       title: blog.title,
-      description: '',
+      description: blog.description,
     },
   }
 }
