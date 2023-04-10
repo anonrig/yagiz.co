@@ -17,11 +17,11 @@ export const metadata: Metadata = {
   },
   category: 'technology',
   description,
-  metadataBase: new URL('https://yagiz.co'),
+  metadataBase: new URL('https://www.yagiz.co'),
   openGraph: {
     title: 'Engineering with Yagiz',
     description,
-    url: 'https://yagiz.co',
+    url: 'https://www.yagiz.co',
     siteName: 'Engineering with Yagiz',
     locale: 'en-US',
     type: 'website',

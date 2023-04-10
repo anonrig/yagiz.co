@@ -19,10 +19,7 @@ const computedFields: ComputedFields = {
       datePublished: doc.publishedAt,
       dateModified: doc.publishedAt,
       description: doc.summary,
-      image: doc.image
-        ? `https://yagiz.co${doc.image}`
-        : `https://yagiz.co/api/og?title=${doc.title}`,
-      url: `https://yagiz.co/${doc._raw.flattenedPath}`,
+      url: `https://www.yagiz.co/${doc._raw.flattenedPath}`,
       author: {
         '@type': 'Person',
         name: 'Yagiz Nizipli',

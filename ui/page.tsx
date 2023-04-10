@@ -21,7 +21,7 @@ export function getPageMetadata({ slug }: Props): Metadata {
       title: page.title,
       description: page.description,
       type: 'website',
-      url: `https://yagiz.co/${page.slug}`
+      url: `https://www.yagiz.co/${page.slug}`
     },
   }
 }
