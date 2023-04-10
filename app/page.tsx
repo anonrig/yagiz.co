@@ -6,9 +6,7 @@ import BlogRow from '@/ui/components/blog-row'
 import Container from '@/ui/components/container'
 
 export default function Home() {
-  const blogs = allBlogs.sort((a, b) => {
-    return compareDesc(new Date(a.date), new Date(b.date))
-  })
+  const blogs = allBlogs.sort((a, b) => compareDesc(new Date(a.date), new Date(b.date)))
 
   return (
     <>

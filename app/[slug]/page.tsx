@@ -1,5 +1,5 @@
 import { allBlogs, Blog } from 'contentlayer/generated'
-import { compareDesc,format } from 'date-fns'
+import { compareDesc, format } from 'date-fns'
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -53,9 +53,7 @@ export default function Blog({ params }: Props) {
   }
 
   const blog = allBlogs[index]
-  const blogs = allBlogs.sort((a, b) => {
-    return compareDesc(new Date(a.date), new Date(b.date))
-  })
+  const blogs = allBlogs.sort((a, b) => compareDesc(new Date(a.date), new Date(b.date)))
 
   return (
     <>

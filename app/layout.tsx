@@ -50,10 +50,7 @@ export const metadata: Metadata = {
   viewport: {
     width: 'device-width',
     initialScale: 1,
-    maximumScale: 1,
   },
-  // TODO: Add Google and Yandex.
-  verification: {},
 }
 
 const mulish = Mulish({

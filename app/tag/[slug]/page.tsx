@@ -46,9 +46,9 @@ export default function Blog({ params }: Props) {
   }
 
   const otherTags = allTags.filter(t => t._id !== tag._id)
-  const blogs = allBlogs.sort((a, b) => {
-    return compareDesc(new Date(a.date), new Date(b.date))
-  }).filter(b => b.tag?._id === tag._id)
+  const blogs = allBlogs
+    .sort((a, b) => compareDesc(new Date(a.date), new Date(b.date)))
+    .filter(b => b.tag?._id === tag._id)
 
   return (
     <section>
