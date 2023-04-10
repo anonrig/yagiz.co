@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { MobileNavigationToggle, MobileNavigationContextProvider } from "../mobile-navigation-toggle";
+import SubscribeButton from "../subscribe";
 
 export type HeaderItem = {
   title: string
@@ -36,12 +37,7 @@ export default function LayoutHeader() {
         </nav>
 
         <div className='hidden items-center justify-end md:flex md:flex-[2]'>
-          <button
-            className='m-0 font-bold text-orange-400'
-            aria-label='Subscribe to the newsletter'
-          >
-            Subscribe
-          </button>
+          <SubscribeButton />
         </div>
 
         <div className='pointer h-30 w-30 md:hidden items-center flex'>

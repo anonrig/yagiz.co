@@ -5,6 +5,7 @@ import { Dispatch, PropsWithChildren, SetStateAction, createContext, useContext,
 import type { HeaderItem } from '@/ui/components/layout-header'
 import { MenuIcon, XIcon } from 'lucide-react'
 import clsx from "clsx"
+import SubscribeButton from './subscribe'
 
 const MobileNavigationContext = createContext<[
   boolean,
@@ -38,7 +39,7 @@ export function MobileNavigationToggle({ items }: { items: HeaderItem[] }) {
       </button>
 
       <div className={clsx(
-        'bg-white h-mobile-overlay left-0 pt-12 absolute top-navigation-bar w-full z-navigation-bar z-[90] overflow-y-auto',
+        'bg-white h-mobile-overlay left-0 pt-12 absolute top-navigation-bar w-full z-navigation-bar z-[20] overflow-y-auto',
         { hidden: !open }
       )}>
         <div className='mx-auto max-w-[calc(1130px+8vw)] px-[4vw] w-full'>
@@ -53,6 +54,8 @@ export function MobileNavigationToggle({ items }: { items: HeaderItem[] }) {
                 {item.title}
               </Link>
             ))}
+
+            <SubscribeButton size='3xl' className='text-right' />
           </nav>
         </div>
       </div>
