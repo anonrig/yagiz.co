@@ -14,7 +14,7 @@ export default function Home() {
       <Container className='mt-[-1.5rem]'>
         <div className='mx-auto my-0 flex max-w-[500px] flex-col items-center text-center'>
           <div className='relative mb-[2rem]'>
-            <Image alt='Engineering with Yagiz' src='/family.png' width={150} height={150} />
+            <Image alt='Engineering with Yagiz' src='/family.png' width={150} height={150} className='rounded-full'/>
           </div>
           <div className='text-[1.7rem] leading-[1.6] dark:text-zinc-200'>
             Here's a collection of posts about my thoughts, stories, ideas and experiences as a human, and an engineer working with different technologies.
