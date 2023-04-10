@@ -18,7 +18,7 @@ export default function LayoutHeader() {
     <MobileNavigationContextProvider>
       <header className='flex h-navigation-bar items-center px-[4vw] mx-auto w-full max-w-[calc(1130px+8vw)]'>
         <div className='flex flex-[2] items-center'>
-          <Link href='/' className='text-[1.8rem] font-extrabold text-slate-400' aria-label='Navigate to the homepage'>
+          <Link href='/' className='text-[1.8rem] font-extrabold text-slate-400 dark:text-neutral-200' aria-label='Navigate to the homepage'>
             Yagiz Nizipli
           </Link>
         </div>
@@ -28,7 +28,7 @@ export default function LayoutHeader() {
             <Link
               href={item.href}
               key={item.href}
-              className='mx-6 font-bold text-slate-800 hover:text-slate-600'
+              className='mx-6 font-bold text-slate-800 dark:text-zinc-200 hover:text-slate-600'
             >
               {item.title}
             </Link>

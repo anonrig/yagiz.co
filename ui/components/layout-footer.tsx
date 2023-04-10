@@ -11,14 +11,11 @@ const items = [
 
 export default function LayoutFooter() {
   return (
-    <footer className={clsx(
-      'flex flex-col items-center pb-20 pt-12',
-      'mx-auto w-full max-w-6xl', // container
-    )}>
+    <footer className='flex flex-col items-center pb-20 pt-12 mx-auto w-full max-w-6xl'>
       <div className='mb-8 flex'>
         <Link
           href={twitterUrl}
-          className='mx-[4px] p-[3px] leading-[0] text-[#999] hover:text-[#CCC]'
+          className='mx-[4px] p-[3px] leading-[0] text-[#999] hover:text-[#CCC] dark:text-neutral-400'
           rel='noopener noreferrer'
           target='_blank'
           aria-label='Twitter'
@@ -28,12 +25,12 @@ export default function LayoutFooter() {
 
         <Link
           href={rssUrl}
-          className='mx-[4px] p-[3px] leading-[0] text-white'
+          className='mx-[4px] p-[3px] leading-[0] text-white dark:text-white-reversed'
           rel='noopener noreferrer'
           target='_blank'
           aria-label='RSS'
         >
-          <Rss size={18} className='rounded-sm bg-[#999] p-0.5 hover:bg-[#CCC]'/>
+          <Rss size={18} className='rounded-sm bg-[#999] p-0.5 hover:bg-[#CCC] dark:bg-neutral-400 hover:dark:bg-neutral-500'/>
         </Link>
       </div>
       <nav className='mt-2 flex flex-wrap items-center justify-center'>
@@ -42,7 +39,7 @@ export default function LayoutFooter() {
             href={item.href}
             key={item.href}
             className={clsx(
-              'flex items-center text-lg font-normal text-slate-500',
+              'flex items-center text-lg font-normal text-slate-500 dark:text-neutral-400',
               index !== 0 && "before:block before:px-[0.7rem] before:font-serif before:leading-[1] before:content-['\\02022']",
             )}
           >

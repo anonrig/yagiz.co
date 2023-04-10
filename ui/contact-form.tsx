@@ -15,12 +15,12 @@ export default function ContactForm() {
     )
   }
 
-  const inputClass = 'font-normal focus:border-slate-300 mt-[0.7rem] bg-white border-[1px] border-slate-200 border-solid leading-[1.15] rounded-md text-slate-800 text-2xl h-[44px] outline-none px-6'
+  const inputClass = 'font-normal focus:border-slate-300 mt-[0.7rem] bg-white dark:bg-white-reversed border-[1px] border-slate-200 dark:border-neutral-600 border-solid leading-[1.15] rounded-md text-slate-800 dark:text-white text-xl h-[44px] outline-none px-6 dark:focus:border-neutral-500'
   const textAreaClass = 'h-full py-6 resize-y'
 
   return (
     <form onSubmit={handleSubmit} className={baseClass}>
-      <label htmlFor='email' className='block text-xl text-black font-bold flex flex-col w-full'>
+      <label htmlFor='email' className='block text-xl text-black dark:text-white font-bold flex flex-col w-full'>
         Email Address:
 
         <input
@@ -36,7 +36,7 @@ export default function ContactForm() {
         />
       </label>
 
-      <label htmlFor='message' className='block text-xl text-black font-bold flex flex-col w-full'>
+      <label htmlFor='message' className='block text-xl text-black dark:text-white font-bold flex flex-col w-full'>
         Message:
 
         <textarea
@@ -56,7 +56,7 @@ export default function ContactForm() {
         aria-label='Submit contact form'
         type='submit'
         disabled={state.submitting}
-        className='mt-6 items-center bg-white border-[1px] border-slate-200 hover:border-slate-300 border-solid rounded-md text-orange-400 text-[11px] font-extrabold h-[36px] justify-center tracking-[0.5px] outline-none px-[15px] uppercase'
+        className='mt-6 items-center bg-white dark:bg-white-reversed border-[1px] border-slate-200 dark:border-neutral-600 hover:border-slate-300 dark:hover:border-neutral-500 border-solid rounded-md text-orange-400 text-[11px] font-extrabold h-[36px] justify-center tracking-[0.5px] outline-none px-[15px] uppercase'
       >
         SUBMIT
       </button>

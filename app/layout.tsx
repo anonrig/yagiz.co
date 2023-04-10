@@ -60,7 +60,7 @@ export default function RootLayout({ children }: PropsWithChildren<unknown>) {
     <html
       lang='en'
       className={clsx(
-        'bg-white text-[62.5%] text-black',
+        'bg-white text-[62.5%] text-black dark:bg-white-reversed',
         mulish.className,
       )}>
       <body>

@@ -9,6 +9,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      colors: {
+        'white-reversed': '#282c35',
+      },
       fontFamily: {
         sans: ['var(--font-mulish)'],
       },

@@ -16,14 +16,14 @@ export default function Home() {
           <div className='relative mb-[2rem]'>
             <Image alt='Engineering with Yagiz' src='/family.png' width={150} height={150} />
           </div>
-          <div className='text-[1.7rem]'>
+          <div className='text-[1.7rem] leading-[1.6] dark:text-zinc-200'>
             Here's a collection of posts about my thoughts, stories, ideas and experiences as a human, and an engineer working with different technologies.
           </div>
         </div>
       </div>
 
       <div className='flex grow py-[6rem]'>
-        <div className='mx-auto w-full max-w-[calc(750px+8vw)] divide-y divide-slate-200 px-[4vw]'>
+        <div className='mx-auto w-full max-w-[calc(750px+8vw)] divide-y divide-slate-200 px-[4vw] dark:divide-neutral-700'>
           {blogs.map((blog) => <BlogRow blog={blog} key={blog._id}/>)}
         </div>
       </div>

@@ -19,7 +19,7 @@ export default function Figure(props: {
         />
       </div>
       {props.caption !== undefined && (
-        <figcaption className='mt-6 text-xl text-slate-500'>
+        <figcaption className='mt-6 text-xl text-neutral-400'>
           {props.caption}
         </figcaption>
       )}
