@@ -40,7 +40,7 @@ export function MobileNavigationToggle({ items }: { items: HeaderItem[] }) {
       </button>
 
       <div className={clsx(
-        'bg-white h-mobile-overlay left-0 pt-12 absolute top-navigation-bar w-full z-navigation-bar z-[20] overflow-y-auto',
+        'bg-white dark:bg-white-reversed h-mobile-overlay left-0 pt-12 absolute top-navigation-bar w-full z-navigation-bar z-[20] overflow-y-auto',
         { hidden: !open }
       )}>
         <Container>

@@ -40,7 +40,7 @@ export default function LayoutHeader() {
           <SubscribeButton />
         </div>
 
-        <div className='pointer h-30 w-30 md:hidden items-center flex'>
+        <div className='pointer h-30 w-30 md:hidden items-center flex text-black dark:text-neutral-300'>
           <MobileNavigationToggle items={items} />
         </div>
       </header>
