@@ -30,7 +30,6 @@ function RoundedImage({ alt, ...props}: ImageProps) {
       alt={alt}
       fill
       className='rounded-lg object-contain w-full !h-[unset] !relative bg-white col-wide'
-      sizes='100vw'
       {...props}
     />
   )

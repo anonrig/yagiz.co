@@ -13,7 +13,7 @@ import Heading from '@/ui/components/heading'
 import Markdown from '@/ui/components/markdown'
 
 type Props = {
-  params: { blog: string }
+  params: { slug: string }
 }
 
 export function generateStaticParams() {
@@ -21,7 +21,7 @@ export function generateStaticParams() {
 }
 
 export function generateMetadata({ params }: Props): Metadata {
-  const blog = allBlogs.find(b => b.slug === params.blog)
+  const blog = allBlogs.find(b => b.slug === params.slug)
   if (!blog) {
     return {
       title: 'Not Found'
@@ -46,14 +46,14 @@ export function generateMetadata({ params }: Props): Metadata {
 }
 
 export default function Blog({ params }: Props) {
-  const blogIndex = allBlogs.findIndex(b => b.slug === params.blog)
+  const index = allBlogs.findIndex(b => b.slug === params.slug)
 
-  if (blogIndex === -1) {
+  if (index === -1) {
     notFound()
   }
 
   const spacerClassName = "before:px-[0.7rem] before:font-serif before:leading-[1] before:content-['\\02022']"
-  const blog = allBlogs[blogIndex]
+  const blog = allBlogs[index]
   const blogs = allBlogs.sort((a, b) => {
     return compareDesc(new Date(a.date), new Date(b.date))
   })
@@ -97,15 +97,10 @@ export default function Blog({ params }: Props) {
           <Markdown code={blog.body.code} />
         </div>
 
-        <BlogFooter blogs={blogs} index={blogIndex} />
+        <BlogFooter blogs={blogs} index={index} />
       </article>
 
-      <BlogSuggestion
-        suggestions={[
-          blogs.at(blogIndex + 2),
-          blogs.at(blogIndex + 1),
-        ] as Blog[]}
-      />
+      <BlogSuggestion blogs={blogs} index={index}/>
     </>
   )
 }

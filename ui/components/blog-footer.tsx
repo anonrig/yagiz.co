@@ -2,6 +2,7 @@ import { Blog } from 'contentlayer/generated'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
+import Container from './container';
 
 export default function BlogFooter({ index, blogs }: { index: number; blogs: Blog[] }) {
   // Newest blog post is at the 0th index
@@ -9,7 +10,7 @@ export default function BlogFooter({ index, blogs }: { index: number; blogs: Blo
   const previous = index !== blogs.length - 1 ? blogs.at(index + 1) : undefined
 
   return (
-    <footer className='mx-auto mt-16 flex w-full max-w-[calc(750px+8vw)] items-center px-[4vw]'>
+    <Container size='tight' className='mt-16 flex items-center' as='footer'>
       <div className='flex flex-2'>
         {previous !== undefined && (
           <Link href={`/${previous.slug}`} aria-label='Previous article'>
@@ -42,6 +43,6 @@ export default function BlogFooter({ index, blogs }: { index: number; blogs: Blo
           </Link>
         )}
       </div>
-    </footer>
+    </Container>
   )
 }

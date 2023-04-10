@@ -6,8 +6,8 @@ import { ImageResponse } from 'next/server'
 export const size = { width: 1920, height: 1080 }
 export const contentType = 'image/png'
 
-export default function og({ params }: { params: { blog: string }}) {
-  const blog = allBlogs.find(b => b.slug === params.blog)
+export default function og({ params }: { params: { slug: string }}) {
+  const blog = allBlogs.find(b => b.slug === params.slug)
 
   if (!blog) {
     notFound()

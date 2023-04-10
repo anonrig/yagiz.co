@@ -1,10 +1,20 @@
 import { Blog } from 'contentlayer/generated'
 import BlogRow from './blog-row'
+import Container from './container'
 
-export default function BlogSuggestion({ suggestions }: { suggestions: Blog[] }) {
+export default function BlogSuggestion({ index, blogs }: { index: number, blogs: Blog[] }) {
+  const suggestions = [
+    blogs.at(index - 2),
+    blogs.at(index - 1),
+  ].filter(Boolean) as Blog[]
+
+  if (suggestions.length === 0) {
+    return null
+  }
+
   return (
     <section className='mt-24 bg-[#f6f6f6] dark:bg-[#2f333c] pb-[3rem] pt-[4.5rem]'>
-      <div className='mx-auto w-full max-w-[calc(750px+8vw)] px-[4vw]'>
+      <Container size='tight'>
         <h3 className='mb-6 text-3xl font-extrabold tracking-wide dark:text-white'>
           You might also like...
         </h3>
@@ -13,7 +23,7 @@ export default function BlogSuggestion({ suggestions }: { suggestions: Blog[] })
             <BlogRow blog={suggestion} key={suggestion._id} />
           ))}
         </div>
-      </div>
+      </Container>
     </section>
   )
 }

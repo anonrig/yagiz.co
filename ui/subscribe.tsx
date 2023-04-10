@@ -37,7 +37,7 @@ const SubscribeButton = forwardRef<HTMLButtonElement, SubscribeButtonProps>(
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const handleSubmit = useCallback(async (event: FormEvent<HTMLFormElement>) => {
-    const { email, name } = event.currentTarget
+    const { email, name } = event.target as any
 
     event.preventDefault()
     setLoading(true)

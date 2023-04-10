@@ -6,6 +6,7 @@ import type { HeaderItem } from '@/ui/components/layout-header'
 import { MenuIcon, XIcon } from 'lucide-react'
 import clsx from "clsx"
 import SubscribeButton from './subscribe'
+import Container from '@/ui/components/container'
 
 const MobileNavigationContext = createContext<[
   boolean,
@@ -42,7 +43,7 @@ export function MobileNavigationToggle({ items }: { items: HeaderItem[] }) {
         'bg-white h-mobile-overlay left-0 pt-12 absolute top-navigation-bar w-full z-navigation-bar z-[20] overflow-y-auto',
         { hidden: !open }
       )}>
-        <div className='mx-auto max-w-[calc(1130px+8vw)] px-[4vw] w-full'>
+        <Container>
           <nav className='flex flex-col gap-[1.5rem]'>
             {items.map(item => (
               <Link
@@ -57,7 +58,7 @@ export function MobileNavigationToggle({ items }: { items: HeaderItem[] }) {
 
             <SubscribeButton size='3xl' className='text-right' />
           </nav>
-        </div>
+        </Container>
       </div>
     </>
   )

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
 import BlogRow from '@/ui/components/blog-row'
+import Container from '@/ui/components/container'
 
 type Props = {
   params: { slug: string }
@@ -51,7 +52,7 @@ export default function Blog({ params }: Props) {
 
   return (
     <section>
-      <div className='mx-auto mt-[-1.5rem] flex w-full max-w-[calc(750px+8vw)] flex-col gap-8 px-[4vw] text-center'>
+      <Container size='tight' className='mt-[-1.5rem] flex flex-col gap-8 text-center'>
         <h1 className='text-4xl font-extrabold leading-[1.3] text-orange-400'>
           #{tag.title}
         </h1>
@@ -72,12 +73,12 @@ export default function Blog({ params }: Props) {
               </Link>
             ))}
         </div>
-      </div>
+      </Container>
 
       <div className='flex grow py-[6rem]'>
-        <div className='mx-auto w-full max-w-[calc(750px+8vw)] divide-y divide-slate-200 px-[4vw]'>
+        <Container size='tight' className='divide-y divide-slate-200'>
           {blogs.map((blog) => <BlogRow blog={blog} key={blog._id}/>)}
-        </div>
+        </Container>
       </div>
     </section>
   )
