@@ -1,6 +1,8 @@
 import Link from "next/link";
+import dynamic from 'next/dynamic'
 import { MobileNavigationToggle, MobileNavigationContextProvider } from "../mobile-navigation-toggle";
-import SubscribeButton from "../subscribe";
+
+const SubscribeButton = dynamic(() => import('../subscribe'))
 
 export type HeaderItem = {
   title: string

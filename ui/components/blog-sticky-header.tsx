@@ -1,10 +1,12 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import clsx from 'clsx';
-import { Blog } from 'contentlayer/generated'
+import type { Blog } from 'contentlayer/generated'
 import { useMemo, useEffect, useState } from 'react';
 import debounce from 'lodash.debounce'
-import SubscribeButton from '../subscribe';
+
+const SubscribeButton = dynamic(() => import('../subscribe'))
 
 function useWindowScrollPercentage() {
   const isBrowser = typeof window !== 'undefined'
