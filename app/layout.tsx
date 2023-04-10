@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     default: 'Engineering with Yagiz',
     template: '%s - Yagiz Nizipli',
   },
+  category: 'technology',
   description,
   metadataBase: new URL('https://yagiz.co'),
   openGraph: {
@@ -38,11 +39,18 @@ export const metadata: Metadata = {
   },
   twitter: {
     title: 'Engineering with Yagiz',
+    description,
     card: 'summary_large_image',
+    creator: '@yagiznizipli',
+    creatorId: '1589638196',
   },
   icons: {
-    // TODO: Add this image.
-    shortcut: '/favicon.ico',
+    icon: '/favicon.ico',
+  },
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
   },
   // TODO: Add Google and Yandex.
   verification: {},
