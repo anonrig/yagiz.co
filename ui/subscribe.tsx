@@ -1,7 +1,7 @@
 'use client'
 
 import clsx from 'clsx'
-import { ButtonHTMLAttributes, forwardRef } from 'react'
+import { ButtonHTMLAttributes, FormEvent, FormEventHandler, forwardRef, useCallback, useState } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { XIcon } from 'lucide-react'
 import Image from 'next/image'
@@ -33,8 +33,44 @@ export interface SubscribeButtonProps
 
 const SubscribeButton = forwardRef<HTMLButtonElement, SubscribeButtonProps>(
   ({ className, variant, size }, ref) => {
+  const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState('')
+  const handleSubmit = useCallback(async (event: FormEvent<HTMLFormElement>) => {
+    const { email, name } = event.currentTarget
+
+    event.preventDefault()
+    setLoading(true)
+    try {
+      const response = await fetch('/api/newsletter', {
+        method: 'post',
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: email.value,
+          name: name.value,
+        })
+      })
+      const json = await response.json()
+
+      if (json.status === 200) {
+        setMessage('')
+        setOpen(false)
+      } else {
+        setMessage(json.message)
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        setMessage(error.message)
+      }
+    } finally {
+      setLoading(false)
+    }
+  }, [setLoading])
+
   return (
-    <Dialog.Root>
+    <Dialog.Root open={open} onOpenChange={(o) => setOpen(o)}>
       <Dialog.Trigger asChild>
         <button
           ref={ref}
@@ -53,31 +89,43 @@ const SubscribeButton = forwardRef<HTMLButtonElement, SubscribeButtonProps>(
               Yagiz Nizipli
             </Dialog.Title>
           </div>
-          <label htmlFor='name' className='block text-xl text-black dark:text-white font-bold flex flex-col w-full'>
-            Name
+          <form onSubmit={handleSubmit}>
+            <label htmlFor='name' className='block text-xl text-black dark:text-white font-bold flex flex-col w-full'>
+              Name
 
-            <Input
-              id="name"
-              type="text"
-              name="name"
-            />
-          </label>
+              <Input
+                id="name"
+                type="text"
+                name="name"
+                required
+              />
+            </label>
 
-          <label htmlFor='email' className='block text-xl text-black dark:text-white font-bold flex flex-col w-full mt-8'>
-            Email
+            <label htmlFor='email' className='block text-xl text-black dark:text-white font-bold flex flex-col w-full mt-8'>
+              Email
 
-            <Input
-              id="email"
-              type="email"
-              name="email"
-            />
-          </label>
+              <Input
+                id="email"
+                type="email"
+                name="email"
+                required
+              />
+            </label>
 
-          <button
-            className="mt-16 mb-10 w-full bg-orange-400 text-white dark:text-white-reversed h-[42px] px-[1.8rem] rounded-lg font-bold"
-          >
-            Subscribe
-          </button>
+            <button
+              type='submit'
+              disabled={loading}
+              className="mt-16 mb-10 w-full bg-orange-400 text-white dark:text-white-reversed h-[42px] px-[1.8rem] rounded-lg font-bold"
+            >
+              Subscribe
+            </button>
+
+            {message.length > 0 && (
+              <div className='text-center text-lg'>
+                Message: {message}
+              </div>
+            )}
+          </form>
 
           <Dialog.Close asChild>
             <button

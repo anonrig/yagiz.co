@@ -14,8 +14,8 @@ const nextConfig = {
     ];
   },
   images: {
-    domains: ['images.unsplash.com']
-  }
+    formats: ['image/avif', 'image/webp'],
+  },
 }
 
 // https://nextjs.org/docs/advanced-features/security-headers
