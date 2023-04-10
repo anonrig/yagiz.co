@@ -36,6 +36,7 @@ export function generateMetadata({ params }: Props): Metadata {
       description: '',
       type: 'article',
       publishedTime: format(new Date(blog.date), 'yyyy-mm-dd'),
+      tags: blog.tag ? [blog.tag.title] : [],
     },
     twitter: {
       card: 'summary_large_image',
@@ -52,12 +53,12 @@ export default function Blog({ params }: Props) {
     notFound()
   }
 
-  const blog = allBlogs[index]
-  const blogs = allBlogs.sort((a, b) => compareDesc(new Date(a.date), new Date(b.date)))
+  const blog: Blog = allBlogs[index]
+  const blogs: Blog[] = allBlogs.sort((a, b) => compareDesc(new Date(a.date), new Date(b.date)))
 
   return (
     <>
-      <article className='block'>
+      <article>
         <Script id={`blog-${blog.slug}`} type='application/ld+json'>{JSON.stringify(blog.structuredData)}</Script>
 
         <header className='mb-[4.5rem] grid grid-cols-canvas text-center'>
