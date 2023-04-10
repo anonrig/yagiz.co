@@ -34,7 +34,7 @@ export function generateMetadata({ params }: Props): Metadata {
       title: blog.title,
       description: blog.description,
       type: 'article',
-      publishedTime: format(new Date(blog.date), 'yyyy-mm-dd'),
+      publishedTime: format(new Date(blog.date), 'yyyy-MM-dd'),
       tags: blog.tag ? [blog.tag.title] : [],
     },
     twitter: {
