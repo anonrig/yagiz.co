@@ -38,7 +38,6 @@ export function generateMetadata({ params }: Props): Metadata {
       tags: blog.tag ? [blog.tag.title] : [],
     },
     twitter: {
-      card: 'summary_large_image',
       title: blog.title,
       description: blog.description,
     },
