@@ -1,6 +1,10 @@
 import { Feed } from 'feed'
+import type { NextConfig } from 'next'
 
 import { sortedBlogs, websiteDomain } from '@/app/content'
+
+// TODO: Remove this line when I find an edge compatible RSS lib.
+export const config: NextConfig = { runtime: 'nodejs' }
 
 export async function GET() {
   const feed = new Feed({

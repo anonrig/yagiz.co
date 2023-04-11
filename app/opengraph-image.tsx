@@ -1,7 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
+import type { NextConfig } from 'next'
 import { ImageResponse } from 'next/server'
 
-export const runtime = 'edge'
+export const config: NextConfig = { runtime: 'edge' }
 export const size = { width: 1920, height: 1080 }
 export const alt = 'Engineering with Yagiz'
 export const contentType = 'image/png'
