@@ -11,19 +11,19 @@ feature_image_caption: Ada URL Parser is available on github.com/ada-url/ada
 minute_to_read: 4
 ---
 
-[Ada URL Parser](https://github.com/ada-url/ada?ref=yagiz.co), a powerful tool for parsing URLs, has just been updated to version 2.0 after the release of version 1.0.4 just a month ago. This latest version brings some significant improvements over its predecessor, includinga doubling of execution speed in some cases, as well as reduced memory usage and allocations. These enhancements make the Ada URL Parser more efficient and capable of handling a broader range of URL parsing tasks with ease. In this blog post, we'll take a closer look at the new features and performance improvements of the Ada URL Parser v2.0 and explore how they can benefit developers in their everyday work.
+[Ada URL Parser](https://github.com/ada-url/ada), a powerful tool for parsing URLs, has just been updated to version 2.0 after the release of version 1.0.4 just a month ago. This latest version brings some significant improvements over its predecessor, includinga doubling of execution speed in some cases, as well as reduced memory usage and allocations. These enhancements make the Ada URL Parser more efficient and capable of handling a broader range of URL parsing tasks with ease. In this blog post, we'll take a closer look at the new features and performance improvements of the Ada URL Parser v2.0 and explore how they can benefit developers in their everyday work.
 
 In addition to the performance and memory improvements, the Ada URL Parser v2.0 also introduces a new feature that will be of particular interest to developers working with one-time URL parsing tasks. With this update, Ada now supports two different implementations of URL parsing out of the box.
 
 ## Dropping ICU requirement
 
-[The International Components for Unicode (ICU) library](https://icu.unicode.org/?ref=yagiz.co) was a vital component of the Ada URL Parser v1.x and was required for proper URL **hostname** parsing and manipulation. This is because URLs can contain a wide variety of international characters, including non-Latin alphabets, and the ICU library provides a comprehensive set of tools for handling these characters in a standardized manner.
+[The International Components for Unicode (ICU) library](https://icu.unicode.org/) was a vital component of the Ada URL Parser v1.x and was required for proper URL **hostname** parsing and manipulation. This is because URLs can contain a wide variety of international characters, including non-Latin alphabets, and the ICU library provides a comprehensive set of tools for handling these characters in a standardized manner.
 
 Specifically, the ICU library provides support for Unicode normalization, which is a critical step in URL parsing. Normalization ensures that URLs containing international characters are properly encoded and can be processed correctly by other software components. Additionally, the ICU library provides support for character set conversion and detection, which are essential for handling URLs from different regions of the world.
 
 Prior to v2.0, Ada was dependent on ICU for `to_ascii` and `to_unicode` operations. The ICU library is available for all systems and we cannot guaranteed that it is up-to-date. Providing our own unicode functions allows us to fully support the standard across a broad range of systems. Furthermore, our benchmarks reveal that we sometimes achieve better performance with our own dedicated functions.
 
-With Ada v2.0, we are dropping the system requirement of ICU and rolling out our implementation of the Unicode Specification, and releasing it publicly on GitHub ([ada/idna](https://github.com/ada-url/idna?ref=yagiz.co)).
+With Ada v2.0, we are dropping the system requirement of ICU and rolling out our implementation of the Unicode Specification, and releasing it publicly on GitHub ([ada/idna](https://github.com/ada-url/idna)).
 
 ## Introducing url\_aggregator
 
@@ -47,7 +47,7 @@ As you may have realized, the public API of **ada::url** and **ada::url\_aggrega
 
 ### Reducing string allocations in Ada
 
-One of the key features of the **Ada URL Parser v2.0** is its ability to provide a comprehensive representation of the various components of a URL string. This representation is based on the [WHATWG URL specification](https://url.spec.whatwg.org/?ref=yagiz.co) and includes a range of offsets for different URL components. These offsets are used to identify the start and end indexes of different parts of the URL, such as the protocol, username, hostname, port, pathname, search, and hash. By using these offsets, developers can easily extract and manipulate different parts of a URL string without having to worry about the underlying parsing details.
+One of the key features of the **Ada URL Parser v2.0** is its ability to provide a comprehensive representation of the various components of a URL string. This representation is based on the [WHATWG URL specification](https://url.spec.whatwg.org/) and includes a range of offsets for different URL components. These offsets are used to identify the start and end indexes of different parts of the URL, such as the protocol, username, hostname, port, pathname, search, and hash. By using these offsets, developers can easily extract and manipulate different parts of a URL string without having to worry about the underlying parsing details.
 
 ```text title="URL Components structure"
 https://user:pass@example.com:1234/foo/bar?baz#quux
@@ -72,7 +72,7 @@ All benchmarks are executed using the Apple M1 Max processor.
 
 ### Comparing Ada with alternatives
 
-The following [benchmark code](https://github.com/ada-url/ada/tree/main/benchmarks?ref=yagiz.co) is available on GitHub as well as [the dataset](https://github.com/ada-url/url-dataset?ref=yagiz.co) of 100,000 URLs. We used cURL 8.0.1, Servo 2.3.1 (using Rust 1.64.0), and Boost 1.81.0 for benchmarking.
+The following [benchmark code](https://github.com/ada-url/ada/tree/main/benchmarks) is available on GitHub as well as [the dataset](https://github.com/ada-url/url-dataset) of 100,000 URLs. We used cURL 8.0.1, Servo 2.3.1 (using Rust 1.64.0), and Boost 1.81.0 for benchmarking.
 
 ```text title="Benchmark results of Ada"
 Benchmark                     time/url      url/s
@@ -86,11 +86,11 @@ cURL                          1.32924us  752.31k/s
 
 Ada is currently **50% faster than Boost**, **3x faster than Servo** and **6x faster than cURL** in the given dataset.
 
-**_Disclaimer:_**cURL _follows [RFC 3986+](https://curl.se/docs/url-syntax.html?ref=yagiz.co), and Boost follows [RFC 3986](https://www.rfc-editor.org/rfc/rfc3986?ref=yagiz.co)._
+**_Disclaimer:_**cURL _follows [RFC 3986+](https://curl.se/docs/url-syntax.html), and Boost follows [RFC 3986](https://www.rfc-editor.org/rfc/rfc3986)._
 
 ### Comparing Node.js (with Ada) with alternatives
 
-The following benchmark code is available on [GitHub](https://github.com/anonrig/node-benchmarks/tree/main/url?ref=yagiz.co) as well as [the dataset](https://github.com/ada-url/url-dataset?ref=yagiz.co) of 100,000 URLs. We used Node.js main branch, Bun 0.5.8 and Deno 1.32.1 for benchmarking.
+The following benchmark code is available on [GitHub](https://github.com/anonrig/node-benchmarks/tree/main/url) as well as [the dataset](https://github.com/ada-url/url-dataset) of 100,000 URLs. We used Node.js main branch, Bun 0.5.8 and Deno 1.32.1 for benchmarking.
 
 ```text title="Comparing Node.js with Bun and Deno"
 benchmark            time (avg)                  (min … max)
@@ -102,6 +102,6 @@ Deno             118.66 ms/iter      (118.41 ms … 118.92 ms)
 
 Node.js is currently **82% faster than Bun** and **3x faster than Deno** in the given dataset.
 
-All this great work is a result of a collaboration between [Daniel Lemire](https://github.com/lemire?ref=yagiz.co), [Miguel Teixeira](https://github.com/miguelteixeiraa?ref=yagiz.co), and me ([Yagiz Nizipli](https://github.com/anonrig?ref=yagiz.co)).
+All this great work is a result of a collaboration between [Daniel Lemire](https://github.com/lemire), [Miguel Teixeira](https://github.com/miguelteixeiraa), and me ([Yagiz Nizipli](https://github.com/anonrig)).
 
-The full changelog can be found on [Ada's GitHub releases page](https://github.com/ada-url/ada/releases?ref=yagiz.co).
+The full changelog can be found on [Ada's GitHub releases page](https://github.com/ada-url/ada/releases).

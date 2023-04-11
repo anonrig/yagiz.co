@@ -108,13 +108,13 @@ After adding the 2 options, **I saw 3-5% performance improvement** compared to p
 
 **2. My benchmarks were wrong, and v8 with JIT compiler was caching JavaScript in a much more performant way than WebAssembly**
 
-I've did some research and saw [this amazing article](https://flaviocopes.com/node-runtime-v8-options/?ref=yagiz.co). I've did some experimenting with the flags but did not see an major improvement compared to the previous benchmark that would reason with the performance regression.
+I've did some research and saw [this amazing article](https://flaviocopes.com/node-runtime-v8-options/). I've did some experimenting with the flags but did not see an major improvement compared to the previous benchmark that would reason with the performance regression.
 
 This made me question if WebAssembly was the actual reason behind this issue. Upon researching and reading I've realized that UTF-16 to UTF-8 conversion between WebAssembly and Node.js using `TextEncoder` and `TextDecoder` was the primarily reason and the bottleneck.
 
 **3. I was questioning myself and thought I've missed a really important bullet point in the implementation.**
 
-The best way to know if you're on the correct path was to actually ask for people's help who have more experience on it than you. I've reached to [Matteo Collina](http://github.com/mcollina?ref=yagiz.co) and [James M. Snell](http://github.com/jasnell?ref=yagiz.co) from the Node.js Foundation Technical Steering Commitee.
+The best way to know if you're on the correct path was to actually ask for people's help who have more experience on it than you. I've reached to [Matteo Collina](http://github.com/mcollina) and [James M. Snell](http://github.com/jasnell) from the Node.js Foundation Technical Steering Commitee.
 
 Upon talking with James, he suggested I should try to reimplement the JavaScript layer without the help from `wasm-pack` and see what would be the change in terms of performance.
 
@@ -149,4 +149,4 @@ Companies such as 1Password prefer using WebAssembly over any other solution, is
 
 Even though this was an educational experience for me, I'll implement the WHATWG URL parser in JavaScript and continue my effort to make it more performant than the existing solution using v8.
 
-The Rust based implementation lives inside [https://github.com/anonrig/url](https://github.com/anonrig/url?ref=yagiz.co).
+The Rust based implementation lives inside [https://github.com/anonrig/url](https://github.com/anonrig/url).

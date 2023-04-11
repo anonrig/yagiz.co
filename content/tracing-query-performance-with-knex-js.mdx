@@ -12,7 +12,7 @@ minute_to_read: 1
 
 Over the years, I found myself searching for the same exact problem whenever I was using Knex.js, the query planner for Node.js. Since, the following code snippet is small enough to not be a Node library, I'm intrigued to share this as a blog post.
 
-Initially, a blog post from [Atomic Object](https://spin.atomicobject.com/2017/03/27/timing-queries-knexjs-nodejs/?ref=yagiz.co) proposed to use `query` and `query-response` events on the knex.js instance, since it's also an event emitter, but I guess it's time to use **perf\_hooks** and properly mark the performance of a query using the native tooling.
+Initially, a blog post from [Atomic Object](https://spin.atomicobject.com/2017/03/27/timing-queries-knexjs-nodejs/) proposed to use `query` and `query-response` events on the knex.js instance, since it's also an event emitter, but I guess it's time to use **perf\_hooks** and properly mark the performance of a query using the native tooling.
 
 ```javascript
 import { PerformanceObserver, performance } from 'perf_hooks'

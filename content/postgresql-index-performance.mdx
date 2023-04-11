@@ -15,7 +15,7 @@ Today, I'm going to talk about one of the most interesting topics in software an
 
 ## Indexes
 
-There's currently 6 different index types supported in [PostgreSQL 14](https://www.postgresql.org/docs/current/indexes-types.html?ref=yagiz.co). I'll briefly talk about these types and create a baseline for you to understand the advantages and disadvantages of using them.
+There's currently 6 different index types supported in [PostgreSQL 14](https://www.postgresql.org/docs/current/indexes-types.html). I'll briefly talk about these types and create a baseline for you to understand the advantages and disadvantages of using them.
 
 ```sql title="An example SQL statement to create a hash index"
 CREATE INDEX name ON table USING HASH (column);
@@ -43,7 +43,7 @@ If you're using `SELECT * FROM repositories WHERE created_at BETWEEN $1 AND $2` 
 ### SP-GiST Index
 
 * SP-GST is an abvreviation for space-partitioned GiST. SP-GiST supports partitioned search trees such as quad-trees, k-d trees and suffix trees. The common feature of these structures is that they repeatedly divide the earch space into partitions that need not be of equal size.
-* More appropriate explanation of GiST and SP-GiST can be found on [here](https://gis.stackexchange.com/questions/374091/when-to-use-gist-and-when-to-use-sp-gist-index?ref=yagiz.co).
+* More appropriate explanation of GiST and SP-GiST can be found on [here](https://gis.stackexchange.com/questions/374091/when-to-use-gist-and-when-to-use-sp-gist-index).
 
 ### GIN Index
 
@@ -56,13 +56,13 @@ If you're using `SELECT * FROM repositories WHERE created_at BETWEEN $1 AND $2` 
 
 * Introduced on PostgreSQL 9.5
 * BRIN index is the block-range index that allows serious performance boosts which involve BETWEEN queries.
-* 20 times better compared to B-Tree index. [Source.](https://www.percona.com/blog/2019/07/16/brin-index-for-postgresql-dont-forget-the-benefits/?ref=yagiz.co)
+* 20 times better compared to B-Tree index. [Source.](https://www.percona.com/blog/2019/07/16/brin-index-for-postgresql-dont-forget-the-benefits/)
 
 `CREATE INDEX testtab_date_brin_idx ON testtab USING BRIN (date);`
 
 ## Index Recommendations
 
-While looking for a good index recommendation extension for PostgreSQL, I saw an extension developed by Powa team on [Github](https://github.com/powa-team/pg%5Fqualstats?ref=yagiz.co).
+While looking for a good index recommendation extension for PostgreSQL, I saw an extension developed by Powa team on [Github](https://github.com/powa-team/pg%5Fqualstats).
 
 ### Installation
 
@@ -93,4 +93,4 @@ SELECT v
 
 This query will give you possible indexes which can improve certain queries you've executed.
 
-For more detailed explanation on this awesome extension, please visit the extensions official [Github repository](https://github.com/powa-team/pg%5Fqualstats?ref=yagiz.co).
+For more detailed explanation on this awesome extension, please visit the extensions official [Github repository](https://github.com/powa-team/pg%5Fqualstats).
