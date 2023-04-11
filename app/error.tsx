@@ -1,5 +1,6 @@
 'use client';
 
+import Container from '@/ui/components/container';
 import { useEffect } from 'react';
 
 export default function Error({ error }: { error: Error }) {
@@ -9,8 +10,8 @@ export default function Error({ error }: { error: Error }) {
   }, [error]);
 
   return (
-    <div>
+    <Container>
       <p>Oh no, something went wrong... maybe refresh?</p>
-    </div>
+    </Container>
   );
 }
