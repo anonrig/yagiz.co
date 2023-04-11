@@ -57,17 +57,17 @@ export default function Blog({ params }: Props) {
           #{tag.title}
         </h1>
 
-        <div className='text-[1.7rem]'>
+        <div className='text-[1.7rem] dark:text-white'>
           {tag.description}
         </div>
 
         <div>
-          <span className='mr-2 mt-2 font-bold text-slate-400'>More:</span>
+          <span className='mr-2 mt-2 font-bold text-white'>More:</span>
             {otherTags.map(tag => (
               <Link
                 href={`/tag/${tag.slug}`}
                 key={tag.slug}
-                className='ml-1 break-keep font-bold text-slate-800 hover:text-slate-600'
+                className='ml-1 break-keep font-bold text-slate-800 hover:text-slate-600 dark:text-neutral-500 dark:hover:text-neutral-400'
               >
                 #{tag.title}
               </Link>

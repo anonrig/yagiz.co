@@ -11,7 +11,7 @@ export default function BlogFooter({ index, blogs }: { index: number; blogs: Blo
 
   return (
     <Container size='tight' className='mt-16 flex items-center' as='footer'>
-      <div className='flex flex-2'>
+      <div className='flex flex-2 text-black dark:text-neutral-400'>
         {previous !== undefined && (
           <Link href={`/${previous.slug}`} aria-label='Previous article'>
             <ArrowLeft size={20} />
@@ -21,7 +21,7 @@ export default function BlogFooter({ index, blogs }: { index: number; blogs: Blo
 
       <div className='flex flex-col'>
         <div className='flex flex-col items-center gap-y-4'>
-          <h3 className='mb-4 text-2xl font-extrabold tracking-wide text-slate-800'>
+          <h3 className='mb-4 text-2xl font-extrabold tracking-wide text-slate-800 dark:text-white'>
             Published by:
           </h3>
           <Link href='/about'>
@@ -36,7 +36,7 @@ export default function BlogFooter({ index, blogs }: { index: number; blogs: Blo
         </div>
       </div>
 
-      <div className='flex flex-2 justify-end'>
+      <div className='flex flex-2 justify-end text-black dark:text-neutral-400'>
         {next !== undefined && (
           <Link href={`/${next.slug}`} aria-label='Next article'>
             <ArrowRight size={20} />
