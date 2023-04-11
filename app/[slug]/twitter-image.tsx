@@ -16,8 +16,5 @@ export default function twitter({ params }: { params: { slug: string }}) {
     notFound()
   }
 
-  return new ImageResponse(<BlogImage title={blog.title} />, {
-    width: 1920,
-    height: 1080,
-  })
+  return new ImageResponse(<BlogImage title={blog.title} />, size)
 }
