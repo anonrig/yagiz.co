@@ -1,12 +1,10 @@
 import { allBlogs } from 'contentlayer/generated'
 import { Feed } from 'feed'
 
-import { metadata } from '../layout'
-
 export async function GET() {
   const feed = new Feed({
-    title: metadata.title,
-    description: metadata.description,
+    title: 'Engineering with Yagiz',
+    description: 'Here\'s a collection of posts about my thoughts, stories, ideas and experiences as a human, and an engineer working with different technologies.',
     id: 'https://www.yagiz.co',
     link: 'https://www.yagiz.co',
     language: 'en',
