@@ -20,8 +20,8 @@ dependencies:
     specifier: ^0.1.11
     version: 0.1.11(react@18.2.0)
   class-variance-authority:
-    specifier: ^0.5.1
-    version: 0.5.1(typescript@5.0.4)
+    specifier: ^0.5.2
+    version: 0.5.2(typescript@5.0.4)
   clsx:
     specifier: ^1.2.1
     version: 1.2.1
@@ -38,8 +38,8 @@ dependencies:
     specifier: ^4.0.8
     version: 4.0.8
   lucide-react:
-    specifier: ^0.138.0
-    version: 0.138.0(react@18.2.0)
+    specifier: ^0.139.0
+    version: 0.139.0(react@18.2.0)
   next:
     specifier: 13.3.1-canary.4
     version: 13.3.1-canary.4(@opentelemetry/api@1.1.0)(react-dom@18.2.0)(react@18.2.0)
@@ -1723,8 +1723,8 @@ packages:
     optionalDependencies:
       fsevents: 2.3.2
 
-  /class-variance-authority@0.5.1(typescript@5.0.4):
-    resolution: {integrity: sha512-J3tAiPbmBhPffsZ6Le3cR4o5hN78XBTst5NwCJJF7hAkZYIDuHQKV03Tb89zMDAxIONmM+DFRooMUCK5nTWpvQ==}
+  /class-variance-authority@0.5.2(typescript@5.0.4):
+    resolution: {integrity: sha512-j7Qqw3NPbs4IpO80gvdACWmVvHiLLo5MECacUBLnJG17CrLpWaQ7/4OaWX6P0IO1j2nvZ7AuSfBS/ImtEUZJGA==}
     peerDependencies:
       typescript: '>= 4.5.5 < 6'
     peerDependenciesMeta:
@@ -3334,8 +3334,8 @@ packages:
     dependencies:
       yallist: 4.0.0
 
-  /lucide-react@0.138.0(react@18.2.0):
-    resolution: {integrity: sha512-gSzdhrNhuUim/uTw8R2fyDL3iAJ3aSn6QplK0UZ0X3xsv2Z3vMUNZQHGnQB9hUEEp243FlArRFEQ2gb4UtTvJw==}
+  /lucide-react@0.139.0(react@18.2.0):
+    resolution: {integrity: sha512-QVCqbEEEnlfX/wUjvXY5K9PMpDiFWfAQskUgSM9pATi326zSs2I0UzX4VIlFtRhRNn/aB6q+4gho7XsHg1J69A==}
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0
     dependencies:
