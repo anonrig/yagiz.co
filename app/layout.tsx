@@ -44,9 +44,6 @@ export const metadata: Metadata = {
     creator: '@yagiznizipli',
     creatorId: '1589638196',
   },
-  icons: {
-    icon: '/favicon.ico',
-  },
   viewport: {
     width: 'device-width',
     initialScale: 1,
