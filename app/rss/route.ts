@@ -1,30 +1,31 @@
-import { allBlogs } from 'contentlayer/generated'
 import { Feed } from 'feed'
+
+import { sortedBlogs, websiteDomain } from '@/app/content'
 
 export async function GET() {
   const feed = new Feed({
     title: 'Engineering with Yagiz',
     description: 'Here\'s a collection of posts about my thoughts, stories, ideas and experiences as a human, and an engineer working with different technologies.',
-    id: 'https://www.yagiz.co',
-    link: 'https://www.yagiz.co',
+    id: websiteDomain,
+    link: websiteDomain,
     language: 'en',
-    favicon: 'https://www.yagiz.co/favicon.ico',
+    favicon: `${websiteDomain}/favicon.ico`,
     generator: 'Next.js',
     copyright: 'Yagiz Nizipli - yagiz.co',
     author: {
       name: 'Yagiz Nizipli',
-      link: 'https://www.yagiz.co/contact',
+      link: `${websiteDomain}/contact`,
     },
   })
 
-  allBlogs.forEach(blog => {
+  sortedBlogs.forEach(blog => {
     feed.addItem({
       title: blog.title,
-      id: `https://www.yagiz.co/${blog.slug}`,
-      link: `https://www.yagiz.co/${blog.slug}`,
+      id: blog.url,
+      link: blog.url,
       description: blog.description,
       date: new Date(blog.date),
-      image: blog.feature_image ? `https://www.yagiz.co${blog.feature_image}` : undefined,
+      image: blog.feature_image ? `${websiteDomain}${blog.feature_image}` : undefined,
     })
   })
 

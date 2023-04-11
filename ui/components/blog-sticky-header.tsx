@@ -28,7 +28,7 @@ function useWindowScrollPercentage() {
             }
           : state;
       });
-    }, 100);
+    }, 50);
 
     //We have to update window scroll at mount, before subscription.
     //Window scroll may be changed between render and effect handler.

@@ -1,14 +1,11 @@
-import { allBlogs } from 'contentlayer/generated'
-import { compareDesc } from 'date-fns'
 import Image from 'next/image'
 
+import { sortedBlogs } from '@/app/content'
 import BlogRow from '@/ui/components/blog-row'
 import Container from '@/ui/components/container'
 import SubscribeButton from '@/ui/subscribe'
 
 export default function Home() {
-  const blogs = allBlogs.sort((a, b) => compareDesc(new Date(a.date), new Date(b.date)))
-
   return (
     <>
       <Container className='mt-[-1.5rem]'>
@@ -29,7 +26,7 @@ export default function Home() {
 
       <div className='flex grow pb-[6rem] pt-[3rem]'>
         <Container size='tight' className='divide-y divide-slate-200 dark:divide-neutral-700'>
-          {blogs.map((blog) => <BlogRow blog={blog} key={blog._id}/>)}
+          {sortedBlogs.map((blog) => <BlogRow blog={blog} key={blog._id}/>)}
         </Container>
       </div>
     </>

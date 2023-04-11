@@ -1,10 +1,11 @@
-import { allBlogs, Blog } from 'contentlayer/generated'
-import { compareDesc, format } from 'date-fns'
+import type { Blog } from 'contentlayer/generated'
+import { format } from 'date-fns'
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import Script from 'next/script'
 
+import { sortedBlogs } from '@/app/content'
 import BlogFooter from '@/ui/components/blog-footer'
 import BlogStickyHeader from '@/ui/components/blog-sticky-header'
 import BlogSuggestion from '@/ui/components/blog-suggestion'
@@ -17,11 +18,11 @@ type Props = {
 }
 
 export function generateStaticParams() {
-  return allBlogs.map(post => post.slug)
+  return sortedBlogs.map(blog => blog.slug)
 }
 
 export function generateMetadata({ params }: Props): Metadata {
-  const blog = allBlogs.find(b => b.slug === params.slug)
+  const blog = sortedBlogs.find(b => b.slug === params.slug)
   if (!blog) {
     return {
       title: 'Not Found'
@@ -45,14 +46,12 @@ export function generateMetadata({ params }: Props): Metadata {
 }
 
 export default function Blog({ params }: Props) {
-  const index = allBlogs.findIndex(b => b.slug === params.slug)
+  const index = sortedBlogs.findIndex(b => b.slug === params.slug)
+  const blog = sortedBlogs.at(index)
 
-  if (index === -1) {
+  if (blog === undefined) {
     notFound()
   }
-
-  const blog: Blog = allBlogs[index]
-  const blogs: Blog[] = allBlogs.sort((a, b) => compareDesc(new Date(a.date), new Date(b.date)))
 
   return (
     <>
@@ -93,10 +92,10 @@ export default function Blog({ params }: Props) {
           <Markdown code={blog.body.code} />
         </div>
 
-        <BlogFooter blogs={blogs} index={index} />
+        <BlogFooter index={index} />
       </article>
 
-      <BlogSuggestion blogs={blogs} index={index}/>
+      <BlogSuggestion index={index}/>
     </>
   )
 }

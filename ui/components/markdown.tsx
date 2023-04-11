@@ -11,7 +11,7 @@ function CustomLink(props: LinkHTMLAttributes<HTMLAnchorElement>) {
 
   if (href?.startsWith('/')) {
     return (
-      <Link href={href} {...props}>
+      <Link href={href as any} {...props}>
         {props.children}
       </Link>
     );

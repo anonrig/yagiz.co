@@ -6,6 +6,7 @@ import {Metadata} from "next";
 import {Mulish} from "next/font/google";
 import {PropsWithChildren} from "react";
 
+import { websiteDomain } from '@/app/content';
 import LayoutFooter from '@/ui/components/layout-footer';
 import LayoutHeader from '@/ui/components/layout-header';
 
@@ -19,14 +20,14 @@ export const metadata: Metadata = {
   category: 'technology',
   creator: 'Yagiz Nizipli',
   publisher: 'Yagiz Nizipli',
-  metadataBase: new URL('https://www.yagiz.co'),
+  metadataBase: new URL(websiteDomain),
   openGraph: {
     title: 'Engineering with Yagiz',
     description,
     siteName: 'Engineering with Yagiz',
     locale: 'en-US',
     type: 'website',
-    url: 'https://www.yagiz.co',
+    url: websiteDomain,
   },
   robots: {
     index: true,

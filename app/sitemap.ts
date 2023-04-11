@@ -1,20 +1,21 @@
-import { allBlogs, allTags } from "contentlayer/generated"
 import { format } from 'date-fns'
 import type { MetadataRoute } from "next"
 
+import { sortedBlogs, sortedTags, websiteDomain } from "@/app/content"
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  const blogs = allBlogs.map(blog => ({
-    url: `https://www.yagiz.co/${blog.slug}`,
+  const blogs = sortedBlogs.map(blog => ({
+    url: blog.url,
     lastModified: format(new Date(blog.date), 'yyyy-MM-dd'),
   }))
 
-  const tags = allTags.map(tag => ({
-    url: `https://www.yagiz.co/tag/${tag.slug}`,
+  const tags = sortedTags.map(tag => ({
+    url: tag.url,
     lastModified: format(new Date(), 'yyyy-MM-dd'),
   }))
 
   const staticPages = ['about', 'press', 'contact'].map(page => ({
-    url: `https://www.yagiz.co/${page}`,
+    url: `${websiteDomain}/${page}`,
     lastModified: format(new Date(), 'yyyy-MM-dd'),
   }))
 

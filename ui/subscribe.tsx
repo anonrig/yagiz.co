@@ -1,7 +1,7 @@
 'use client'
 
 import clsx from 'clsx'
-import { ButtonHTMLAttributes, FormEvent, FormEventHandler, forwardRef, useCallback, useState } from 'react'
+import { ButtonHTMLAttributes, FormEvent, forwardRef, useCallback, useState } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { XIcon } from 'lucide-react'
 import Image from 'next/image'

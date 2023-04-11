@@ -1,9 +1,8 @@
-import { allBlogs, allTags, Blog } from 'contentlayer/generated'
-import { compareDesc } from 'date-fns'
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
+import { sortedBlogs, sortedTags } from '@/app/content'
 import BlogRow from '@/ui/components/blog-row'
 import Container from '@/ui/components/container'
 
@@ -12,11 +11,11 @@ type Props = {
 }
 
 export function generateStaticParams() {
-  return allTags.map(tag => tag.slug)
+  return sortedTags.map(tag => tag.slug)
 }
 
 export function generateMetadata({ params }: Props): Metadata {
-  const tag = allTags.find(t => t.slug === params.slug)
+  const tag = sortedTags.find(t => t.slug === params.slug)
   if (!tag) {
     return {
       title: 'Not Found'
@@ -38,17 +37,15 @@ export function generateMetadata({ params }: Props): Metadata {
   }
 }
 
-export default function Blog({ params }: Props) {
-  const tag = allTags.find(t => t.slug === params.slug)
+export default function Tag({ params }: Props) {
+  const tag = sortedTags.find(t => t.slug === params.slug)
 
   if (!tag) {
     notFound()
   }
 
-  const otherTags = allTags.filter(t => t._id !== tag._id)
-  const blogs = allBlogs
-    .sort((a, b) => compareDesc(new Date(a.date), new Date(b.date)))
-    .filter(b => b.tag?._id === tag._id)
+  const otherTags = sortedTags.filter(t => t._id !== tag._id)
+  const blogs = sortedBlogs.filter(b => b.tag?._id === tag._id)
 
   return (
     <section>

@@ -1,11 +1,12 @@
-import { Blog } from 'contentlayer/generated'
+import type { Blog } from 'contentlayer/generated'
+import { sortedBlogs } from '@/app/content'
 import BlogRow from './blog-row'
 import Container from './container'
 
-export default function BlogSuggestion({ index, blogs }: { index: number, blogs: Blog[] }) {
+export default function BlogSuggestion({ index }: { index: number }) {
   const suggestions = [
-    blogs.at(index - 2),
-    blogs.at(index - 1),
+    sortedBlogs.at(index - 2),
+    sortedBlogs.at(index - 1),
   ].filter(Boolean) as Blog[]
 
   if (suggestions.length === 0) {

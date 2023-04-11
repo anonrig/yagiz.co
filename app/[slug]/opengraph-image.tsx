@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import { allBlogs  } from 'contentlayer/generated'
 import { notFound } from 'next/navigation'
 import { ImageResponse } from 'next/server'

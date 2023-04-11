@@ -1,32 +1,11 @@
-import {ComputedFields,defineDocumentType, defineNestedType, makeSource} from 'contentlayer/source-files';
+import { defineDocumentType, makeSource } from 'contentlayer/source-files';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypePrettyCode from 'rehype-pretty-code';
 import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 import path from 'node:path'
 
-const computedFields: ComputedFields = {
-  slug: {
-    type: 'string',
-    resolve: (doc) => doc._raw.flattenedPath,
-  },
-  structuredData: {
-    type: 'json',
-    resolve: (doc) => ({
-      '@context': 'https://schema.org',
-      '@type': 'BlogPosting',
-      headline: doc.title,
-      datePublished: doc.publishedAt,
-      dateModified: doc.publishedAt,
-      description: doc.summary,
-      url: `https://www.yagiz.co/${doc._raw.flattenedPath}`,
-      author: {
-        '@type': 'Person',
-        name: 'Yagiz Nizipli',
-      },
-    }),
-  },
-};
+export const websiteDomain = 'https://www.yagiz.co'
 
 export const Page = defineDocumentType(() => ({
   name: 'Page',
@@ -56,6 +35,10 @@ export const Page = defineDocumentType(() => ({
       type: 'string',
       resolve: (doc) => path.basename(doc._raw.flattenedPath),
     },
+    url: {
+      type: 'string',
+      resolve: (doc) => `${websiteDomain}/${doc.slug}`,
+    },
   },
 }))
 
@@ -71,6 +54,10 @@ export const Tag = defineDocumentType(() => ({
     slug: {
       type: 'string',
       resolve: (doc) => path.basename(doc._raw.flattenedPath),
+    },
+    url: {
+      type: 'string',
+      resolve: (doc) => `${websiteDomain}/tag/${doc.slug}`,
     },
   },
 }))
@@ -113,7 +100,32 @@ export const Blog = defineDocumentType(() => ({
       required: true,
     }
   },
-  computedFields,
+  computedFields: {
+    slug: {
+      type: 'string',
+      resolve: (doc) => doc._raw.flattenedPath,
+    },
+    url: {
+      type: 'string',
+      resolve: (doc) => `${websiteDomain}/${doc.slug}`,
+    },
+    structuredData: {
+      type: 'json',
+      resolve: (doc) => ({
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: doc.title,
+        datePublished: doc.date,
+        dateModified: doc.date,
+        description: doc.description,
+        url: `${websiteDomain}/${doc._raw.flattenedPath}`,
+        author: {
+          '@type': 'Person',
+          name: 'Yagiz Nizipli',
+        },
+      }),
+    },
+  },
 }));
 
 export default makeSource({

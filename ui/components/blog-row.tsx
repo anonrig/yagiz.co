@@ -2,10 +2,11 @@ import { Blog } from 'contentlayer/generated'
 import { format } from 'date-fns'
 import { ChevronRight } from 'lucide-react'
 import Link from 'next/link'
+import type { Route } from 'next'
 
 export default function BlogRow({ blog }: { blog: Blog}) {
   return (
-    <Link href={blog.slug} className='group relative flex items-center overflow-hidden py-6 leading-[1]'>
+    <Link href={blog.slug as Route} className='group relative flex items-center overflow-hidden py-6 leading-[1]'>
       <time dateTime={blog.date} className='mr-6 flex min-w-[45px] whitespace-nowrap text-base font-extrabold uppercase text-orange-400'>
         {format(new Date(blog.date), 'MMM dd')}
       </time>

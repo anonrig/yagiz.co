@@ -1,13 +1,13 @@
-import { Blog } from 'contentlayer/generated'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import Container from './container';
+import { sortedBlogs } from '@/app/content';
 
-export default function BlogFooter({ index, blogs }: { index: number; blogs: Blog[] }) {
+export default function BlogFooter({ index }: { index: number }) {
   // Newest blog post is at the 0th index
-  const next = index !== 0 ? blogs.at(index - 1) : undefined
-  const previous = index !== blogs.length - 1 ? blogs.at(index + 1) : undefined
+  const next = index !== 0 ? sortedBlogs.at(index - 1) : undefined
+  const previous = index !== sortedBlogs.length - 1 ? sortedBlogs.at(index + 1) : undefined
 
   return (
     <Container size='tight' className='mt-16 flex items-center' as='footer'>

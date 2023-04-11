@@ -1,12 +1,13 @@
 import Link from "next/link";
 import dynamic from 'next/dynamic'
+import type { Route } from 'next'
 import { MobileNavigationToggle, MobileNavigationContextProvider } from "../mobile-navigation-toggle";
 
 const SubscribeButton = dynamic(() => import('../subscribe'))
 
 export type HeaderItem = {
   title: string
-  href: string
+  href: Route
 }
 
 const items: HeaderItem[] = [
