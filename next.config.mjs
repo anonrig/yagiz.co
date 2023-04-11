@@ -13,6 +13,11 @@ const nextConfig = {
       },
     ];
   },
+  redirects() {
+    return [
+      { source: '/rss.xml', destination: '/rss', permanent: true }
+    ]
+  },
   images: {
     formats: ['image/avif', 'image/webp'],
   },
