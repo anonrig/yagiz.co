@@ -1,0 +1,14 @@
+import { Stethoscope } from 'lucide-react'
+
+import Container from '@/ui/components/container'
+
+export default function NotFound() {
+  return (
+    <Container className='flex h-[calc(100vh-80px)] items-center justify-center'>
+      <div className='flex flex-col items-center space-y-4'>
+        <Stethoscope size={24} className='text-black dark:text-white' />
+        <p className='text-2xl font-semibold text-neutral-500 dark:text-neutral-200'>This page could not be found.</p>
+      </div>
+    </Container>
+  )
+}

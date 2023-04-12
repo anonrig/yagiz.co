@@ -47,7 +47,7 @@ export function generateMetadata({ params }: Props): Metadata {
 
 export default function Blog({ params }: Props) {
   const index = sortedBlogs.findIndex(b => b.slug === params.slug)
-  const blog = sortedBlogs.at(index)
+  const blog = sortedBlogs[index]
 
   if (blog === undefined) {
     notFound()
