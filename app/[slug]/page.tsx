@@ -58,16 +58,16 @@ export default function Blog({ params }: Props) {
       <article>
         <Script id={`blog-${blog.slug}`} type='application/ld+json'>{JSON.stringify(blog.structuredData)}</Script>
 
-        <header className='mb-[4.5rem] grid grid-cols-canvas text-center'>
-          <div className='col-main mb-4 text-lg font-extrabold uppercase text-slate-400'>
+        <header className='mb-6 grid grid-cols-canvas text-center'>
+          <div className='col-main mb-4 text-xs font-extrabold uppercase text-slate-400'>
             <span>
               <time dateTime={blog.date}>{format(new Date(blog.date), 'MMM dd, yyyy')}</time>
             </span>
-            <span className="before:px-[0.7rem] before:font-serif before:leading-[1] before:content-['\02022']">
+            <span className="before:px-2 before:font-serif before:leading-[1] before:content-['\02022']">
               {blog.minute_to_read} min read
             </span>
             {blog.tag !== undefined && (
-              <span className="before:px-[0.7rem] before:font-serif before:leading-[1] before:content-['\02022']">
+              <span className="before:px-2 before:font-serif before:leading-[1] before:content-['\02022']">
                 <Link href={`/tag/${blog.tag.slug}`} className='text-orange-400 hover:text-orange-300'>
                   {blog.tag.title}
                 </Link>

@@ -14,9 +14,9 @@ export default function BlogSuggestion({ index }: { index: number }) {
   }
 
   return (
-    <section className='mt-24 bg-[#f6f6f6] dark:bg-[#2f333c] pb-[3rem] pt-[4.5rem]'>
+    <section className='mt-24 bg-[#f6f6f6] dark:bg-[#2f333c] py-12'>
       <Container size='tight'>
-        <h3 className='mb-6 text-3xl font-extrabold tracking-wide dark:text-white'>
+        <h3 className='mb-4 text-xl font-extrabold dark:text-white'>
           You might also like...
         </h3>
         <div className='divide-y divide-slate-200 dark:divide-neutral-700'>

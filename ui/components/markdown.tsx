@@ -53,9 +53,12 @@ export default function Markdown({ code }: { code: string }) {
     <article className={clsx(
       'grid grid-cols-canvas [&>*]:col-main',
       'max-w-none [&_p:has(img.col-wide)]:col-wide',
-      'prose prose-neutral text-2xl dark:prose-invert marker:text-black',
-      'prose-h2:text-4xl prose-h2:font-extrabold', // h2
-      'prose-h3:text-3xl prose-h3:font-extrabold prose-h3:text-slate-400', // h3
+      'prose prose-neutral prose-tight dark:prose-invert marker:text-black',
+      'text-base leading-7', // text
+      'prose-headings:font-extrabold prose-headings:mt-6',
+      'prose-h1:text-3xl', // h1
+      'prose-h2:text-2xl', // h2
+      'prose-h3:text-xl prose-h3:text-slate-400', // h3
       'prose-strong:pr-2 prose-strong:font-bold', // strong
     )}>
       <Component components={components} />

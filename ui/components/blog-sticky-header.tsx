@@ -60,11 +60,11 @@ export default function BlogStickyHeader({ blog }: { blog: Blog }) {
       )}
     >
       <div className='flex flex-row justify-between w-full items-center'>
-        <div className='overflow-hidden text-ellipsis whitespace-nowrap text-slate-800 dark:text-white leading-[1.3] mr-4 overflow-hidden overflow-ellipsis whitespace-nowrap text-xl font-bold'>
+        <div className='overflow-hidden text-ellipsis whitespace-nowrap text-slate-800 dark:text-white leading-[1.3] mr-4 overflow-hidden overflow-ellipsis whitespace-nowrap text-sm font-bold'>
           {blog.title}
         </div>
 
-        <SubscribeButton size='xl' className='whitespace-nowrap' />
+        <SubscribeButton className='text-sm whitespace-nowrap' />
       </div>
 
       <div className='bg-[#e6e6e6] dark:bg-slate-600 bottom-[-2px] h-[2px] left-0 absolute w-full'>

@@ -1,4 +1,4 @@
-import { Metadata } from 'next'
+import type { Metadata, Route } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
@@ -49,22 +49,22 @@ export default function Tag({ params }: Props) {
 
   return (
     <section>
-      <Container size='tight' className='mt-[-1.5rem] flex flex-col gap-8 text-center'>
-        <h1 className='text-4xl font-extrabold leading-[1.3] text-orange-400'>
+      <Container size='tight' className='-mt-6 flex flex-col gap-8 text-center'>
+        <h1 className='text-2xl font-extrabold text-orange-400'>
           #{tag.title}
         </h1>
 
-        <div className='text-[1.7rem] dark:text-white'>
+        <div className='leading-6 dark:text-white'>
           {tag.description}
         </div>
 
         <div>
-          <span className='mr-2 mt-2 font-bold text-white'>More:</span>
+          <span className='mr-2 mt-2 font-bold'>More:</span>
             {otherTags.map(tag => (
               <Link
-                href={`/tag/${tag.slug}`}
+                href={`/tag/${tag.slug}` as Route}
                 key={tag.slug}
-                className='ml-1 break-keep font-bold text-slate-800 hover:text-slate-600 dark:text-neutral-500 dark:hover:text-neutral-400'
+                className='ml-1 break-keep font-bold text-neutral-500 hover:text-neutral-400 dark:text-neutral-500 dark:hover:text-neutral-400'
               >
                 #{tag.title}
               </Link>
@@ -72,9 +72,9 @@ export default function Tag({ params }: Props) {
         </div>
       </Container>
 
-      <div className='flex grow py-[6rem]'>
+      <div className='flex grow py-14'>
         <Container size='tight' className='divide-y divide-slate-200'>
-          {blogs.map((blog) => <BlogRow blog={blog} key={blog._id}/>)}
+          {blogs.map((blog) => <BlogRow blog={blog} key={blog._id} />)}
         </Container>
       </div>
     </section>

@@ -21,7 +21,7 @@ export default function BlogFooter({ index }: { index: number }) {
 
       <div className='flex flex-col'>
         <div className='flex flex-col items-center gap-y-4'>
-          <h3 className='mb-4 text-2xl font-extrabold tracking-wide text-slate-800 dark:text-white'>
+          <h3 className='mb-4 font-extrabold tracking-wide text-slate-800 dark:text-white'>
             Published by:
           </h3>
           <Link href='/about'>
