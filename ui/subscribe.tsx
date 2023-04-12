@@ -15,15 +15,9 @@ const subscribeButtonVariants = cva(
       variant: {
         bold: 'font-bold',
       },
-      size: {
-        'xl': 'text-xl',
-        '2xl': 'text-2xl',
-        '3xl': 'text-3xl'
-      },
     },
     defaultVariants: {
       variant: 'bold',
-      size: '2xl'
     }
   }
 )
@@ -35,7 +29,7 @@ export interface SubscribeButtonProps
     }
 
 const SubscribeButton = forwardRef<HTMLButtonElement, SubscribeButtonProps>(
-  ({ className, variant, size, label }, ref) => {
+  ({ className, variant, label }, ref) => {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
@@ -77,7 +71,7 @@ const SubscribeButton = forwardRef<HTMLButtonElement, SubscribeButtonProps>(
       <Dialog.Trigger asChild>
         <button
           ref={ref}
-          className={clsx(subscribeButtonVariants({ variant, size, className }))}
+          className={clsx(subscribeButtonVariants({ variant, className }))}
           aria-label='Subscribe to the newsletter'
         >
           {label ?? 'Subscribe'}
@@ -88,12 +82,12 @@ const SubscribeButton = forwardRef<HTMLButtonElement, SubscribeButtonProps>(
         <Dialog.Content className="z-[30] fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-[6px] bg-white dark:bg-black p-[25px] focus:outline-none">
           <div className='mt-[16px] mb-[32px] flex flex-col items-center'>
             <Image src='/family.png' width={60} height={60} className='rounded-full' alt='Yagiz Nizipli' />
-            <Dialog.Title className="my-4 text-black dark:text-white tracking-4 text-5xl font-extrabold tracking-tight">
+            <Dialog.Title className="my-4 text-black dark:text-white tracking-4 text-3xl font-extrabold tracking-tight">
               Yagiz Nizipli
             </Dialog.Title>
           </div>
           <form onSubmit={handleSubmit}>
-            <label htmlFor='name' className='block text-xl text-black dark:text-white font-bold flex flex-col w-full'>
+            <label htmlFor='name' className='block text-sm text-black dark:text-white font-bold flex flex-col w-full'>
               Name
 
               <Input
@@ -104,7 +98,7 @@ const SubscribeButton = forwardRef<HTMLButtonElement, SubscribeButtonProps>(
               />
             </label>
 
-            <label htmlFor='email' className='block text-xl text-black dark:text-white font-bold flex flex-col w-full mt-8'>
+            <label htmlFor='email' className='block text-sm text-black dark:text-white font-bold flex flex-col w-full mt-8'>
               Email
 
               <Input
@@ -118,13 +112,13 @@ const SubscribeButton = forwardRef<HTMLButtonElement, SubscribeButtonProps>(
             <button
               type='submit'
               disabled={loading}
-              className="mt-16 mb-10 w-full bg-orange-400 text-white dark:text-white-reversed h-[42px] px-[1.8rem] rounded-lg font-bold"
+              className="mt-10 mb-4 w-full bg-orange-400 text-white dark:text-white-reversed h-[42px] px-[1.8rem] rounded-lg font-bold"
             >
               Subscribe
             </button>
 
             {message.length > 0 && (
-              <div className='text-center text-lg'>
+              <div className='text-center'>
                 Message: {message}
               </div>
             )}
@@ -132,10 +126,10 @@ const SubscribeButton = forwardRef<HTMLButtonElement, SubscribeButtonProps>(
 
           <Dialog.Close asChild>
             <button
-              className="absolute top-[10px] right-[10px] inline-flex h-[44px] w-[44px] appearance-none items-center justify-center rounded-full focus:shadow-[0_0_0_2px] focus:outline-none"
+              className="absolute top-4 right-4 inline-flex appearance-none items-center justify-center rounded-full focus:shadow-[0_0_0_2px] focus:outline-none"
               aria-label="Close"
             >
-              <XIcon size={24} className='text-neutral-300 m-4' />
+              <XIcon size={24} className='text-neutral-300 m-2' />
             </button>
           </Dialog.Close>
         </Dialog.Content>

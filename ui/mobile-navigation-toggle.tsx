@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { Dispatch, PropsWithChildren, SetStateAction, createContext, useContext, useState } from "react"
-import type { HeaderItem } from '@/ui/components/layout-header'
+import type { Item } from '@/ui/layout'
 import { MenuIcon, XIcon } from 'lucide-react'
 import clsx from "clsx"
 import SubscribeButton from './subscribe'
@@ -30,7 +30,7 @@ export function useMobileNavigationToggle() {
   return context
 }
 
-export function MobileNavigationToggle({ items }: { items: HeaderItem[] }) {
+export function MobileNavigationToggle({ items }: { items: Item[] }) {
   const [open, setOpen] = useMobileNavigationToggle()
 
   return (
@@ -40,23 +40,23 @@ export function MobileNavigationToggle({ items }: { items: HeaderItem[] }) {
       </button>
 
       <div className={clsx(
-        'bg-white dark:bg-white-reversed h-mobile-overlay left-0 pt-12 absolute top-navigation-bar w-full z-navigation-bar z-[20] overflow-y-auto',
+        'bg-white dark:bg-white-reversed h-mobile-overlay left-0 pt-12 fixed top-navigation-bar w-full z-navigation-bar z-[20] overflow-y-auto',
         { hidden: !open }
       )}>
         <Container>
-          <nav className='flex flex-col gap-[1.5rem]'>
+          <nav className='flex flex-col gap-6'>
             {items.map(item => (
               <Link
                 href={item.href}
                 key={item.href}
-                className='text-3xl text-right font-bold'
+                className='text-lg text-right font-bold'
                 onClick={() => setOpen(false)}
               >
                 {item.title}
               </Link>
             ))}
 
-            <SubscribeButton size='3xl' className='text-right' />
+            <SubscribeButton className='text-right text-lg' />
           </nav>
         </Container>
       </div>

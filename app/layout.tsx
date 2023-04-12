@@ -7,8 +7,7 @@ import {Mulish} from "next/font/google";
 import {PropsWithChildren} from "react";
 
 import { websiteDomain } from '@/app/content';
-import LayoutFooter from '@/ui/components/layout-footer';
-import LayoutHeader from '@/ui/components/layout-header';
+import { Footer, Header }from '@/ui/layout'
 
 const description = "Here's a collection of posts about my thoughts, stories, ideas and experiences as a human, and an engineer working with different technologies.";
 export const metadata: Metadata = {
@@ -66,15 +65,15 @@ export default function RootLayout({ children }: PropsWithChildren<unknown>) {
     <html
       lang='en'
       className={clsx(
-        'bg-white text-[62.5%] text-black dark:bg-white-reversed',
+        'bg-white text-black dark:bg-white-reversed',
         mulish.className,
       )}>
       <body>
-        <LayoutHeader />
-        <main className='grow py-[6rem]'>
+        <Header />
+        <main className='grow py-14'>
           {children}
         </main>
-        <LayoutFooter />
+        <Footer />
         <Analytics />
       </body>
     </html>

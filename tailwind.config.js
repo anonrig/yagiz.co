@@ -15,13 +15,6 @@ module.exports = {
       fontFamily: {
         sans: ['var(--font-mulish)'],
       },
-      fontSize: {
-        'base': '1.1rem',
-        'lg': '1.2rem',
-        'xl': '1.4rem',
-        '2xl': '1.7rem',
-        '4xl': '2.3rem',
-      },
       flex: {
         '2': '2'
       },
@@ -31,11 +24,6 @@ module.exports = {
       },
       spacing: {
         'navigation-bar': navigation_height,
-      },
-      lineHeight: {
-        'lg': '1.4',
-        'xl': '1.6',
-        '2xl': '1.8',
       },
       gridTemplateColumns: {
         'canvas': '[full-start] minmax(4vw,auto) [wide-start] minmax(auto,140px) [main-start] min(640px,calc(100% - 8vw)) [main-end] minmax(auto,140px) [wide-end] minmax(4vw,auto) [full-end]',

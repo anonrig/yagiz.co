@@ -3,23 +3,18 @@
 @tailwind utilities;
 
 body {
-  @apply flex min-h-screen flex-col text-[1.5rem] antialiased leading-[1.6];
+  @apply flex min-h-screen flex-col text-base antialiased;
   word-break: break-word;
-  text-rendering: optimizeLegibility;
-}
-
-.prose .anchor {
-  @apply absolute invisible no-underline;
-
-  margin-left: -1em;
-  padding-right: 0.5em;
-  width: 80%;
-  max-width: 700px;
-  cursor: pointer;
 }
 
 .anchor:hover {
   @apply visible;
+}
+
+.prose .anchor {
+  @apply absolute invisible no-underline font-extrabold cursor-pointer -ml-1 pr-2;
+  width: 80%;
+  max-width: 700px;
 }
 
 .prose a {
@@ -36,6 +31,11 @@ body {
   @apply visible;
 }
 
+.prose img {
+  /* Don't apply styles to next/image */
+  @apply m-0;
+}
+
 pre::-webkit-scrollbar {
   display: none;
 }
@@ -43,11 +43,6 @@ pre::-webkit-scrollbar {
 pre {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
-}
-
-.prose img {
-  /* Don't apply styles to next/image */
-  @apply m-0;
 }
 
 /* Remove Safari input shadow on mobile */
@@ -59,7 +54,7 @@ input[type='email'] {
 }
 
 [data-rehype-pretty-code-fragment] code {
-  @apply grid min-w-full break-words rounded-none border-0 bg-transparent p-0 text-lg text-black;
+  @apply grid min-w-full break-words rounded-none border-0 bg-transparent p-0 text-black leading-4 text-xs font-mono;
   counter-reset: line;
   box-decoration-break: clone;
 }
@@ -85,7 +80,7 @@ input[type='email'] {
   @apply rounded-md bg-slate-500 bg-opacity-10 p-1;
 }
 [data-rehype-pretty-code-title] {
-  @apply px-6 py-3 font-mono text-lg font-medium border rounded-t-lg text-neutral-200 border-[#333333] bg-[#1c1c1c];
+  @apply px-4 py-2 font-mono font-medium border rounded-t-lg text-neutral-200 border-[#333333] bg-[#1c1c1c] text-xs;
 }
 [data-rehype-pretty-code-title] + pre {
   @apply mt-0 rounded-t-none border-t-0;

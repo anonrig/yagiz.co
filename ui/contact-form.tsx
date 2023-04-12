@@ -5,20 +5,20 @@ import Input from '@/ui/components/input'
 import Textarea from '@/ui/components/textarea'
 
 export default function ContactForm() {
-  const baseClass = 'max-w-[calc(640px+8vw)] mt-[3rem] mx-auto px-[4vw] w-full flex flex-col items-start gap-y-4'
+  const baseClass = 'max-w-[calc(640px+8vw)] mt-[3rem] mx-auto px-4 sm:px-8  w-full flex flex-col items-start gap-y-4 text-sm'
   const [state, handleSubmit] = useForm("mpzolveb")
 
   if (state.succeeded) {
     return (
       <div className={baseClass}>
-        <p className='text-2xl'>Thank you. I'll respond to your email as soon as possible.</p>
+        <p>Thank you. I'll respond to your email as soon as possible.</p>
       </div>
     )
   }
 
   return (
     <form onSubmit={handleSubmit} className={baseClass}>
-      <label htmlFor='email' className='block text-xl text-black dark:text-white font-bold flex flex-col w-full'>
+      <label htmlFor='email' className='block text-black dark:text-white font-bold flex flex-col w-full'>
         Email Address:
 
         <Input
@@ -33,7 +33,7 @@ export default function ContactForm() {
         />
       </label>
 
-      <label htmlFor='message' className='block text-xl text-black dark:text-white font-bold flex flex-col w-full'>
+      <label htmlFor='message' className='block text-black dark:text-white font-bold flex flex-col w-full'>
         Message:
 
         <Textarea
