@@ -1,5 +1,3 @@
-import 'server-only'
-
 import clsx from 'clsx';
 import Image, { ImageProps } from 'next/image';
 import Link from 'next/link';
@@ -53,6 +51,8 @@ export default function Markdown({ code }: { code: string }) {
   const Component = getMDXComponent(code);
   return (
     <article className={clsx(
+      'grid grid-cols-canvas [&>*]:col-main',
+      'max-w-none [&_p:has(img.col-wide)]:col-wide',
       'prose prose-neutral text-2xl dark:prose-invert marker:text-black',
       'prose-h2:text-4xl prose-h2:font-extrabold', // h2
       'prose-h3:text-3xl prose-h3:font-extrabold prose-h3:text-slate-400', // h3

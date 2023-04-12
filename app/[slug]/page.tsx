@@ -88,9 +88,7 @@ export default function Blog({ params }: Props) {
 
         <BlogStickyHeader blog={blog} />
 
-        <div className='grid grid-cols-canvas text-2xl [&>*]:col-main'>
-          <Markdown code={blog.body.code} />
-        </div>
+        <Markdown code={blog.body.code} />
 
         <BlogFooter index={index} />
       </article>

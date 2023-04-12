@@ -1,5 +1,3 @@
-import 'server-only'
-
 import { allPages } from 'contentlayer/generated'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
@@ -47,9 +45,7 @@ export default function Page({ children, slug }: PropsWithChildren<Props>) {
         )}
       </header>
 
-      <div className='grid grid-cols-canvas text-2xl [&>*]:col-main'>
-        <Markdown code={page.body.code} />
-      </div>
+      <Markdown code={page.body.code} />
 
       {children}
     </section>
