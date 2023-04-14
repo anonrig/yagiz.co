@@ -8,7 +8,7 @@ import SubscribeButton from '@/ui/subscribe'
 export default function BlogStickyHeader({ blog }: { blog: Blog }) {
   useEffect(() => {
     // Start showing and moving the sticky header until 100px offset.
-    scroll(animate('#sticky-header', { x: 0, y: 50 }), {
+    scroll(animate('#sticky-header', { x: 0, y: 50, opacity: [0, 1] }), {
       offset: ['start start', '100px']
     })
 
@@ -20,7 +20,7 @@ export default function BlogStickyHeader({ blog }: { blog: Blog }) {
 
   return (
     <header
-      id="sticky-header"
+      id='sticky-header'
       className='top-0 inset-x-0 items-center backdrop-blur-sm bg-[hsla(0,0%,100%,.8)] dark:bg-white-reversed/50 flex h-[50px] justify-between px-8 fixed z-[90] top-[-50px]'
     >
       <div className='flex flex-row justify-between w-full items-center'>
