@@ -1,11 +1,11 @@
 import { allPages } from 'contentlayer/generated'
-import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
+import { notFound } from 'next/navigation'
+import { PropsWithChildren } from 'react'
 
 import Figure from '@/ui/components/figure'
 import Heading from '@/ui/components/heading'
 import Markdown from '@/ui/components/markdown'
-import { PropsWithChildren } from 'react'
 
 type Props = { slug: string }
 

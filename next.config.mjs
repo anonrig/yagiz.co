@@ -2,6 +2,9 @@ import { withContentlayer } from 'next-contentlayer'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  eslint: {
+    dirs: ['ui', 'app', 'content'],
+  },
   swcMinify: true,
   experimental: {
     appDir: true,

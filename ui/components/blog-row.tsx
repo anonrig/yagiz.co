@@ -1,8 +1,8 @@
 import { Blog } from 'contentlayer/generated'
 import { format } from 'date-fns'
 import { ChevronRight } from 'lucide-react'
-import Link from 'next/link'
 import type { Route } from 'next'
+import Link from 'next/link'
 
 export default function BlogRow({ blog }: { blog: Blog}) {
   return (

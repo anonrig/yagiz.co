@@ -1,12 +1,13 @@
 'use client'
 
-import clsx from 'clsx'
-import { ButtonHTMLAttributes, FormEvent, forwardRef, useCallback, useState } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
+import { cva,VariantProps } from 'class-variance-authority'
+import clsx from 'clsx'
 import { XIcon } from 'lucide-react'
 import Image from 'next/image'
+import { ButtonHTMLAttributes, FormEvent, forwardRef, useCallback, useState } from 'react'
+
 import Input from '@/ui/components/input'
-import { VariantProps, cva } from 'class-variance-authority'
 
 const subscribeButtonVariants = cva(
   'text-orange-400',
@@ -78,11 +79,11 @@ const SubscribeButton = forwardRef<HTMLButtonElement, SubscribeButtonProps>(
         </button>
       </Dialog.Trigger>
       <Dialog.Portal>
-        <Dialog.Overlay className="z-[30] fixed inset-0 backdrop-blur-sm bg-black/20" />
-        <Dialog.Content className="z-[30] fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-[6px] bg-white dark:bg-black p-[25px] focus:outline-none">
+        <Dialog.Overlay className='z-[30] fixed inset-0 backdrop-blur-sm bg-black/20' />
+        <Dialog.Content className='z-[30] fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-[6px] bg-white dark:bg-black p-[25px] focus:outline-none'>
           <div className='mt-[16px] mb-[32px] flex flex-col items-center'>
             <Image src='/family.png' width={60} height={60} className='rounded-full' alt='Yagiz Nizipli' />
-            <Dialog.Title className="my-4 text-black dark:text-white tracking-4 text-3xl font-extrabold tracking-tight">
+            <Dialog.Title className='my-4 text-black dark:text-white tracking-4 text-3xl font-extrabold tracking-tight'>
               Yagiz Nizipli
             </Dialog.Title>
           </div>
@@ -91,9 +92,9 @@ const SubscribeButton = forwardRef<HTMLButtonElement, SubscribeButtonProps>(
               Name
 
               <Input
-                id="name"
-                type="text"
-                name="name"
+                id='name'
+                type='text'
+                name='name'
                 required
               />
             </label>
@@ -102,9 +103,9 @@ const SubscribeButton = forwardRef<HTMLButtonElement, SubscribeButtonProps>(
               Email
 
               <Input
-                id="email"
-                type="email"
-                name="email"
+                id='email'
+                type='email'
+                name='email'
                 required
               />
             </label>
@@ -112,7 +113,7 @@ const SubscribeButton = forwardRef<HTMLButtonElement, SubscribeButtonProps>(
             <button
               type='submit'
               disabled={loading}
-              className="mt-10 mb-4 w-full bg-orange-400 text-white dark:text-white-reversed h-[42px] px-[1.8rem] rounded-lg font-bold"
+              className='mt-10 mb-4 w-full bg-orange-400 text-white dark:text-white-reversed h-[42px] px-[1.8rem] rounded-lg font-bold'
             >
               Subscribe
             </button>
@@ -126,8 +127,8 @@ const SubscribeButton = forwardRef<HTMLButtonElement, SubscribeButtonProps>(
 
           <Dialog.Close asChild>
             <button
-              className="absolute top-4 right-4 inline-flex appearance-none items-center justify-center rounded-full focus:shadow-[0_0_0_2px] focus:outline-none"
-              aria-label="Close"
+              className='absolute top-4 right-4 inline-flex appearance-none items-center justify-center rounded-full focus:shadow-[0_0_0_2px] focus:outline-none'
+              aria-label='Close'
             >
               <XIcon size={24} className='text-neutral-300 m-2' />
             </button>
@@ -137,5 +138,7 @@ const SubscribeButton = forwardRef<HTMLButtonElement, SubscribeButtonProps>(
     </Dialog.Root>
   )
 })
+
+SubscribeButton.displayName = 'SubscribeButton'
 
 export default SubscribeButton

@@ -1,4 +1,3 @@
-import type { Blog } from 'contentlayer/generated'
 import { format } from 'date-fns'
 import { Metadata } from 'next'
 import Link from 'next/link'

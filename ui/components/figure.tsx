@@ -1,7 +1,6 @@
-import Image from 'next/image'
-
 import { cva, VariantProps } from 'class-variance-authority'
 import clsx from 'clsx'
+import Image from 'next/image'
 
 const figureVariants = cva(
   'mt-6',
