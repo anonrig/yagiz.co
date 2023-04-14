@@ -62,7 +62,6 @@ export const Tag = defineDocumentType(() => ({
     url: {
       type: 'string',
       resolve: (doc) => {
-        console.log(doc._raw)
         const slug = path.basename(doc._raw.flattenedPath)
         return `${websiteDomain}/tag/${slug}`
       },
