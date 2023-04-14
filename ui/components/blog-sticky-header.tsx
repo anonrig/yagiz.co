@@ -1,63 +1,29 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import clsx from 'clsx';
 import type { Blog } from 'contentlayer/generated'
-import { useMemo, useEffect, useState } from 'react';
-import debounce from 'lodash.debounce'
+import { useEffect } from 'react'
+import { animate, scroll } from 'motion'
 
 const SubscribeButton = dynamic(() => import('../subscribe'))
 
-function useWindowScrollPercentage() {
-  const isBrowser = typeof window !== 'undefined'
-  const [state, setState] = useState({
-    x: isBrowser ? window.pageXOffset : 0,
-    y: isBrowser ? window.pageYOffset : 0,
-  })
-
+export default function BlogStickyHeader({ blog }: { blog: Blog }) {
   useEffect(() => {
-    const handler = debounce(() => {
-      setState((state) => {
-        const { pageXOffset, pageYOffset } = window;
-        // Check state for change, return same state if no change happened to prevent rerender
-        //(see useState/setState documentation). useState/setState is used internally in useRafState/setState.
-        return state.x !== pageXOffset || state.y !== pageYOffset
-          ? {
-              x: pageXOffset,
-              y: pageYOffset,
-            }
-          : state;
-      });
-    }, 50);
-
-    //We have to update window scroll at mount, before subscription.
-    //Window scroll may be changed between render and effect handler.
-    handler();
-
-    document.addEventListener('scroll', handler, {
-      capture: false,
-      passive: true,
+    // Start showing and moving the sticky header until 100px offset.
+    scroll(animate('#sticky-header', { x: 0, y: 50 }), {
+      offset: ['start start', '100px']
     })
 
-    return () => document.removeEventListener('scroll', handler)
-  }, []);
-
-  return useMemo(() => {
-    if (state.y === 0) return 100
-    const windowHeight = document.documentElement.scrollHeight- document.documentElement.clientHeight
-    return 100 - Math.floor((scrollY / windowHeight) * 100)
-  }, [state.y])
-}
-
-export default function BlogStickyHeader({ blog }: { blog: Blog }) {
-  const scrollPercentage = useWindowScrollPercentage()
+    // Animate scroll indicator depending on the window scroll position
+    scroll(animate('#progress-indicator', { scaleX: ['0', '1'] }), {
+      offset: ['100px', 'end end']
+    })
+  }, [])
 
   return (
     <header
-      className={clsx(
-        'top-0 inset-x-0 items-center backdrop-blur-sm bg-[hsla(0,0%,100%,.8)] dark:bg-white-reversed/50 flex h-[50px] justify-between px-8 fixed z-[90] duration-300 transition-transform ease-in-out',
-        scrollPercentage <= 99 ? 'translate-y-0' : 'translate-y-[-52px]',
-      )}
+      id="sticky-header"
+      className='top-0 inset-x-0 items-center backdrop-blur-sm bg-[hsla(0,0%,100%,.8)] dark:bg-white-reversed/50 flex h-[50px] justify-between px-8 fixed z-[90] top-[-50px]'
     >
       <div className='flex flex-row justify-between w-full items-center'>
         <div className='overflow-hidden text-ellipsis whitespace-nowrap text-slate-800 dark:text-white leading-[1.3] mr-4 overflow-hidden overflow-ellipsis whitespace-nowrap text-sm font-bold'>
@@ -68,10 +34,7 @@ export default function BlogStickyHeader({ blog }: { blog: Blog }) {
       </div>
 
       <div className='bg-[#e6e6e6] dark:bg-slate-600 bottom-[-2px] h-[2px] left-0 absolute w-full'>
-        <div
-          className='bg-orange-400 h-full duration-200 transition-transform'
-          style={{ transform: `translate3d(-${scrollPercentage}%, 0px, 0px)` }}
-        ></div>
+        <div id='progress-indicator' className='bg-orange-400 h-full origin-[0%] scale-x-0'></div>
       </div>
     </header>
   )
