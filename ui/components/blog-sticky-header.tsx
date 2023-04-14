@@ -1,11 +1,9 @@
 'use client'
 
-import dynamic from 'next/dynamic'
 import type { Blog } from 'contentlayer/generated'
 import { useEffect } from 'react'
 import { animate, scroll } from 'motion'
-
-const SubscribeButton = dynamic(() => import('../subscribe'))
+import SubscribeButton from '@/ui/subscribe'
 
 export default function BlogStickyHeader({ blog }: { blog: Blog }) {
   useEffect(() => {
