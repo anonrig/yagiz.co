@@ -1,4 +1,4 @@
-import { VariantProps, cva } from "class-variance-authority"
+import { cva,VariantProps } from "class-variance-authority"
 import clsx from "clsx"
 import { ElementType, PropsWithChildren } from "react"
 

@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
+
 export default function BlogImage({ title }: { title: string }) {
   return (
     <div

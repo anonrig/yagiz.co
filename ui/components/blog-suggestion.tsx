@@ -1,5 +1,7 @@
 import type { Blog } from 'contentlayer/generated'
+
 import { sortedBlogs } from '@/app/content'
+
 import BlogRow from './blog-row'
 import Container from './container'
 

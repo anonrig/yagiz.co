@@ -1,6 +1,7 @@
 'use client'
 
 import { useForm, ValidationError } from '@formspree/react'
+
 import Input from '@/ui/components/input'
 import Textarea from '@/ui/components/textarea'
 
@@ -22,13 +23,13 @@ export default function ContactForm() {
         Email Address:
 
         <Input
-          id="email"
-          type="email"
-          name="email"
+          id='email'
+          type='email'
+          name='email'
         />
         <ValidationError
-          prefix="Email"
-          field="email"
+          prefix='Email'
+          field='email'
           errors={state.errors}
         />
       </label>
@@ -37,13 +38,13 @@ export default function ContactForm() {
         Message:
 
         <Textarea
-          id="message"
-          name="message"
+          id='message'
+          name='message'
           rows={6}
         />
         <ValidationError
-          prefix="Message"
-          field="message"
+          prefix='Message'
+          field='message'
           errors={state.errors}
         />
       </label>

@@ -1,9 +1,10 @@
+import path from 'node:path'
+
 import { defineDocumentType, makeSource } from 'contentlayer/source-files';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypePrettyCode from 'rehype-pretty-code';
 import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
-import path from 'node:path'
 
 export const websiteDomain = 'https://www.yagiz.co'
 
