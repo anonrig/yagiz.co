@@ -37,7 +37,7 @@ export async function POST(request: Request) {
           email_address: email,
           status: 'subscribed',
           merge_fields: {
-            user_fname: name,
+            FNAME: name,
           },
         })
       }
