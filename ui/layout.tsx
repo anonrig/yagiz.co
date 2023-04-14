@@ -4,6 +4,7 @@ import clsx from 'clsx'
 import type { Route } from 'next'
 import { Rss, Twitter } from 'lucide-react'
 import { MobileNavigationToggle, MobileNavigationContextProvider } from "./mobile-navigation-toggle";
+import { rssUrl, twitterUrl } from "@/app/content";
 
 const SubscribeButton = dynamic(() => import('./subscribe'))
 
@@ -12,8 +13,6 @@ export type Item = {
   href: Route
 }
 
-const twitterUrl = 'https://twitter.com/yagiznizipli'
-const rssUrl = 'https://feedly.com/i/subscription/feed%2Fhttps%3A%2F%2Fwww.yagiz.co%2Frss%2F'
 const headerItems: Item[] = [
   { title: 'Home', href: '/' },
   { title: 'About', href: '/about' },
