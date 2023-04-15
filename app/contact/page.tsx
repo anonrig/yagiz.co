@@ -8,7 +8,7 @@ export const metadata: Metadata = getPageMetadata({ slug: 'contact' })
 export default function Press() {
   return (
     <Page slug={'contact'}>
-      <ContactForm />
+      <ContactForm className='mt-6' />
     </Page>
   )
 }
