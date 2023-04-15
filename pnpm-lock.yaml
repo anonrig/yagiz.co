@@ -7,6 +7,9 @@ dependencies:
   '@radix-ui/react-dialog':
     specifier: ^1.0.3
     version: 1.0.3(@types/react@18.0.35)(react-dom@18.2.0)(react@18.2.0)
+  '@radix-ui/react-form':
+    specifier: ^0.0.2
+    version: 0.0.2(react-dom@18.2.0)(react@18.2.0)
   '@vercel/analytics':
     specifier: ^0.1.11
     version: 0.1.11(react@18.2.0)
@@ -1119,6 +1122,23 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
+  /@radix-ui/react-form@0.0.2(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-+WQU4Gs4MqjYsHwh5d19Ka4CMcWeXd7WPuWYCYGtNbDRMHFG2TtgM9PlEK4Yrk7wG1f5/da6Bgtteky2ggDXUg==}
+    peerDependencies:
+      react: ^16.8 || ^17.0 || ^18.0
+      react-dom: ^16.8 || ^17.0 || ^18.0
+    dependencies:
+      '@babel/runtime': 7.21.0
+      '@radix-ui/primitive': 1.0.0
+      '@radix-ui/react-compose-refs': 1.0.0(react@18.2.0)
+      '@radix-ui/react-context': 1.0.0(react@18.2.0)
+      '@radix-ui/react-id': 1.0.0(react@18.2.0)
+      '@radix-ui/react-label': 2.0.1(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-primitive': 1.0.2(react-dom@18.2.0)(react@18.2.0)
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
   /@radix-ui/react-id@1.0.0(react@18.2.0):
     resolution: {integrity: sha512-Q6iAB/U7Tq3NTolBBQbHTgclPmGWE3OlktGGqrClPozSw4vkQ1DfQAOtzgRPecKsMdJINE05iaoDUG8tRzCBjw==}
     peerDependencies:
@@ -1127,6 +1147,18 @@ packages:
       '@babel/runtime': 7.21.0
       '@radix-ui/react-use-layout-effect': 1.0.0(react@18.2.0)
       react: 18.2.0
+    dev: false
+
+  /@radix-ui/react-label@2.0.1(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-qcfbS3B8hTYmEO44RNcXB6pegkxRsJIbdxTMu0PEX0Luv5O2DvTIwwVYxQfUwLpM88EL84QRPLOLgwUSApMsLQ==}
+    peerDependencies:
+      react: ^16.8 || ^17.0 || ^18.0
+      react-dom: ^16.8 || ^17.0 || ^18.0
+    dependencies:
+      '@babel/runtime': 7.21.0
+      '@radix-ui/react-primitive': 1.0.2(react-dom@18.2.0)(react@18.2.0)
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
     dev: false
 
   /@radix-ui/react-portal@1.0.2(react-dom@18.2.0)(react@18.2.0):
