@@ -9,6 +9,8 @@ import {PropsWithChildren} from "react";
 import { websiteDomain } from '@/app/content';
 import { Footer, Header }from '@/ui/layout'
 
+import Providers from './providers';
+
 const description = "Here's a collection of posts about my thoughts, stories, ideas and experiences as a human, and an engineer working with different technologies.";
 export const metadata: Metadata = {
   title: {
@@ -71,7 +73,9 @@ export default function RootLayout({ children }: PropsWithChildren<unknown>) {
       <body>
         <Header />
         <main className='grow py-14'>
-          {children}
+          <Providers>
+            {children}
+          </Providers>
         </main>
         <Footer />
         <Analytics />
