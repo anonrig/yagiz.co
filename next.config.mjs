@@ -5,7 +5,7 @@ const nextConfig = {
   eslint: {
     dirs: ['ui', 'app', 'content'],
   },
-  swcMinify: true,
+  poweredByHeader: false,
   experimental: {
     appDir: true,
     typedRoutes: true,
