@@ -1,9 +1,8 @@
 'use client'
 
-import dynamic from 'next/dynamic'
 import { createContext, Dispatch, PropsWithChildren, SetStateAction, useContext, useState } from 'react'
 
-const SubscribeButton = dynamic(() => import('@/ui/subscribe-modal'))
+import SubscribeModal from '@/ui/subscribe-modal'
 
 type SubscribeContextType = {
   visible: boolean
@@ -24,7 +23,7 @@ export default function Providers(props: PropsWithChildren<unknown>) {
   return (
     <SubscribeContext.Provider value={{ visible, setVisible }}>
       {props.children}
-      <SubscribeButton />
+      <SubscribeModal />
     </SubscribeContext.Provider>
   )
 }
