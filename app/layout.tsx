@@ -71,12 +71,12 @@ export default function RootLayout({ children }: PropsWithChildren<unknown>) {
         mulish.className,
       )}>
       <body>
-        <Header />
-        <main className='grow py-14'>
-          <Providers>
+        <Providers>
+          <Header />
+          <main className='grow py-14'>
             {children}
-          </Providers>
-        </main>
+          </main>
+        </Providers>
         <Footer />
         <Analytics />
       </body>

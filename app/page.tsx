@@ -1,11 +1,10 @@
-import dynamic from 'next/dynamic'
 import Image from 'next/image'
 
 import { sortedBlogs } from '@/app/content'
 import FamilyPhoto from '@/public/family.png'
 import BlogRow from '@/ui/components/blog-row'
 import Container from '@/ui/components/container'
-const SubscribeButton = dynamic(() => import('@/ui/subscribe'))
+import SubscribeButton from '@/ui/subscribe'
 
 export default function Home() {
   return (

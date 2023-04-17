@@ -1,14 +1,12 @@
 import clsx from 'clsx'
 import { Rss, Twitter } from 'lucide-react'
 import type { Route } from 'next'
-import dynamic from 'next/dynamic'
 import Link from "next/link";
 
 import { rssUrl, twitterUrl } from "@/app/content";
+import SubscribeButton from '@/ui/subscribe'
 
 import { MobileNavigationContextProvider,MobileNavigationToggle } from "./mobile-navigation-toggle";
-
-const SubscribeButton = dynamic(() => import('./subscribe'))
 
 export type Item = {
   title: string
