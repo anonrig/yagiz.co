@@ -87,7 +87,8 @@ const moduleExports = plugins.reduce((acc, next) => next(acc), nextConfig);
 export default withSentryConfig({
   ...moduleExports,
   sentry: {
-    hideSourceMaps: true
+    hideSourceMaps: true,
+    widenClientFileUpload: true,
   }
 }, {
   silent: true,
