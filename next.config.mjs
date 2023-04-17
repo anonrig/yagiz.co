@@ -1,4 +1,9 @@
+import { withSentryConfig } from '@sentry/nextjs'
 import { withContentlayer } from 'next-contentlayer'
+
+const plugins = [
+  withContentlayer,
+];
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -75,6 +80,15 @@ const securityHeaders = [
     key: 'Permissions-Policy',
     value: 'camera=(), microphone=(), geolocation=()',
   },
-  ];
+];
 
-export default withContentlayer(nextConfig);
+const moduleExports = plugins.reduce((acc, next) => next(acc), nextConfig);
+
+export default withSentryConfig({
+  ...moduleExports,
+  sentry: {
+    hideSourceMaps: true
+  }
+}, {
+  silent: true,
+});
