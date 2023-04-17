@@ -12,7 +12,7 @@ body {
 }
 
 .prose .anchor {
-  @apply absolute invisible no-underline font-extrabold cursor-pointer -ml-1 pr-2;
+  @apply absolute invisible no-underline font-extrabold cursor-pointer -ml-5 pr-2;
   width: 80%;
   max-width: 700px;
 }
