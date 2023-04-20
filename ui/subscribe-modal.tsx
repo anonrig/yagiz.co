@@ -17,6 +17,7 @@ export default function SubscribeModal() {
 
     event.preventDefault()
     setLoading(true)
+    setMessage('')
     try {
       const response = await fetch('/api/newsletter', {
         method: 'post',
@@ -57,7 +58,7 @@ export default function SubscribeModal() {
             </Dialog.Title>
           </div>
           <Form.Root onSubmit={handleSubmit} className='flex flex-col gap-y-4'>
-            <Form.Field name='email' className='flex flex-col gap-y-2'>
+            <Form.Field name='name' className='flex flex-col gap-y-2'>
               <Form.Label
                 className='block text-sm text-black dark:text-white font-bold flex flex-col w-full'
               >Name</Form.Label>
@@ -100,7 +101,7 @@ export default function SubscribeModal() {
 
             {message.length > 0 && (
               <div className='text-center'>
-                Message: {message}
+                {message}
               </div>
             )}
           </Form.Root>
