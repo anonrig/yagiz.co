@@ -11,11 +11,11 @@ dependencies:
     specifier: ^0.0.2
     version: 0.0.2(react-dom@18.2.0)(react@18.2.0)
   '@sentry/nextjs':
-    specifier: ^7.48.0
-    version: 7.48.0(next@13.3.1-canary.9)(react@18.2.0)
+    specifier: ^7.49.0
+    version: 7.49.0(next@13.3.1-canary.9)(react@18.2.0)
   '@vercel/analytics':
-    specifier: ^0.1.11
-    version: 0.1.11(react@18.2.0)
+    specifier: ^1.0.0
+    version: 1.0.0(react@18.2.0)
   class-variance-authority:
     specifier: ^0.5.2
     version: 0.5.2(typescript@5.0.4)
@@ -32,8 +32,8 @@ dependencies:
     specifier: ^4.2.2
     version: 4.2.2
   lucide-react:
-    specifier: ^0.161.0
-    version: 0.161.0(react@18.2.0)
+    specifier: ^0.171.0
+    version: 0.171.0(react@18.2.0)
   motion:
     specifier: ^10.15.5
     version: 10.15.5
@@ -53,8 +53,8 @@ dependencies:
     specifier: ^6.1.1
     version: 6.1.1
   rehype-pretty-code:
-    specifier: ^0.9.4
-    version: 0.9.4(shiki@0.14.1)
+    specifier: ^0.9.5
+    version: 0.9.5(shiki@0.14.1)
   rehype-slug:
     specifier: ^5.1.0
     version: 5.1.0
@@ -70,8 +70,8 @@ devDependencies:
     specifier: ^0.5.9
     version: 0.5.9(tailwindcss@3.3.1)
   '@types/node':
-    specifier: 18.15.11
-    version: 18.15.11
+    specifier: 18.15.12
+    version: 18.15.12
   '@types/react':
     specifier: 18.0.37
     version: 18.0.37
@@ -80,7 +80,7 @@ devDependencies:
     version: 18.0.11
   autoprefixer:
     specifier: ^10.4.14
-    version: 10.4.14(postcss@8.4.22)
+    version: 10.4.14(postcss@8.4.23)
   eslint-config-next:
     specifier: 13.3.0
     version: 13.3.0(eslint@8.38.0)(typescript@5.0.4)
@@ -91,11 +91,11 @@ devDependencies:
     specifier: ^1.2.0
     version: 1.2.0
   postcss:
-    specifier: ^8.4.22
-    version: 8.4.22
+    specifier: ^8.4.23
+    version: 8.4.23
   tailwindcss:
     specifier: ^3.3.1
-    version: 3.3.1(postcss@8.4.22)
+    version: 3.3.1(postcss@8.4.23)
   typescript:
     specifier: 5.0.4
     version: 5.0.4
@@ -556,7 +556,7 @@ packages:
     engines: {node: ^8.13.0 || >=10.10.0}
     dependencies:
       '@grpc/proto-loader': 0.7.6
-      '@types/node': 18.15.11
+      '@types/node': 18.15.12
     dev: false
 
   /@grpc/proto-loader@0.6.13:
@@ -1290,25 +1290,25 @@ packages:
     resolution: {integrity: sha512-sXo/qW2/pAcmT43VoRKOJbDOfV3cYpq3szSVfIThQXNt+E4DfKj361vaAt3c88U5tPUxzEswam7GW48PJqtKAg==}
     dev: true
 
-  /@sentry-internal/tracing@7.48.0:
-    resolution: {integrity: sha512-MFAPDTrvCtfSm0/Zbmx7HA0Q5uCfRadOUpN8Y8rP1ndz+329h2kA3mZRCuC+3/aXL11zs2CHUhcAkGjwH2vogg==}
+  /@sentry-internal/tracing@7.49.0:
+    resolution: {integrity: sha512-ESh3+ZneQk/3HESTUmIPNrW5GVPu/HrRJU+eAJJto74vm+6vP7zDn2YV2gJ1w18O/37nc7W/bVCgZJlhZ3cwew==}
     engines: {node: '>=8'}
     dependencies:
-      '@sentry/core': 7.48.0
-      '@sentry/types': 7.48.0
-      '@sentry/utils': 7.48.0
+      '@sentry/core': 7.49.0
+      '@sentry/types': 7.49.0
+      '@sentry/utils': 7.49.0
       tslib: 1.14.1
     dev: false
 
-  /@sentry/browser@7.48.0:
-    resolution: {integrity: sha512-tdx/2nhuiykncmXFlV4Dpp+Hxgt/v31LiyXE79IcM560wc+QmWKtzoW9azBWQ0xt5KOO3ERMib9qPE4/ql1/EQ==}
+  /@sentry/browser@7.49.0:
+    resolution: {integrity: sha512-x2DekKkQoY7/dhBzE4J25mdQ978NtPBTVQb+uZqlF/t5mp4K44TAszmPqy8lC/CmVHkp7qcpRGSCIzeboUL4KA==}
     engines: {node: '>=8'}
     dependencies:
-      '@sentry-internal/tracing': 7.48.0
-      '@sentry/core': 7.48.0
-      '@sentry/replay': 7.48.0
-      '@sentry/types': 7.48.0
-      '@sentry/utils': 7.48.0
+      '@sentry-internal/tracing': 7.49.0
+      '@sentry/core': 7.49.0
+      '@sentry/replay': 7.49.0
+      '@sentry/types': 7.49.0
+      '@sentry/utils': 7.49.0
       tslib: 1.14.1
     dev: false
 
@@ -1329,27 +1329,27 @@ packages:
       - supports-color
     dev: false
 
-  /@sentry/core@7.48.0:
-    resolution: {integrity: sha512-8FYuJTMpyuxRZvlen3gQ3rpOtVInSDmSyXqWEhCLuG/w34AtWoTiW7G516rsAAh6Hy1TP91GooMWbonP3XQNTQ==}
+  /@sentry/core@7.49.0:
+    resolution: {integrity: sha512-AlSnCYgfEbvK8pkNluUkmdW/cD9UpvOVCa+ERQswXNRkAv5aDGCL6Ihv6fnIajE++BYuwZh0+HwZUBVKTFzoZg==}
     engines: {node: '>=8'}
     dependencies:
-      '@sentry/types': 7.48.0
-      '@sentry/utils': 7.48.0
+      '@sentry/types': 7.49.0
+      '@sentry/utils': 7.49.0
       tslib: 1.14.1
     dev: false
 
-  /@sentry/integrations@7.48.0:
-    resolution: {integrity: sha512-yzbJopVu1UHFXRDv236o5hSEUtqeP45T9uSVbAhKnH5meKWunK7MKvhFvQjhcfvlUVibYrewoVztQP2hrpxgfw==}
+  /@sentry/integrations@7.49.0:
+    resolution: {integrity: sha512-qsEVkcZjw+toFGnzsVo+Cozz+hMK9LugzkfJyOFL+CyiEx9MfkEmsvRpZe1ETEWKe/VZylYU27NQzl6UNuAUjw==}
     engines: {node: '>=8'}
     dependencies:
-      '@sentry/types': 7.48.0
-      '@sentry/utils': 7.48.0
+      '@sentry/types': 7.49.0
+      '@sentry/utils': 7.49.0
       localforage: 1.10.0
       tslib: 1.14.1
     dev: false
 
-  /@sentry/nextjs@7.48.0(next@13.3.1-canary.9)(react@18.2.0):
-    resolution: {integrity: sha512-SLWkd1ZB27uK21QkUiIBEUgvhaMFMx8V5MO2+IlGluJKUdd06IgYAOsS0kjwQc34Ow6D0qowy8iScmtHebgQew==}
+  /@sentry/nextjs@7.49.0(next@13.3.1-canary.9)(react@18.2.0):
+    resolution: {integrity: sha512-MXcaIe1qgSDlRYIlq4XzjFNIBNmSRb4MnaQg7JKmoSzEh+AXvnRDNG5gYhsKJBKdBZGRsKyevNrbb9Yh9YpsNg==}
     engines: {node: '>=8'}
     peerDependencies:
       next: ^10.0.8 || ^11.0 || ^12.0 || ^13.0
@@ -1360,12 +1360,12 @@ packages:
         optional: true
     dependencies:
       '@rollup/plugin-commonjs': 24.0.0(rollup@2.78.0)
-      '@sentry/core': 7.48.0
-      '@sentry/integrations': 7.48.0
-      '@sentry/node': 7.48.0
-      '@sentry/react': 7.48.0(react@18.2.0)
-      '@sentry/types': 7.48.0
-      '@sentry/utils': 7.48.0
+      '@sentry/core': 7.49.0
+      '@sentry/integrations': 7.49.0
+      '@sentry/node': 7.49.0
+      '@sentry/react': 7.49.0(react@18.2.0)
+      '@sentry/types': 7.49.0
+      '@sentry/utils': 7.49.0
       '@sentry/webpack-plugin': 1.20.0
       chalk: 3.0.0
       next: 13.3.1-canary.9(@opentelemetry/api@1.1.0)(react-dom@18.2.0)(react@18.2.0)
@@ -1378,14 +1378,14 @@ packages:
       - supports-color
     dev: false
 
-  /@sentry/node@7.48.0:
-    resolution: {integrity: sha512-DJyyZaVhv/pUzJPof7es6zYDHeWbNqE0T3tQfLCkShdyfR+Ew8In8W/x2s7S8vq0cfRq0rqv1E6B2/HpVdYO7g==}
+  /@sentry/node@7.49.0:
+    resolution: {integrity: sha512-KLIrqcbKk4yR3g8fjl87Eyv4M9j4YI6b7sqVAZYj3FrX3mC6JQyGdlDfUpSKy604n1iAdr6OuUp5f9x7jPJaeQ==}
     engines: {node: '>=8'}
     dependencies:
-      '@sentry-internal/tracing': 7.48.0
-      '@sentry/core': 7.48.0
-      '@sentry/types': 7.48.0
-      '@sentry/utils': 7.48.0
+      '@sentry-internal/tracing': 7.49.0
+      '@sentry/core': 7.49.0
+      '@sentry/types': 7.49.0
+      '@sentry/utils': 7.49.0
       cookie: 0.4.2
       https-proxy-agent: 5.0.1
       lru_map: 0.3.3
@@ -1394,39 +1394,39 @@ packages:
       - supports-color
     dev: false
 
-  /@sentry/react@7.48.0(react@18.2.0):
-    resolution: {integrity: sha512-E2HF0njufOI/BWktXfIiPNIh0dh7la9uQmDlYiFAK8MnlW4OOjw4rRJV2qkxKQCYdO9WB+T460DVw102Z/MyUA==}
+  /@sentry/react@7.49.0(react@18.2.0):
+    resolution: {integrity: sha512-s+ROJr1tP9zVBmoOn94JM+fu2TuoJKxkSXTEUOKoQ9P6P5ROzpDqTzHRGk6u4OjZTy5tftRyEqBGM2Iaf9Y+UA==}
     engines: {node: '>=8'}
     peerDependencies:
       react: 15.x || 16.x || 17.x || 18.x
     dependencies:
-      '@sentry/browser': 7.48.0
-      '@sentry/types': 7.48.0
-      '@sentry/utils': 7.48.0
+      '@sentry/browser': 7.49.0
+      '@sentry/types': 7.49.0
+      '@sentry/utils': 7.49.0
       hoist-non-react-statics: 3.3.2
       react: 18.2.0
       tslib: 1.14.1
     dev: false
 
-  /@sentry/replay@7.48.0:
-    resolution: {integrity: sha512-8fRHMGJ0NJeIZi6UucxUTvfDPaBa7+jU1kCTLjCcuH3X/UVz5PtGLMtFSO5U8HP+mUDlPs97MP1uoDvMa4S2Ng==}
+  /@sentry/replay@7.49.0:
+    resolution: {integrity: sha512-UY3bHoBDPOu4Dpq3m3oxNjLrq09NiFVYUfrTN4QOq1Am2SA04XbuCj/YZ+jNVy/NrFtoz9cTovK6oQbNw53jog==}
     engines: {node: '>=12'}
     dependencies:
-      '@sentry/core': 7.48.0
-      '@sentry/types': 7.48.0
-      '@sentry/utils': 7.48.0
+      '@sentry/core': 7.49.0
+      '@sentry/types': 7.49.0
+      '@sentry/utils': 7.49.0
     dev: false
 
-  /@sentry/types@7.48.0:
-    resolution: {integrity: sha512-kkAszZwQ5/v4n7Yyw/DPNRWx7h724mVNRGZIJa9ggUMvTgMe7UKCZZ5wfQmYiKVlGbwd9pxXAcP8Oq15EbByFQ==}
+  /@sentry/types@7.49.0:
+    resolution: {integrity: sha512-9yXXh7iv76+O6h2ONUVx0wsL1auqJFWez62mTjWk4350SgMmWp/zUkBxnVXhmcYqscz/CepC+Loz9vITLXtgxg==}
     engines: {node: '>=8'}
     dev: false
 
-  /@sentry/utils@7.48.0:
-    resolution: {integrity: sha512-d977sghkFVMfld0LrEyyY2gYrfayLPdDEpUDT+hg5y79r7zZDCFyHtdB86699E5K89MwDZahW7Erk+a1nk4x5w==}
+  /@sentry/utils@7.49.0:
+    resolution: {integrity: sha512-JdC9yGnOgev4ISJVwmIoFsk8Zx0psDZJAj2DV7x4wMZsO6QK+YjC7G3mUED/S5D5lsrkBZ/3uvQQhr8DQI4UcQ==}
     engines: {node: '>=8'}
     dependencies:
-      '@sentry/types': 7.48.0
+      '@sentry/types': 7.49.0
       tslib: 1.14.1
     dev: false
 
@@ -1473,7 +1473,7 @@ packages:
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       postcss-selector-parser: 6.0.10
-      tailwindcss: 3.3.1(postcss@8.4.22)
+      tailwindcss: 3.3.1(postcss@8.4.23)
     dev: true
 
   /@types/acorn@4.0.6:
@@ -1526,8 +1526,8 @@ packages:
     resolution: {integrity: sha512-iiUgKzV9AuaEkZqkOLDIvlQiL6ltuZd9tGcW3gwpnX8JbuiuhFlEGmmFXEXkN50Cvq7Os88IY2v0dkDqXYWVgA==}
     dev: false
 
-  /@types/node@18.15.11:
-    resolution: {integrity: sha512-E5Kwq2n4SbMzQOn6wnmBjuK9ouqlURrcZDVfbo9ftDDTFt3nk7ZKK4GMOzoYgnpQJKcxwQw+lGaBvvlMo0qN/Q==}
+  /@types/node@18.15.12:
+    resolution: {integrity: sha512-Wha1UwsB3CYdqUm2PPzh/1gujGCNtWVUYF0mB00fJFoR4gTyWTDPjSm+zBF787Ahw8vSGgBja90MkgFwvB86Dg==}
 
   /@types/parse5@6.0.3:
     resolution: {integrity: sha512-SuT16Q1K51EAVPz1K29DJ/sXjhSQ0zjvsypYJ6tlwVsRV9jwW5Adq2ch8Dq8kDBCkYnELS7N7VNCSB5nC56t/g==}
@@ -1622,8 +1622,8 @@ packages:
       eslint-visitor-keys: 3.4.0
     dev: true
 
-  /@vercel/analytics@0.1.11(react@18.2.0):
-    resolution: {integrity: sha512-mj5CPR02y0BRs1tN3oZcBNAX9a8NxsIUl9vElDPcqxnMfP0RbRc9fI9Ud7+QDg/1Izvt5uMumsr+6YsmVHcyuw==}
+  /@vercel/analytics@1.0.0(react@18.2.0):
+    resolution: {integrity: sha512-RQmj7pv82JwGDHrnKeRc6TtSw2U7rWNubc2IH0ernTzWTj02yr9zvIYiYJeztsBzrJtWv7m8Nz6vxxb+cdEtJw==}
     peerDependencies:
       react: ^16.8||^17||^18
     dependencies:
@@ -1777,7 +1777,7 @@ packages:
     hasBin: true
     dev: false
 
-  /autoprefixer@10.4.14(postcss@8.4.22):
+  /autoprefixer@10.4.14(postcss@8.4.23):
     resolution: {integrity: sha512-FQzyfOsTlwVzjHxKEqRIAdJx9niO6VCBCoEwax/VLSoQF29ggECcPuBqUMZ+u8jCZOPSy8b8/8KnuFbp0SaFZQ==}
     engines: {node: ^10 || ^12 || >=14}
     hasBin: true
@@ -1789,7 +1789,7 @@ packages:
       fraction.js: 4.2.0
       normalize-range: 0.1.2
       picocolors: 1.0.0
-      postcss: 8.4.22
+      postcss: 8.4.23
       postcss-value-parser: 4.2.0
     dev: true
 
@@ -3620,8 +3620,8 @@ packages:
     resolution: {integrity: sha512-Pn9cox5CsMYngeDbmChANltQl+5pi6XmTrraMSzhPmMBbmgcxmqWry0U3PGapCU1yB4/LqCcom7qhHZiF/jGfQ==}
     dev: false
 
-  /lucide-react@0.161.0(react@18.2.0):
-    resolution: {integrity: sha512-Yr0VR0l6r+t65JCE9q+rTMItWqbhF4Wn3l73PHMwxves2wDhEPH7V2JqxvqS0In/brIwiyBV90++r/rHxNK9ug==}
+  /lucide-react@0.171.0(react@18.2.0):
+    resolution: {integrity: sha512-iCcpl4wfilDMeG1WtTkYTf47RMOx5KO5Kn5N8SSWq5KBxUELkHT7+p8+6wRz7GETxScA8fvjz22tFBmODnlYRg==}
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0
     dependencies:
@@ -4591,29 +4591,29 @@ packages:
     engines: {node: '>= 6'}
     dev: true
 
-  /postcss-import@14.1.0(postcss@8.4.22):
+  /postcss-import@14.1.0(postcss@8.4.23):
     resolution: {integrity: sha512-flwI+Vgm4SElObFVPpTIT7SU7R3qk2L7PyduMcokiaVKuWv9d/U+Gm/QAd8NDLuykTWTkcrjOeD2Pp1rMeBTGw==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       postcss: ^8.0.0
     dependencies:
-      postcss: 8.4.22
+      postcss: 8.4.23
       postcss-value-parser: 4.2.0
       read-cache: 1.0.0
       resolve: 1.22.2
     dev: true
 
-  /postcss-js@4.0.1(postcss@8.4.22):
+  /postcss-js@4.0.1(postcss@8.4.23):
     resolution: {integrity: sha512-dDLF8pEO191hJMtlHFPRa8xsizHaM82MLfNkUHdUtVEV3tgTp5oj+8qbEqYM57SLfc74KSbw//4SeJma2LRVIw==}
     engines: {node: ^12 || ^14 || >= 16}
     peerDependencies:
       postcss: ^8.4.21
     dependencies:
       camelcase-css: 2.0.1
-      postcss: 8.4.22
+      postcss: 8.4.23
     dev: true
 
-  /postcss-load-config@3.1.4(postcss@8.4.22):
+  /postcss-load-config@3.1.4(postcss@8.4.23):
     resolution: {integrity: sha512-6DiM4E7v4coTE4uzA8U//WhtPwyhiim3eyjEMFCnUpzbrkK9wJHgKDT2mR+HbtSrd/NubVaYTOpSpjUl8NQeRg==}
     engines: {node: '>= 10'}
     peerDependencies:
@@ -4626,17 +4626,17 @@ packages:
         optional: true
     dependencies:
       lilconfig: 2.1.0
-      postcss: 8.4.22
+      postcss: 8.4.23
       yaml: 1.10.2
     dev: true
 
-  /postcss-nested@6.0.0(postcss@8.4.22):
+  /postcss-nested@6.0.0(postcss@8.4.23):
     resolution: {integrity: sha512-0DkamqrPcmkBDsLn+vQDIrtkSbNkv5AD/M322ySo9kqFkCIYklym2xEmWkwo+Y3/qZo34tzEPNUw4y7yMCdv5w==}
     engines: {node: '>=12.0'}
     peerDependencies:
       postcss: ^8.2.14
     dependencies:
-      postcss: 8.4.22
+      postcss: 8.4.23
       postcss-selector-parser: 6.0.11
     dev: true
 
@@ -4669,8 +4669,8 @@ packages:
       source-map-js: 1.0.2
     dev: false
 
-  /postcss@8.4.22:
-    resolution: {integrity: sha512-XseknLAfRHzVWjCEtdviapiBtfLdgyzExD50Rg2ePaucEesyh8Wv4VPdW0nbyDa1ydbrAxV19jvMT4+LFmcNUA==}
+  /postcss@8.4.23:
+    resolution: {integrity: sha512-bQ3qMcpF6A/YjR55xtoTr0jGOlnPOKAIMdOWiv0EIT6HVPEaJiJB4NLljSbiHoC2RX7DN5Uvjtpbg1NPdwv1oA==}
     engines: {node: ^10 || ^12 || >=14}
     dependencies:
       nanoid: 3.3.6
@@ -4715,7 +4715,7 @@ packages:
       '@protobufjs/pool': 1.1.0
       '@protobufjs/utf8': 1.1.0
       '@types/long': 4.0.2
-      '@types/node': 18.15.11
+      '@types/node': 18.15.12
       long: 4.0.0
     dev: false
 
@@ -4734,7 +4734,7 @@ packages:
       '@protobufjs/path': 1.1.2
       '@protobufjs/pool': 1.1.0
       '@protobufjs/utf8': 1.1.0
-      '@types/node': 18.15.11
+      '@types/node': 18.15.12
       long: 5.2.1
     dev: false
 
@@ -4863,8 +4863,8 @@ packages:
       unist-util-visit: 4.1.2
     dev: false
 
-  /rehype-pretty-code@0.9.4(shiki@0.14.1):
-    resolution: {integrity: sha512-3m4aQT15n8C+UizcZL0enaahoZwCDm5K1qKQ3DGgHE7U8l/DEEEJ/hm+uDe9yyK4sxVOSfZcRIMHrpJwLQi+Rg==}
+  /rehype-pretty-code@0.9.5(shiki@0.14.1):
+    resolution: {integrity: sha512-TYA4oDxxn4z/YZ6ZNz7BX5BuyeJzi7D6XxI44T/eqUOBYypwwOd7RZ+IBb1NkERpian/k7sZ1+KsdIbWDRenQw==}
     engines: {node: ^12.16.0 || >=13.2.0}
     peerDependencies:
       shiki: '*'
@@ -5276,7 +5276,7 @@ packages:
       tslib: 2.5.0
     dev: true
 
-  /tailwindcss@3.3.1(postcss@8.4.22):
+  /tailwindcss@3.3.1(postcss@8.4.23):
     resolution: {integrity: sha512-Vkiouc41d4CEq0ujXl6oiGFQ7bA3WEhUZdTgXAhtKxSy49OmKs8rEfQmupsfF0IGW8fv2iQkp1EVUuapCFrZ9g==}
     engines: {node: '>=12.13.0'}
     hasBin: true
@@ -5297,11 +5297,11 @@ packages:
       normalize-path: 3.0.0
       object-hash: 3.0.0
       picocolors: 1.0.0
-      postcss: 8.4.22
-      postcss-import: 14.1.0(postcss@8.4.22)
-      postcss-js: 4.0.1(postcss@8.4.22)
-      postcss-load-config: 3.1.4(postcss@8.4.22)
-      postcss-nested: 6.0.0(postcss@8.4.22)
+      postcss: 8.4.23
+      postcss-import: 14.1.0(postcss@8.4.23)
+      postcss-js: 4.0.1(postcss@8.4.23)
+      postcss-load-config: 3.1.4(postcss@8.4.23)
+      postcss-nested: 6.0.0(postcss@8.4.23)
       postcss-selector-parser: 6.0.11
       postcss-value-parser: 4.2.0
       quick-lru: 5.1.1
