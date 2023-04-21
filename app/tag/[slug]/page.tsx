@@ -59,7 +59,7 @@ export default function Tag({ params }: Props) {
         </div>
 
         <div>
-          <span className='mr-2 mt-2 font-bold'>More:</span>
+          <span className='mr-2 mt-2 font-bold dark:text-white'>More:</span>
             {otherTags.map(tag => (
               <Link
                 href={`/tag/${tag.slug}` as Route}
@@ -73,7 +73,7 @@ export default function Tag({ params }: Props) {
       </Container>
 
       <div className='flex grow py-14'>
-        <Container size='tight' className='divide-y divide-slate-200'>
+        <Container size='tight' className='divide-y divide-slate-200 dark:divide-neutral-700'>
           {blogs.map((blog) => <BlogRow blog={blog} key={blog._id} />)}
         </Container>
       </div>
