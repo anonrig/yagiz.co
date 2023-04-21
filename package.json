@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint --dir .",
-    "lint-fix": "next lint --dir . --fix"
+    "lint-fix": "next lint --dir . --fix",
+    "cli": "node --no-warnings ./cli.mjs"
   },
   "dependencies": {
     "@formspree/react": "^2.4.1",
@@ -33,6 +34,7 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
+    "@clack/prompts": "^0.6.3",
     "@tailwindcss/typography": "^0.5.9",
     "@types/node": "18.15.12",
     "@types/react": "18.0.37",
