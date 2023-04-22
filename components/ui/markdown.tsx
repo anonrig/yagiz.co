@@ -59,7 +59,7 @@ export default function Markdown({ code }: { code: string }) {
       'prose-h1:text-3xl', // h1
       'prose-h2:text-2xl', // h2
       'prose-h3:text-xl prose-h3:text-neutral-600 dark:prose-h3:text-neutral-300 ', // h3
-      'prose-strong:pr-2 prose-strong:font-bold', // strong
+      'prose-strong:font-bold', // strong
     )}>
       <Component components={components} />
     </article>
