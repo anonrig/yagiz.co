@@ -10,6 +10,8 @@ type Props = {
   params: { slug: string }
 }
 
+export const dynamicParams = false
+
 export function generateStaticParams() {
   return sortedTags.map(tag => tag.slug)
 }

@@ -11,12 +11,8 @@ export default function Error({ error }: { error: Error }) {
   }, [error]);
 
   return (
-    <html>
-      <body>
-        <Container>
-          <p>Oh no, something went wrong... maybe refresh?</p>
-        </Container>
-      </body>
-    </html>
+    <Container>
+      <p>Oh no, something went wrong... maybe refresh?</p>
+    </Container>
   );
 }

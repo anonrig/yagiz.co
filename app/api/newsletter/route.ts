@@ -1,4 +1,3 @@
-import type { NextConfig } from "next"
 import { NextResponse } from "next/server"
 import { z } from 'zod'
 
@@ -8,7 +7,7 @@ const schema = z.object({
   name: z.string(),
 })
 
-export const config: NextConfig = { runtime: 'edge' }
+export const runtime = 'edge'
 
 export async function POST(request: Request) {
   const { MAILCHIMP_API_SERVER, MAILCHIMP_AUDIENCE_ID, MAILCHIMP_API_KEY } = process.env

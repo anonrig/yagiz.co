@@ -1,0 +1,125 @@
+---
+title: Securing your Next.js 13 application
+description: >-
+  Even though, this started as an experiment, implementing the URL parser in Rust using WebAssembly became the graduation project for my Masters in Computer Science at Fordham University.
+date: '2023-04-17'
+tag: tags/security.mdx
+status: published
+type: Blog
+minute_to_read: 6
+---
+
+Next.js is a popular framework for building server-side rendered React
+applications, but like any web application, it's crucial to take security
+seriously. In this blog post, we will discuss some essential security practices
+that you can implement in your Next.js application. We will cover topics such
+as security headers, including Content Security Policy, Referrer-Policy, and
+X-Frame-Options, as well as preventing cross-site request forgery attacks. By
+following these security best practices, you can help ensure the safety and
+privacy of your users' sensitive information.
+
+## Security Headers
+
+One of the essential security practices for Next.js applications is to
+implement recommended security headers. Security headers are HTTP response
+headers that allow web developers to control and enforce additional security
+mechanisms in their applications. The code snippet below shows an example of
+some recommended security headers to add to your Next.js application.
+
+```js title="Adding security headers to your next.config.mjs file"
+const ContentSecurityPolicy = `
+  default-src 'self' vercel.live;
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' cdn.vercel-insights.com vercel.live;
+  style-src 'self' 'unsafe-inline';
+  img-src * blob: data:;
+  media-src 'none';
+  connect-src *;
+  font-src 'self';
+`.replace(/\n/g, '');
+
+const securityHeaders = [
+  { key: 'Content-Security-Policy', value: ContentSecurityPolicy },
+  { key: 'Referrer-Policy', value: 'origin-when-cross-origin' },
+  { key: 'X-Frame-Options', value: 'DENY' },
+  { key: 'X-Content-Type-Options', value: 'nosniff' },
+  { key: 'X-DNS-Prefetch-Control', value: 'on' },
+  { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains; preload' },
+  { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+];
+
+/** @type {import('next').NextConfig} */
+export default {
+  headers() {
+    return [
+      { source: '/(.*)', headers: securityHeaders },
+    ];
+  },
+}
+```
+
+### Content Security Policy
+
+Content Security Policy (CSP) is a security header that allows you to specify a
+set of rules that define the sources from which the application can load
+resources such as scripts, styles, and images. It is designed to mitigate
+cross-site scripting (XSS) attacks by preventing the execution of scripts from
+untrusted sources. The value of the Content-Security-Policy header in the code
+snippet above specifies the allowed sources for various resources.
+
+### Referrer-Policy
+
+Referrer-Policy is a security header that allows you to control how much
+information is passed in the HTTP Referer header when navigating from one page
+to another. The value of the Referrer-Policy header in the code snippet above
+specifies that the origin should be sent as the referrer when the request is
+made from the same origin, but not when the request is made from a different
+origin.
+
+### X-Frame-Options
+
+X-Frame-Options is a security header that prevents clickjacking attacks by
+ensuring that a webpage can only be displayed in a frame or iframe if it is
+from the same origin. The value of the X-Frame-Options header in the code
+snippet above specifies that the page should not be displayed in any frame or
+iframe.
+
+### X-Content-Type-Options
+
+X-Content-Type-Options is a security header that prevents MIME type sniffing, a
+vulnerability that allows attackers to trick the browser into interpreting a
+resource as a different MIME type, possibly executing malicious code. The value
+of the X-Content-Type-Options header in the code snippet above specifies that
+the browser should not try to guess the MIME type and should only use the
+declared MIME type.
+
+### X-DNS-Prefetch-Control
+
+X-DNS-Prefetch-Control is a security header that controls whether the browser
+should prefetch DNS entries for links on a webpage. Prefetching DNS entries can
+reduce the latency of subsequent requests but can also be used for tracking
+purposes. The value of the X-DNS-Prefetch-Control header in the code snippet
+above specifies that DNS prefetching should be enabled.
+
+### Strict-Transport-Security
+
+Strict-Transport-Security (HSTS) is a security header that enforces the use of
+HTTPS by the browser and prevents downgrade attacks. The value of the
+Strict-Transport-Security header in the code snippet above specifies that the
+browser should use HTTPS for all requests for the next 365 days, including
+subdomains, and preload the HSTS policy to all browsers.
+
+### Permissions-Policy
+
+Permissions-Policy is a security header that allows you to specify which APIs
+and features are allowed to be used in the application. The value of the
+Permissions-Policy header in the code snippet above specifies that the camera,
+microphone, and geolocation APIs are not allowed to be used.
+
+## Cross Site Request Forgery
+
+**Cross-site request forgery (CSRF)** is a type of attack that exploits the trust between a user and a website to perform unauthorized actions on the user's
+behalf. CSRF attacks can lead to serious security breaches, such as account
+takeover, data theft, and malware installation. In this type of attack, an
+attacker tricks a user into executing a malicious action on a website without
+their knowledge or consent. Since the attack is carried out with the user's
+credentials, it can be difficult to detect and mitigate.
