@@ -1,12 +1,14 @@
 ---
 title: Securing your Next.js 13 application
 description: >-
-  Even though, this started as an experiment, implementing the URL parser in Rust using WebAssembly became the graduation project for my Masters in Computer Science at Fordham University.
-date: '2023-04-17'
+  Next.js is a popular framework for building server-side rendered React
+  applications, but like any web application, it's crucial to take security
+  seriously.
+date: '2023-04-22'
 tag: tags/security.mdx
-status: draft
+status: published
 type: Blog
-minute_to_read: 6
+minute_to_read: 8
 ---
 
 Next.js is a popular framework for building server-side rendered React
@@ -53,7 +55,7 @@ export default {
     return [
       { source: '/(.*)', headers: securityHeaders },
     ];
-  },
+  }
 }
 ```
 
@@ -117,9 +119,108 @@ microphone, and geolocation APIs are not allowed to be used.
 
 ## Cross Site Request Forgery
 
-**Cross-site request forgery (CSRF)** is a type of attack that exploits the trust between a user and a website to perform unauthorized actions on the user's
+**Cross-site request forgery (CSRF)** is a type of attack that exploits the
+trust between a user and a website to perform unauthorized actions on the user's
 behalf. CSRF attacks can lead to serious security breaches, such as account
 takeover, data theft, and malware installation. In this type of attack, an
 attacker tricks a user into executing a malicious action on a website without
 their knowledge or consent. Since the attack is carried out with the user's
 credentials, it can be difficult to detect and mitigate.
+
+### Implement on your own
+
+Here is a high level implementation
+
+1. Create a `middleware.ts` on your root folder.
+2. Filter middleware to grab only `GET` requests
+3. Create a secure cookie with a short expiration date with a value that
+  is signed by the secret key only known by the server-side available
+  environment key.
+4. Update the NextResponse headers with `X-CSRF-Token` header with the raw value
+5. On the server-side of the page you want to add CSRF protection, grab the
+  http value using `headers().get('X-CSRF-Token')` and pass it to the
+  client-side component.
+6. On the client-side of the page, create a hidden input with the value of the
+  `X-CSRF-Token` header.
+6. On your **route endpoint**:
+   1. Validate that the CSRF header exists
+   2. Validate that a cookie is sent with the existing request
+   3. Sign `X-CSRF-Token` value with your secret key and make sure that it
+     is same as the cookie of the request.
+   4. If any of these validations fail, throw an error.
+
+### Use a package
+
+1. Install [`edge-csrf`](https://github.com/amorey/edge-csrf) module using
+`npm install edge-csrf` or `yarn add edge-csrf`.
+2. Create a `middleware.ts` on your root folder.
+
+```js title="middleware.ts"
+import csrf from 'edge-csrf';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+
+// initalize protection function
+const csrfProtect = csrf({
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+  },
+});
+
+export async function middleware(request: NextRequest) {
+  const response = NextResponse.next();
+
+  // csrf protection
+  const csrfError = await csrfProtect(request, response);
+
+  // check result
+  if (csrfError) {
+      return new NextResponse('invalid csrf token', { status: 403 });
+  }
+
+  return response;
+}
+```
+
+3. And on your React component:
+
+```js title="pages/page.ts"
+import type { NextPage, GetServerSideProps } from 'next';
+import React from 'react';
+
+type Props = {
+  csrfToken: string;
+};
+
+export const getServerSideProps: GetServerSideProps = async ({ res }) => {
+  const csrfToken = res.getHeader('x-csrf-token') || 'missing';
+  return { props: { csrfToken } };
+}
+
+const FormPage: NextPage<Props> = ({ csrfToken }) => {
+  return (
+    <form action="/api/form-handler" method="post">
+      <input type="hidden" value={csrfToken}>
+      <input type="text" name="my-input">
+      <input type="submit">
+    </form>
+  );
+}
+
+export default FormPage;
+```
+
+4. Create your API endpoint:
+
+```js title="pages/api/form-handler.ts"
+import type { NextApiRequest, NextApiResponse } from 'next';
+
+type Data = {
+  status: string
+};
+
+export default function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
+  // this code won't execute unless CSRF token passes validation
+  res.status(200).json({ status: 'success' });
+}
+```
