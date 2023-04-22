@@ -55,9 +55,10 @@ export default function Blog({ params }: Props) {
   return (
     <>
       <article>
-        <script type='application/ld+json'>
-          {JSON.stringify(blog.structuredData)}
-        </script>
+        <script
+          type='application/ld+json'
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(blog.structuredData) }}
+        />
 
         <header className='mb-6 grid grid-cols-canvas text-center'>
           <div className='col-main mb-4 text-xs font-extrabold uppercase text-slate-400'>
