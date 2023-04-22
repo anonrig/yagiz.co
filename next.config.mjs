@@ -31,6 +31,16 @@ const nextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
   },
+  webpack(config, { webpack }) {
+    config.plugins.push(
+      new webpack.DefinePlugin({
+        __SENTRY_DEBUG__: false,
+        __SENTRY_TRACING__: false,
+      })
+    )
+
+    return config
+  }
 }
 
 // https://nextjs.org/docs/advanced-features/security-headers
@@ -88,6 +98,7 @@ export default withSentryConfig({
   ...moduleExports,
   sentry: {
     hideSourceMaps: true,
+    tunnelRoute: '/api/sentry',
     widenClientFileUpload: true,
   }
 }, {
