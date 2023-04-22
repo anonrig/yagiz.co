@@ -1,9 +1,9 @@
 import type { Blog } from 'contentlayer/generated'
 
 import { sortedBlogs } from '@/app/content'
+import Container from '@/components/ui/container'
 
 import BlogRow from './blog-row'
-import Container from './container'
 
 export default function BlogSuggestion({ index }: { index: number }) {
   const suggestions = [

@@ -1,16 +1,15 @@
 import { format } from 'date-fns'
-import { Metadata } from 'next'
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import Script from 'next/script'
 
 import { sortedBlogs } from '@/app/content'
-import BlogFooter from '@/ui/components/blog-footer'
-import BlogStickyHeader from '@/ui/components/blog-sticky-header'
-import BlogSuggestion from '@/ui/components/blog-suggestion'
-import Figure from '@/ui/components/figure'
-import Heading from '@/ui/components/heading'
-import Markdown from '@/ui/components/markdown'
+import BlogFooter from '@/components/blog-footer'
+import BlogStickyHeader from '@/components/blog-sticky-header'
+import BlogSuggestion from '@/components/blog-suggestion'
+import Figure from '@/components/ui/figure'
+import Heading from '@/components/ui/heading'
+import Markdown from '@/components/ui/markdown'
 
 type Props = {
   params: { slug: string }
@@ -56,7 +55,9 @@ export default function Blog({ params }: Props) {
   return (
     <>
       <article>
-        <Script id={`blog-${blog.slug}`} type='application/ld+json'>{JSON.stringify(blog.structuredData)}</Script>
+        <script type='application/ld+json'>
+          {JSON.stringify(blog.structuredData)}
+        </script>
 
         <header className='mb-6 grid grid-cols-canvas text-center'>
           <div className='col-main mb-4 text-xs font-extrabold uppercase text-slate-400'>

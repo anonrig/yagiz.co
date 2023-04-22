@@ -4,13 +4,13 @@ import type { Route } from 'next'
 import Link from "next/link";
 
 import { rssUrl, twitterUrl } from "@/app/content";
-import SubscribeButton from '@/ui/subscribe'
+import SubscribeButton from '@/components/subscribe'
 
 import { MobileNavigationContextProvider,MobileNavigationToggle } from "./mobile-navigation-toggle";
 
 export type Item = {
   title: string
-  href: Route
+  href: Route<string>
 }
 
 const headerItems: Item[] = [

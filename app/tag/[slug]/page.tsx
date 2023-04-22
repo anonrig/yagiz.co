@@ -3,8 +3,8 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
 import { sortedBlogs, sortedTags } from '@/app/content'
-import BlogRow from '@/ui/components/blog-row'
-import Container from '@/ui/components/container'
+import BlogRow from '@/components/blog-row'
+import Container from '@/components/ui/container'
 
 type Props = {
   params: { slug: string }

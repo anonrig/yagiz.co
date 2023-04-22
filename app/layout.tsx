@@ -7,7 +7,7 @@ import {Mulish} from "next/font/google";
 import {PropsWithChildren} from "react";
 
 import { websiteDomain } from '@/app/content';
-import { Footer, Header }from '@/ui/layout'
+import { Footer, Header }from '@/components/layout'
 
 import Providers from './providers';
 
@@ -15,7 +15,7 @@ const description = "Here's a collection of posts about my thoughts, stories, id
 export const metadata: Metadata = {
   title: {
     default: 'Engineering with Yagiz',
-    template: '%s - Yagiz Nizipli',
+    template: '%s - Engineering with Yagiz',
   },
   description,
   category: 'technology',
@@ -69,7 +69,9 @@ export default function RootLayout({ children }: PropsWithChildren<unknown>) {
       className={clsx(
         'bg-white text-black dark:bg-white-reversed',
         mulish.className,
-      )}>
+      )}
+      suppressHydrationWarning
+    >
       <body>
         <Providers>
           <Header />

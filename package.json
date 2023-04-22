@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "concurrently \"npm:dev-*\" --hide contentlayer --raw",
+    "dev-next": "next dev",
+    "dev-contentlayer": "contentlayer dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint --dir .",
@@ -40,6 +42,7 @@
     "@types/react": "18.0.38",
     "@types/react-dom": "18.0.11",
     "autoprefixer": "^10.4.14",
+    "concurrently": "^8.0.1",
     "eslint-config-next": "13.3.1",
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "markdown-wasm": "^1.2.0",

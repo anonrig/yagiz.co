@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import Page, { getPageMetadata } from '@/ui/page'
+import Page, { getPageMetadata } from '@/components/page'
 
 export const metadata: Metadata = getPageMetadata({ slug: 'press' })
 

@@ -1,5 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 
+import { githubImage } from "@/app/content";
+
 export default function BlogImage({ title }: { title: string }) {
   return (
     <div
@@ -45,7 +47,7 @@ export default function BlogImage({ title }: { title: string }) {
           alt='Yagiz Nizipli'
           width='140'
           height='140'
-          src='https:/github.com/anonrig.png'
+          src={githubImage}
           style={{
             borderRadius: 70
           }}

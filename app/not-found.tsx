@@ -1,6 +1,6 @@
 import { Stethoscope } from 'lucide-react'
 
-import Container from '@/ui/components/container'
+import Container from '@/components/ui/container'
 
 export default function NotFound() {
   return (

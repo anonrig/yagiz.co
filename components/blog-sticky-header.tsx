@@ -4,7 +4,7 @@ import type { Blog } from 'contentlayer/generated'
 import { animate, scroll } from 'motion'
 import { useEffect } from 'react'
 
-import SubscribeButton from '@/ui/subscribe'
+import SubscribeButton from '@/components/subscribe'
 
 export default function BlogStickyHeader({ blog }: { blog: Blog }) {
   useEffect(() => {

@@ -3,9 +3,9 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { PropsWithChildren } from 'react'
 
-import Figure from '@/ui/components/figure'
-import Heading from '@/ui/components/heading'
-import Markdown from '@/ui/components/markdown'
+import Figure from '@/components/ui/figure'
+import Heading from '@/components/ui/heading'
+import Markdown from '@/components/ui/markdown'
 
 type Props = { slug: string }
 

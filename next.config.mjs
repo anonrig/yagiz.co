@@ -8,7 +8,7 @@ const plugins = [
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
-    dirs: ['ui', 'app', 'content'],
+    dirs: ['components', 'app', 'content'],
   },
   poweredByHeader: false,
   experimental: {

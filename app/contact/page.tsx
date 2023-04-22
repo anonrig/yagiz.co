@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 
-import ContactForm from '@/ui/contact-form'
-import Page, { getPageMetadata } from '@/ui/page'
+import ContactForm from '@/components/contact-form'
+import Page, { getPageMetadata } from '@/components/page'
 
 export const metadata: Metadata = getPageMetadata({ slug: 'contact' })
 

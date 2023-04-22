@@ -1,10 +1,10 @@
 import Image from 'next/image'
 
 import { sortedBlogs } from '@/app/content'
+import BlogRow from '@/components/blog-row'
+import SubscribeButton from '@/components/subscribe'
+import Container from '@/components/ui/container'
 import FamilyPhoto from '@/public/family.png'
-import BlogRow from '@/ui/components/blog-row'
-import Container from '@/ui/components/container'
-import SubscribeButton from '@/ui/subscribe'
 
 export default function Home() {
   return (

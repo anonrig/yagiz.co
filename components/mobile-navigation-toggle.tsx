@@ -5,8 +5,8 @@ import { MenuIcon, XIcon } from 'lucide-react'
 import Link from 'next/link'
 import { createContext, Dispatch, PropsWithChildren, SetStateAction, useContext, useState } from "react"
 
-import Container from '@/ui/components/container'
-import type { Item } from '@/ui/layout'
+import type { Item } from '@/components/layout'
+import Container from '@/components/ui/container'
 
 import SubscribeButton from './subscribe'
 

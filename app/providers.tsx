@@ -2,7 +2,7 @@
 
 import { createContext, Dispatch, PropsWithChildren, SetStateAction, useContext, useState } from 'react'
 
-import SubscribeModal from '@/ui/subscribe-modal'
+import SubscribeModal from '@/components/subscribe-modal'
 
 type SubscribeContextType = {
   visible: boolean
