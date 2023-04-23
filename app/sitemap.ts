@@ -20,6 +20,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }))
 
   return [
+    { url: websiteDomain, lastModified: format(new Date(), 'yyyy-MM-dd') },
     ...blogs,
     ...tags,
     ...staticPages,
