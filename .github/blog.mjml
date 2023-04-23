@@ -1,0 +1,56 @@
+<mjml>
+    <mj-head>
+        <mj-font name="Mulish"
+                 href="https://fonts.googleapis.com/css?family=Mulish" />
+        <mj-attributes>
+            <mj-text font-family="Mulish" />
+        </mj-attributes>
+        <mj-title>{{title}}</mj-title>
+    </mj-head>
+    <mj-body>
+        <!-- Header -->
+        <mj-section background-color="#f0f0f0">
+            <mj-column>
+                <mj-image src="{{imageUrl}}" width="80px" height="80px"/>
+                <mj-text align="center"
+                         font-size="20px"
+                         font-weight="800">
+                    {{heading}}
+                </mj-text>
+            </mj-column>
+        </mj-section>
+
+        <!-- Read more section -->
+        <mj-section background-color="#fafafa">
+            <mj-column>
+                <mj-text font-size="16px"
+                         font-weight="600">
+                    {{title}}
+                </mj-text>
+
+                <mj-text font-size="13px" font-family="Mulish" line-height="20px">
+                    {{description}}
+                </mj-text>
+
+                <mj-spacer height="30px" />
+
+                <mj-button font-size="12px"
+                           font-weight="400"
+                           href="{{url}}">
+                    READ MORE
+                </mj-button>
+            </mj-column>
+        </mj-section>
+
+        <!-- Footer -->
+        <mj-section background-color="#f0f0f0">
+            <mj-column>
+                <mj-text font-size="8px" align="center">
+                    <a href="[[UNSUB_LINK_EN]]">
+                        click here to unsubscribe
+                    </a>
+                </mj-text>
+            </mj-column>
+        </mj-section>
+    </mj-body>
+</mjml>

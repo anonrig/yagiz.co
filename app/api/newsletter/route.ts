@@ -1,63 +1,57 @@
-import { NextResponse } from "next/server"
-import { z } from 'zod'
+import { NextResponse } from 'next/server'
+import Mailjet, { Contact, LibraryResponse } from 'node-mailjet';
 
-const errorMessage = 'There was an error subscribing to the newsletter. React out to me from the contact form and I\'ll add you to the list.'
-const schema = z.object({
-  email: z.string().email(),
-  name: z.string(),
-})
-
-export const runtime = 'edge'
+// Replace this with `edge` when `node-mailjet` resolves axios related issues
+export const runtime = 'nodejs'
 
 export async function POST(request: Request) {
-  const { MAILCHIMP_API_SERVER, MAILCHIMP_AUDIENCE_ID, MAILCHIMP_API_KEY } = process.env
-  const body = await request.json()
-  const validation = schema.safeParse(body)
+  const body: {
+    email?: string
+    name?: string
+  } = await request.json()
 
-  if (!validation.success) {
+  if (!body.email?.length || !body.name?.length) {
     return NextResponse.json({
       status: 400,
       message: 'Input validation failed. Make sure you have an email and a full name',
     })
   }
 
-  const { email, name } = validation.data
+  const mailjet = new Mailjet({
+    apiKey: process.env.MAILJET_API_KEY ?? '',
+    apiSecret: process.env.MAILJET_SECRET_KEY ?? '',
+  })
 
   try {
-    const response = await fetch(
-      `https://${MAILCHIMP_API_SERVER}.api.mailchimp.com/3.0/lists/${MAILCHIMP_AUDIENCE_ID}/members`,
-      {
-        method: 'post',
-        headers: {
-          'content-type': 'application/json',
-          'authorization': `api_key ${MAILCHIMP_API_KEY}`
-        },
-        body: JSON.stringify({
-          email_address: email,
-          status: 'subscribed',
-          merge_fields: {
-            FNAME: name,
-          },
-        })
-      }
-    )
+    const { response }: LibraryResponse<Contact.PostContactResponse> = await mailjet
+      .post('contact', { version: 'v3' })
+      .request({
+        IsExcludedFromCampaigns: 'true',
+        Name: body.name,
+        Email: body.email,
+      })
 
-    if (response.status >= 400) {
-      const json = await response.json()
+    const contactId = response.data.Data.at(0)?.ID
+
+    if (!contactId) {
       return NextResponse.json({
-        status: 400,
-        message: json.title,
+        status: 500,
+        message: 'ContactID was missing from Mailjet API',
       })
     }
-  } catch (error) {
-    let cause
-    if (error instanceof Error) {
-      cause = error.message
-    }
+
+    await mailjet
+      .post('listrecipient', { version: 'v3' })
+      .request({
+        'ContactID': contactId,
+        'ListID': process.env.MAILJET_CONTACT_LIST_ID ?? '',
+      })
+  } catch (error: any) {
+    console.error(error)
+    const message = error.response?.statusText ?? error.message ?? ''
     return NextResponse.json({
       status: 400,
-      message: errorMessage,
-      cause,
+      message,
     })
   }
 
