@@ -22,7 +22,6 @@
     "date-fns": "^2.29.3",
     "feed": "^4.2.2",
     "lucide-react": "^0.176.0",
-    "markdown-wasm": "^1.2.0",
     "motion": "^10.15.5",
     "next": "13.3.1",
     "next-contentlayer": "^0.3.2",
