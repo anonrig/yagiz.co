@@ -14,6 +14,7 @@ export default function BlogImage({ title }: { title: string }) {
         justifyContent: 'center',
         paddingLeft: 190,
         paddingRight: 190,
+        backgroundColor: 'white',
       }}
     >
       <div

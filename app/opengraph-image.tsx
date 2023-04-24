@@ -19,6 +19,7 @@ export default function og() {
           justifyContent: 'center',
           paddingLeft: 190,
           paddingRight: 190,
+          backgroundColor: 'white',
         }}
       >
         <div
