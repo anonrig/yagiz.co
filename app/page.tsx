@@ -12,7 +12,14 @@ export default function Home() {
       <Container className='-mt-8'>
         <div className='mx-auto mb-4 flex max-w-lg flex-col items-center text-center'>
           <div className='relative mb-8'>
-            <Image alt='Engineering with Yagiz' src={FamilyPhoto} width={150} height={150} className='rounded-full' />
+            <Image
+              alt='Engineering with Yagiz'
+              src={FamilyPhoto}
+              width={150}
+              height={150}
+              className='rounded-full'
+              quality={100}
+            />
           </div>
           <div className='text-lg dark:text-zinc-200'>
             Here's a collection of posts about my thoughts, stories, ideas and experiences as a human, and an engineer working with different technologies.
