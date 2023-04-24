@@ -6,7 +6,19 @@ import { format } from 'date-fns'
 
 import { allTags, allBlogs } from '../../.contentlayer/generated/index.mjs'
 
-const folder = new URL('../content', import.meta.url).pathname
+const folder = new URL('../../content', import.meta.url).pathname
+const getTemplateFor = ({ title, description, tag, status }) => `
+---
+title: '${title}'
+description: >-
+  ${description}
+type: Blog
+date: '${format(new Date(), 'yyyy-MM-dd')}'
+tag: ${tag}
+status: ${status}
+minute_to_read: 1
+---
+`.trim()
 
 export async function createBlog() {
   const {
@@ -74,19 +86,12 @@ export async function createBlog() {
     }
   })
 
-  const template = `
-  ---
-  title: '${title}'
-  description: >-
-    ${description}
-  type: Blog
-  date: '${format(new Date(), 'yyyy-MM-dd')}'
-  tag: ${tag}
-  status: ${status}
-  minute_to_read: 1
-  ---
-  `
-
+  const template = getTemplateFor({
+    title,
+    description,
+    tag,
+    status,
+  })
   const creating = spinner()
   creating.start('Creating the document')
   const documentPath = path.join(folder, `${slug}.mdx`)

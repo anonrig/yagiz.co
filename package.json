@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint --dir .",
-    "lint-fix": "next lint --dir . --fix",
+    "lint-fix": "eslint --fix .",
     "cli": "node --no-warnings -r dotenv/config ./cli.mjs"
   },
   "dependencies": {
