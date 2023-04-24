@@ -10,8 +10,14 @@ type Props = {
   params: { slug: string }
 }
 
-export function generateStaticParams() {
-  return sortedTags.map(tag => tag.slug)
+// Force static rendering and static data fetching of a layout or page
+export const dynamic = 'force-static'
+
+// Dynamic segments not included in generateStaticParams will return a 404.
+export const dynamicParams = false
+
+export function generateStaticParams(): Props['params'][] {
+  return sortedTags.map(tag => ({ slug: tag.slug }))
 }
 
 export function generateMetadata({ params }: Props): Metadata {
