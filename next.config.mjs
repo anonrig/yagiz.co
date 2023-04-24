@@ -12,7 +12,6 @@ const nextConfig = {
   eslint: {
     dirs: ['components', 'app', 'content'],
   },
-  poweredByHeader: false,
   experimental: {
     appDir: true,
     typedRoutes: true,
