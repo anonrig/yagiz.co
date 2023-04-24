@@ -368,8 +368,6 @@ Due to the object destructure of `bindingUrl.urlComponents`,
 the barrier between JavaScript and C++ is only crossed once,
 reducing the performance cost of string serialization.
 
-## Caveats
-
 The usage of indexes as offsets to access the URL properties
 through a string is not a new idea. As most of you knew, it's
 called lazy loading.
@@ -385,8 +383,6 @@ use. This approach can help reduce the amount of computation required, improve
 memory usage, and speed up the overall execution time of the algorithm.
 Examples of algorithms that may use lazy loading include memoization, dynamic
 programming, and certain types of graph traversal algorithms.
-
-## Conclusions
 
 The usage of lazy-loading forces us to know the context of where lazy loading
 is used. In the case of the URL class, the cost of parsing vs. the cost of
