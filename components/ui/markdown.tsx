@@ -35,7 +35,7 @@ function RoundedImage({ alt, ...props}: ImageProps) {
 
 function Blockquote(props: PropsWithChildren<unknown>) {
   return (
-    <blockquote className='border-l-[5px] border-orange-400 bg-gray-100 py-0.5 px-6 font-bold not-italic tracking-tight text-slate-600 dark:bg-[#1c1c1c] dark:text-neutral-400'>
+    <blockquote className='border-l-[5px] mb-0 border-orange-400 bg-gray-100 py-0.5 px-6 font-bold not-italic tracking-tight text-slate-600 dark:bg-[#1c1c1c] dark:text-neutral-400'>
       {props.children}
     </blockquote>
   )
