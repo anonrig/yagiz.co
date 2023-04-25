@@ -9,25 +9,32 @@ status: published
 minute_to_read: 6
 ---
 
-Serializing strings in Node.js has been a pain point for web developers,
-particularly when it comes to URL operations. Recently, with the help of
-[Daniel Lemire](https://lemire.me), we conducted a research to reduce the cost
-of string serialization in Node.js core particularly in the context of URL
-parsing, resulting in a series of optimizations that addressed the issue. By
-implementing these techniques, we were able to improve the performance of URL
-parsing and formatting, as well as reducing memory usage and improving overall
-stability. In this article, we will delve into the challenges we encountered
-while optimizing string serialization in Node.js, and the techniques we used to
-achieve significant performance improvements.
+Serializing strings has been a pain point for developers, and in the context
+of this article, is a bottleneck in URL operations. Recently, with the help of
+[Daniel Lemire][daniel-lemire], we conducted an extensive research to reduce
+the cost of string serialization on URL parsing operations in Node.js core,
+resulting in a series of optimizations that addressed the issue, leading to
+[Ada][ada] v2.0.0. By implementing these techniques, we were able to improve
+the performance of URL parsing and formatting, as well as reducing memory usage
+and improving overall runtime stability. In this article, we will delve into
+the challenges we encountered while optimizing such bottlenecks in Node.js
+core, and try to explain the techniques we used to achieve the significant
+performance improvements.
 
 ## Quick Recap
 
+> What is the purpose of serialization?
+
+Serialization enables us to save the state of an object and recreate the object
+in a new location. In the context of this paper, serialization is required
+and used to pass data between C++ and JavaScript layers.
+
 > How does C++ code communicate with JavaScript code in Node.js?
 
-Node.js exposes C++ classes to the JavaScript layer through the
-[V8 JavaScript engine](https://v8.dev) exposes them using a function
-called `internalBinding` where each subsystem of Node.js registers its
-own bindings through certain functions.
+Node.js exposes C++ classes to the JavaScript layer using [V8][v8] through an
+interface called `internalBinding` where each subsystem of Node.js registers
+its own bindings. An example implementation of how `node:buffer` registers
+a certain function is available below.
 
 ```cpp title="src/node_buffer.cc" {5, 9, 12, 13}
 void Initialize(Local<Object> target,
@@ -57,9 +64,7 @@ does not include base url as the parameter.
 
 Whenever a user calls `new URL` inside Node.js, the following class is created.
 This class is a wrapper for calling the actual implementation in C++ provided
-by [the Ada URL parser](https://github.com/ada-url/ada).
-
-The following code is available on [Github](https://github.com/anonrig/node/blob/26a967f6d0d111d72da6ea34634854e2ba8c517f/lib/internal/url.js#L567).
+by [the Ada URL parser][ada]. The following code is available on [Github](https://github.com/anonrig/node/blob/26a967f6d0d111d72da6ea34634854e2ba8c517f/lib/internal/url.js#L567).
 
 ```js title="Node.js URL class constructor" {8}
 const { parse } = internalBinding('url');
@@ -93,13 +98,14 @@ if (isValid) {
 
 In the example above, the `parse` function returns a boolean `isValid` and
 other properties of the parsed URL. However, the `parse` function returns
-these properties regardless of the `isValid` flag. This means that the
+these properties regardless of the `isValid` flag. This means that
 the structure of the `rest` object is unknown on the compile time, and
-V8 has to do its magic to optimize it as much as it can.
+V8 has to do its magic to optimize it with its limited knowledge on
+the executed code block. **This is a very common problem with JIT (Just in time)
+compilers.**
 
-Let's dive into the details of how the `parse` function is implemented.
-
-The URL constructor by default calls a C++ function called `parse` which is
+Let's dive into the details of how the `parse` function is implemented: The URL
+constructor by default calls a C++ function called `parse` which is
 defined inside `src/node_url.cc`. The `parse` function is defined as follows:
 
 ```cpp title="Parse"
@@ -185,11 +191,13 @@ function to update the current context of the URL:
 This implementation as you've realized is not very efficient. It requires
 sharing the knowledge of the callback function parameters, by index, between
 JavaScript and C++. On top of this being a bad practice, there is a lot of
-room for improvement in terms of performance.
+room for improvement in terms of performance. The bridge between
+C++ to JavaScript is not very efficient, leading to bottlenecks when used
+in hot paths.
 
 This wasn't a problem until now, where the true performance cost of this
 function lied in the fact that the URL parser was slow. However, with
-[Ada URL parser](https://github.com/ada-url/ada) the bottleneck was moved
+[Ada URL parser][ada] the bottleneck was moved
 to the serialization of the result.
 
 As you know the URL contains a lot of properties, where `href` is the only
@@ -222,13 +230,21 @@ to be resolved if we are going to resolve this.
 
 ## The Solution
 
-With [Ada URL Parser v2.0.0](https://github.com/ada-url/ada), we incorporated
-Servo URL's approach to storing the URL properties. The idea is to store the
+With [Ada URL Parser v2.0.0][ada], we incorporated a common approach in
+industry for storing the URL properties. The idea is to store the
 href, and use offsets to represent the URL properties. This way, we can have
 access to the URL properties without knowing the **business logic** behind
 "How to parse a URL?".
 
+This solution comes with another advantage on top of solving the serialization
+cost. The parsing becomes faster, because we don't need to create multiple
+strings for each URL property. We can reserve and allocate a string with a
+guessed size, and use the offsets to construct the `href` while parsing the URL.
+This reduces the memory allocations, and the time spent on parsing the URL.
+
 ### URL Components
+
+Here's a quick recap from [Ada v2.0 article][ada-v2-article]:
 
 ```text title="URL Components structure"
 https://user:pass@example.com:1234/foo/bar?baz#quux
@@ -273,6 +289,19 @@ offsets of the URL. Due to the single-threaded environment and the non-parallel
 execution of the URL parser, we ensure that that only **1** Uint32Array is
 created for parsing URLs throughout the lifecycle of the Node.js application.
 
+> What is AliasedUint32Array?
+
+Referencing from the implementation itself: `AliasedUint32Array` is a class
+that encapsulates the technique of having a native buffer mapped to a
+JavaScript object. Writes to the native buffer can happen efficiently without
+going through JavaScript, and the data is then available to user via the
+exposed JavaScript object. While this technique is computationally efficient,
+it is effectively a write to JavaScript application state without going through
+the monitored API. Thus any VM capabilities to detect the modification are
+circumvented. The implementation is available at [Github][nodejs-aliased-buffer].
+
+Here's the implementation of the parse function from `BindingData` class.
+
 ```cpp title="src/node_url.cc"
 void BindingData::Parse(const FunctionCallbackInfo<Value>& args) {
   CHECK_GE(args.Length(), 1);
@@ -303,7 +332,7 @@ As a result of this optimization, we just need to update the
 `url_components_buffer_` with the offsets of the URL properties. This
 is done by the `binding_data->UpdateComponents` method.
 
-### JavaScript class
+### JavaScript Class
 
 Let's dive into the JavaScript implementation of the URL class.
 Here's the implementation as of Node.js 20 (April 24, 2023).
@@ -338,6 +367,9 @@ URL has significantly decreased.
 
 ### Updating the URL context
 
+The following code is triggered every time, a URL setter is triggered,
+as well as the everytime a URL is constructed.
+
 ```js title="Simplified version of #updateContext(href) implementation" /bindingUrl.urlComponents/
 #updateContext(href) {
   const {
@@ -369,7 +401,7 @@ the barrier between JavaScript and C++ is only crossed once,
 reducing the performance cost of string serialization.
 
 The usage of indexes as offsets to access the URL properties
-through a string is not a new idea. As most of you knew, it's
+through a string is not a new idea. As most of you know, it's
 called lazy loading.
 
 > What is lazy loading?
@@ -381,21 +413,31 @@ advance would be inefficient or impractical. Instead, the algorithm only
 calculates values as they are requested, often caching the results for future
 use. This approach can help reduce the amount of computation required, improve
 memory usage, and speed up the overall execution time of the algorithm.
-Examples of algorithms that may use lazy loading include memoization, dynamic
-programming, and certain types of graph traversal algorithms.
 
 The usage of lazy-loading forces us to know the context of where lazy loading
 is used. In the case of the URL class, the cost of parsing vs. the cost of
 accessing the URL properties is the main factor that we need to consider.
 As a result of this experiment, and optimizations done on both
-[Ada](https://github.com/ada-url/ada) and Node.js, we were able to reduce
+[Ada][ada] and Node.js, we were able to reduce
 the performance cost of parsing by a significant amount.
 
-Here's the result of parsing 100,000 URLs in different Node.js versions:
+Here's the result of parsing 100,000 URLs in different Node.js versions on M1 Pro Max. The benchmark code is available at [Github][node-benchmarks].
 
-```
-Node.js 20         38.97 ms/iter
-Node.js 19.8.1     79.29 ms/iter
-Node.js 19.7.0    105.59 ms/iter
-Node.js 19.6.1    140.42 ms/iter
-```
+
+| Runtime         | Ada Version | Time (ms/iter) |
+| --------------- | ----------- | -------------- |
+| Node.js 20      | 2.0.0       | 38.97          |
+| Node.js 19.8.1  | 1.0.4       | 79.29          |
+| Node.js 19.7.0  | 1.0.1       | 105.59         |
+| Node.js 19.6.1  | -           | 140.42         |
+
+If you have a passion for performance and Node.js, we are actively looking for
+contributors for our [performance team][nodejs-performance-team].
+
+[ada]: https://github.com/ada-url/ada
+[ada-v2-article]: https://www.yagiz.co/announcing-ada-url-parser-v2-0
+[nodejs-aliased-buffer]: https://github.com/nodejs/node/blob/main/src/aliased_buffer.h#L32
+[daniel-lemire]: https://lemire.me
+[node-benchmarks]: https://github.com/anonrig/node-benchmarks
+[nodejs-performance-team]: https://github.com/nodejs/performance
+[v8]: https://v8.dev
