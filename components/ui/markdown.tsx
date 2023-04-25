@@ -1,25 +1,25 @@
-import clsx from 'clsx';
-import Image, { ImageProps } from 'next/image';
-import Link from 'next/link';
-import { getMDXComponent } from 'next-contentlayer/hooks';
-import { LinkHTMLAttributes, PropsWithChildren } from 'react';
+import clsx from 'clsx'
+import Image, { ImageProps } from 'next/image'
+import Link from 'next/link'
+import { getMDXComponent } from 'next-contentlayer/hooks'
+import { LinkHTMLAttributes, PropsWithChildren } from 'react'
 
 function CustomLink(props: LinkHTMLAttributes<HTMLAnchorElement>) {
-  const href = props.href;
+  const href = props.href
 
   if (href?.startsWith('/')) {
     return (
       <Link href={href as any} {...props}>
         {props.children}
       </Link>
-    );
+    )
   }
 
   if (href?.startsWith('#')) {
-    return <a {...props} />;
+    return <a {...props} />
   }
 
-  return <a target='_blank' rel='noopener noreferrer' {...props} />;
+  return <a target='_blank' rel='noopener noreferrer' {...props} />
 }
 
 function RoundedImage({ alt, ...props}: ImageProps) {
@@ -41,14 +41,25 @@ function Blockquote(props: PropsWithChildren<unknown>) {
   )
 }
 
+function Table(props: PropsWithChildren<unknown>) {
+  return (
+    <div className='bg-[#f6f6f6] dark:bg-[#2f333c] px-2 py-4 rounded-md'>
+      <table className='my-0'>
+      {props.children}
+      </table>
+    </div>
+  )
+}
+
 const components: Record<string, any> = {
   img: RoundedImage,
   a: CustomLink,
   blockquote: Blockquote,
+  table: Table,
 }
 
 export default function Markdown({ code }: { code: string }) {
-  const Component = getMDXComponent(code);
+  const Component = getMDXComponent(code)
   return (
     <article className={clsx(
       'grid grid-cols-canvas [&>*]:col-main',
@@ -63,5 +74,5 @@ export default function Markdown({ code }: { code: string }) {
     )}>
       <Component components={components} />
     </article>
-  );
+  )
 }
