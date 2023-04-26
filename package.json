@@ -32,8 +32,7 @@
     "rehype-autolink-headings": "^6.1.1",
     "rehype-pretty-code": "^0.9.5",
     "rehype-slug": "^5.1.0",
-    "remark-gfm": "^3.0.1",
-    "shiki": "^0.14.1"
+    "remark-gfm": "^3.0.1"
   },
   "devDependencies": {
     "@clack/prompts": "^0.6.3",
@@ -51,5 +50,11 @@
     "postcss": "^8.4.23",
     "tailwindcss": "^3.3.1",
     "typescript": "5.0.4"
+  },
+  "postcss": {
+    "plugins": {
+      "tailwindcss": {},
+      "autoprefixer": {}
+    }
   }
 }

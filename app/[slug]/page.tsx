@@ -1,12 +1,13 @@
+import type { Blog } from 'contentlayer/generated'
 import { format } from 'date-fns'
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
 
-import { sortedBlogs } from '@/app/content'
+import { sortedBlogs, websiteDomain } from '@/app/content'
 import BlogFooter from '@/components/blog-footer'
+import BlogRow from '@/components/blog-row'
 import BlogStickyHeader from '@/components/blog-sticky-header'
-import BlogSuggestion from '@/components/blog-suggestion'
+import Container from '@/components/ui/container'
 import Figure from '@/components/ui/figure'
 import Heading from '@/components/ui/heading'
 import Markdown from '@/components/ui/markdown'
@@ -26,37 +27,56 @@ export function generateStaticParams(): Props['params'][] {
 }
 
 export function generateMetadata({ params }: Props): Metadata {
-  const blog = sortedBlogs.find(b => b.slug === params.slug)
-  if (!blog) {
-    return {
-      title: 'Not Found'
-    }
-  }
+  // No need to check if blog exists, dynamicParams=false will return a 404.
+  const blog = sortedBlogs.find(b => b.slug === params.slug)!
+
   return {
     title: blog.title,
     description: blog.description,
+    authors: [{ name: 'Yagiz Nizipli' }],
+    category: 'technology',
     openGraph: {
       title: blog.title,
       description: blog.description,
       type: 'article',
       publishedTime: format(new Date(blog.date), 'yyyy-MM-dd'),
       tags: blog.tag ? [blog.tag.title] : [],
+      siteName: 'Engineering with Yagiz',
+      images: [{
+        url: `${websiteDomain}/${blog.slug}/og-image.png`,
+        width: 1200,
+        height: 600,
+        alt: blog.title,
+        type: 'image/png'
+      }],
+      locale: 'en-US',
+      authors: ['Yagiz Nizipli'],
     },
     twitter: {
       card: 'summary_large_image',
       title: blog.title,
       description: blog.description,
+      images: {
+        url: `${websiteDomain}/${blog.slug}/og-image.png`,
+        alt: blog.title,
+        type: 'image/png',
+        width: 1200,
+        height: 600,
+      },
+      siteId: '1589638196',
+      creator: '@yagiznizipli',
+      creatorId: '1589638196',
     },
   }
 }
 
-export default function Blog({ params }: Props) {
+export default function BlogDetail({ params }: Props) {
   const index = sortedBlogs.findIndex(b => b.slug === params.slug)
   const blog = sortedBlogs[index]
-
-  if (blog === undefined) {
-    notFound()
-  }
+  const suggestions = [
+    sortedBlogs.at(index - 2),
+    sortedBlogs.at(index - 1),
+  ].filter(Boolean) as Blog[]
 
   return (
     <>
@@ -101,7 +121,16 @@ export default function Blog({ params }: Props) {
         <BlogFooter index={index} />
       </article>
 
-      <BlogSuggestion index={index}/>
+      {suggestions.length > 0 && <section className='mt-24 bg-[#f6f6f6] dark:bg-[#2f333c] py-12'>
+        <Container size='tight'>
+          <h3 className='mb-4 text-xl font-extrabold dark:text-white'>
+            You might also like...
+          </h3>
+          <div className='divide-y divide-slate-200 dark:divide-neutral-700'>
+            {suggestions.map(blog => (<BlogRow blog={blog} key={blog._id} />))}
+          </div>
+        </Container>
+      </section>}
     </>
   )
 }

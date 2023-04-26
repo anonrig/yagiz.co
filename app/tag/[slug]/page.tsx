@@ -1,6 +1,5 @@
 import type { Metadata, Route } from 'next'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
 
 import { sortedBlogs, sortedTags } from '@/app/content'
 import BlogRow from '@/components/blog-row'
@@ -21,12 +20,9 @@ export function generateStaticParams(): Props['params'][] {
 }
 
 export function generateMetadata({ params }: Props): Metadata {
-  const tag = sortedTags.find(t => t.slug === params.slug)
-  if (!tag) {
-    return {
-      title: 'Not Found'
-    }
-  }
+  // No need to check if tag exists, dynamicParams=false will return a 404.
+  const tag = sortedTags.find(t => t.slug === params.slug)!
+
   return {
     title: tag.title,
     description: tag.description,
@@ -44,12 +40,7 @@ export function generateMetadata({ params }: Props): Metadata {
 }
 
 export default function Tag({ params }: Props) {
-  const tag = sortedTags.find(t => t.slug === params.slug)
-
-  if (!tag) {
-    notFound()
-  }
-
+  const tag = sortedTags.find(t => t.slug === params.slug)!
   const otherTags = sortedTags.filter(t => t._id !== tag._id)
   const blogs = sortedBlogs.filter(b => b.tag?._id === tag._id)
 
