@@ -9,12 +9,14 @@ import { sortedBlogs } from '@/app/content'
 // @see https://beta.nextjs.org/docs/routing/route-handlers#dynamic-route-segments
 
 export const runtime = 'edge'
+export const size = { width: 1200, height: 600 }
+export const contentType = 'image/png'
 
 type Context = {
   params: { slug: string }
 }
 
-export function GET(_request: Request, { params }: Context) {
+export default function og({ params }: Context) {
   const blog = sortedBlogs.find(blog => blog.slug === params.slug)
   if (!blog) {
     return new Response('Not found', { status: 404 })

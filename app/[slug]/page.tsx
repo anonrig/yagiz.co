@@ -3,7 +3,7 @@ import { format } from 'date-fns'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
-import { sortedBlogs, websiteDomain } from '@/app/content'
+import { sortedBlogs } from '@/app/content'
 import BlogFooter from '@/components/blog-footer'
 import BlogRow from '@/components/blog-row'
 import BlogStickyHeader from '@/components/blog-sticky-header'
@@ -42,13 +42,6 @@ export function generateMetadata({ params }: Props): Metadata {
       publishedTime: format(new Date(blog.date), 'yyyy-MM-dd'),
       tags: blog.tag ? [blog.tag.title] : [],
       siteName: 'Engineering with Yagiz',
-      images: [{
-        url: `${websiteDomain}/${blog.slug}/og-image.png`,
-        width: 1200,
-        height: 600,
-        alt: blog.title,
-        type: 'image/png'
-      }],
       locale: 'en-US',
       authors: ['Yagiz Nizipli'],
     },
@@ -56,13 +49,6 @@ export function generateMetadata({ params }: Props): Metadata {
       card: 'summary_large_image',
       title: blog.title,
       description: blog.description,
-      images: {
-        url: `${websiteDomain}/${blog.slug}/og-image.png`,
-        alt: blog.title,
-        type: 'image/png',
-        width: 1200,
-        height: 600,
-      },
       siteId: '1589638196',
       creator: '@yagiznizipli',
       creatorId: '1589638196',
