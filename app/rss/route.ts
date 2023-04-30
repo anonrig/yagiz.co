@@ -11,7 +11,7 @@ export async function GET() {
     description: 'Here\'s a collection of posts about my thoughts, stories, ideas and experiences as a human, and an engineer working with different technologies.',
     id: websiteDomain,
     link: websiteDomain,
-    language: 'en',
+    language: 'en-us',
     favicon: `${websiteDomain}/favicon.ico`,
     generator: 'Next.js',
     copyright: 'Yagiz Nizipli - yagiz.co',
