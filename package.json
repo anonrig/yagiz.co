@@ -55,5 +55,8 @@
       "tailwindcss": {},
       "autoprefixer": {}
     }
+  },
+  "volta": {
+    "node": "20.0.0"
   }
 }
