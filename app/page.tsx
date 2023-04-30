@@ -18,7 +18,6 @@ export default function Home() {
               width={150}
               height={150}
               className='rounded-full'
-              quality={100}
             />
           </div>
           <div className='text-lg dark:text-zinc-200'>
