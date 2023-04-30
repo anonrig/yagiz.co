@@ -1,8 +1,9 @@
 'use client'
 
-import { createContext, Dispatch, PropsWithChildren, SetStateAction, useContext, useState } from 'react'
+import dynamic from 'next/dynamic'
+import {createContext, Dispatch, PropsWithChildren, SetStateAction, Suspense, useContext, useState} from 'react'
 
-import SubscribeModal from '@/components/subscribe-modal'
+const SubscribeModal = dynamic(() => import('@/components/subscribe-modal'))
 
 type SubscribeContextType = {
   visible: boolean
@@ -23,7 +24,9 @@ export default function Providers(props: PropsWithChildren<unknown>) {
   return (
     <SubscribeContext.Provider value={{ visible, setVisible }}>
       {props.children}
-      <SubscribeModal />
+      <Suspense>
+        <SubscribeModal />
+      </Suspense>
     </SubscribeContext.Provider>
   )
 }
