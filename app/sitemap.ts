@@ -3,6 +3,8 @@ import type { MetadataRoute } from "next"
 
 import { sortedBlogs, sortedTags, websiteDomain } from "@/app/content"
 
+export const runtime = 'edge'
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const blogs = sortedBlogs.map(blog => ({
     url: blog.url,
