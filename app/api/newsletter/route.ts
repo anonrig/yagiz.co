@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server'
-import Mailjet, { Contact, LibraryResponse } from 'node-mailjet';
 
-// Replace this with `edge` when `node-mailjet` resolves axios related issues
-export const runtime = 'nodejs'
+const headers = {
+  'content-type': 'application/json',
+  'authorization': 'Basic ' + btoa(`${process.env.MAILJET_API_KEY}:${process.env.MAILJET_SECRET_KEY}`)
+}
+
+export const runtime = 'edge'
 
 export async function POST(request: Request) {
   const body: {
@@ -17,21 +20,21 @@ export async function POST(request: Request) {
     })
   }
 
-  const mailjet = new Mailjet({
-    apiKey: process.env.MAILJET_API_KEY ?? '',
-    apiSecret: process.env.MAILJET_SECRET_KEY ?? '',
-  })
-
   try {
-    const { response }: LibraryResponse<Contact.PostContactResponse> = await mailjet
-      .post('contact', { version: 'v3' })
-      .request({
+    const contactResponse = await fetch('https://api.mailjet.com/v3/REST/contact', {
+      headers,
+      method: 'POST',
+      body: JSON.stringify({
         IsExcludedFromCampaigns: 'true',
         Name: body.name,
         Email: body.email,
       })
-
-    const contactId = response.data.Data.at(0)?.ID
+    })
+    const contactJson = await contactResponse.json()
+    if (contactJson.ErrorMessage) {
+      throw new Error(contactJson.ErrorMessage)
+    }
+    const contactId = contactJson.Data.at(0)?.ID
 
     if (!contactId) {
       return NextResponse.json({
@@ -40,12 +43,18 @@ export async function POST(request: Request) {
       })
     }
 
-    await mailjet
-      .post('listrecipient', { version: 'v3' })
-      .request({
+    const listResponse = await fetch('https://api.mailjet.com/v3/REST/listrecipient', {
+      headers,
+      method: 'POST',
+      body: JSON.stringify({
         'ContactID': contactId,
         'ListID': process.env.MAILJET_CONTACT_LIST_ID ?? '',
-      })
+      }),
+    })
+    const listJson = await listResponse.json()
+    if (listJson.ErrorMessage) {
+      throw new Error(listJson.ErrorMessage)
+    }
   } catch (error: any) {
     console.error(error)
     const message = error.response?.statusText ?? error.message ?? ''
