@@ -19,7 +19,7 @@
     "class-variance-authority": "^0.6.0",
     "clsx": "^1.2.1",
     "contentlayer": "^0.3.2",
-    "date-fns": "^2.29.3",
+    "date-fns": "^2.30.0",
     "feed": "^4.2.2",
     "lucide-react": "^0.188.0",
     "markdown-wasm": "^1.2.0",
