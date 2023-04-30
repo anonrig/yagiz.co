@@ -28,7 +28,7 @@ export async function GET() {
       link: blog.url,
       description: blog.description,
       date: new Date(blog.date),
-      image: blog.feature_image ? `${websiteDomain}${blog.feature_image}` : undefined,
+      image: blog.feature_image ? `${websiteDomain}${blog.feature_image}` : `${blog.url}/opengraph-image`,
     })
   })
 
