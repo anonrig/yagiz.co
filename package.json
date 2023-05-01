@@ -21,7 +21,7 @@
     "contentlayer": "^0.3.2",
     "date-fns": "^2.30.0",
     "feed": "^4.2.2",
-    "lucide-react": "^0.188.0",
+    "lucide-react": "^0.190.0",
     "markdown-wasm": "^1.2.0",
     "motion": "^10.15.5",
     "next": "13.3.2",
