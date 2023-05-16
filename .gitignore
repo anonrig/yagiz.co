@@ -39,8 +39,5 @@ next-env.d.ts
 
 .contentlayer
 
-# Sentry
-.sentryclirc
-
 # Dotenv
 .env
