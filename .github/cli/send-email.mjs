@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import mjml2html from 'mjml'
 import Mailjet from 'node-mailjet'
 
-import {select, cancel, outro, group, spinner, confirm} from '@clack/prompts'
+import {select, cancel, group, spinner, confirm} from '@clack/prompts'
 import {allBlogs} from '../../.contentlayer/generated/index.mjs'
 import {compareDesc} from 'date-fns'
 import Handlebars from 'handlebars'
