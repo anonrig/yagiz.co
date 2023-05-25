@@ -5,9 +5,6 @@ import { ImageResponse } from 'next/server'
 import { githubImage } from "@/app/content";
 import { sortedBlogs } from '@/app/content'
 
-// TODO: Using generateStaticParams() is not yet supported for use with Route Handlers.
-// @see https://beta.nextjs.org/docs/routing/route-handlers#dynamic-route-segments
-
 export const runtime = 'edge'
 export const size = { width: 1200, height: 600 }
 export const contentType = 'image/png'
