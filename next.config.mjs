@@ -33,10 +33,16 @@ const nextConfig = {
   },
 }
 
+const domains = [
+  'cdn.vercel-insights.com',
+  'vercel.live',
+  'va.vercel-scripts.com',
+  'static.cloudflareinsights.com',
+]
 // https://nextjs.org/docs/advanced-features/security-headers
 const ContentSecurityPolicy = `
   default-src 'self' vercel.live;
-  script-src 'self' 'unsafe-eval' 'unsafe-inline' cdn.vercel-insights.com vercel.live va.vercel-scripts.com;
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' ${domains.join(' ')};
   style-src 'self' 'unsafe-inline';
   img-src * blob: data:;
   media-src 'none';
