@@ -1,6 +1,7 @@
-const { withContentlayer } = require('next-contentlayer')
+import withPlaiceholder from '@plaiceholder/next'
+import { withContentlayer } from 'next-contentlayer'
 
-const plugins = [withContentlayer]
+const plugins = [withContentlayer, withPlaiceholder]
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -77,4 +78,4 @@ const securityHeaders = [
   },
 ]
 
-module.exports = plugins.reduce((acc, next) => next(acc), nextConfig)
+export default plugins.reduce((acc, next) => next(acc), nextConfig)

@@ -2,6 +2,9 @@ import type { Blog } from 'contentlayer/generated'
 import { format } from 'date-fns'
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import fs from 'node:fs/promises'
+import path from 'node:path'
+import { getPlaiceholder } from 'plaiceholder'
 
 import { sortedBlogs } from '@/app/content'
 import BlogFooter from '@/components/blog-footer'
@@ -56,12 +59,25 @@ export function generateMetadata({ params }: Props): Metadata {
   }
 }
 
-export default function BlogDetail({ params }: Props) {
+export default async function BlogDetail({ params }: Props) {
   const index = sortedBlogs.findIndex((b) => b.slug === params.slug)
   const blog = sortedBlogs[index]
   const suggestions = [sortedBlogs.at(index - 2), sortedBlogs.at(index - 1)].filter(
     Boolean,
   ) as Blog[]
+
+  let blurDataURL
+
+  if (blog.feature_image) {
+    const imagePath = new URL(path.join('../../public', blog.feature_image), import.meta.url)
+    try {
+      const file = await fs.readFile(imagePath)
+      const { base64 } = await getPlaiceholder(file)
+      blurDataURL = base64
+    } catch {
+      // Omit any error
+    }
+  }
 
   return (
     <>
@@ -98,6 +114,7 @@ export default function BlogDetail({ params }: Props) {
               alt={blog.title}
               src={blog.feature_image}
               caption={blog.feature_image_caption}
+              blurDataURL={blurDataURL}
             />
           )}
         </header>

@@ -19,6 +19,7 @@ interface Props extends VariantProps<typeof figureVariants> {
   caption?: string
   src: string
   alt: string
+  blurDataURL?: string
 }
 
 export default function Figure({ size, className, ...props }: Props) {
@@ -30,7 +31,8 @@ export default function Figure({ size, className, ...props }: Props) {
           src={props.src}
           fill
           className='object-cover duration-300 ease-in-out'
-          priority
+          blurDataURL={props.blurDataURL}
+          placeholder={props.blurDataURL === undefined ? 'blur' : undefined}
         />
       </div>
       {props.caption !== undefined && (
