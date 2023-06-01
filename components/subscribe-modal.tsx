@@ -14,9 +14,9 @@ export default function SubscribeModal() {
   const [message, setMessage] = useState('')
   const handleSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
-      const { email, name } = event.target as any
-
       event.preventDefault()
+
+      const { email, name } = event.target as any
       setLoading(true)
       setMessage('')
       try {
@@ -53,7 +53,7 @@ export default function SubscribeModal() {
     <Dialog.Root open={visible} onOpenChange={(o) => setVisible(o)}>
       <Dialog.Portal>
         <Dialog.Overlay className='z-[30] fixed inset-0 backdrop-blur-sm bg-black/20' />
-        <Dialog.Content className='z-[30] fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-md bg-white dark:bg-black p-4 focus:outline-none overflow-y-scroll'>
+        <Dialog.Content className='z-[30] fixed md:top-[50%] md:left-[50%] max-h-[85vh] w-full md:w-[90vw] md:max-w-[450px] md:translate-x-[-50%] md:translate-y-[-50%] rounded-md bg-white dark:bg-black p-4 focus:outline-none overflow-y-scroll'>
           <div className='mt-[16px] mb-[32px] flex flex-col items-center'>
             <Image
               src='/family.png'
@@ -74,6 +74,7 @@ export default function SubscribeModal() {
               <Form.Control
                 type='text'
                 required
+                placeholder='John Doe'
                 className='font-normal focus:border-slate-300 bg-white dark:bg-white-reversed border-[1px] border-slate-200 dark:border-neutral-600 border-solid leading-[1.15] rounded-md text-slate-800 dark:text-white h-[44px] outline-none px-4 dark:focus:border-neutral-500'
               />
               <Form.Message
@@ -97,6 +98,7 @@ export default function SubscribeModal() {
               <Form.Control
                 type='email'
                 required
+                placeholder='john@doe.com'
                 className='font-normal focus:border-slate-300 bg-white dark:bg-white-reversed border-[1px] border-slate-200 dark:border-neutral-600 border-solid leading-[1.15] rounded-md text-slate-800 dark:text-white h-[44px] outline-none px-4 dark:focus:border-neutral-500'
               />
               <Form.Message
