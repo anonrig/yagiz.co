@@ -7,14 +7,7 @@
     "enabled": true,
     "rules": {
       "recommended": true,
-      "a11y": {
-        "recommended": true
-      },
-      "performance": {
-        "recommended": true
-      },
       "suspicious": {
-        "recommended": true,
         "noExplicitAny": "off"
       },
       "style": {
