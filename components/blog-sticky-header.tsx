@@ -10,12 +10,12 @@ export default function BlogStickyHeader({ blog }: { blog: Blog }) {
   useEffect(() => {
     // Start showing and moving the sticky header until 100px offset.
     scroll(animate('#sticky-header', { x: 0, y: 50, opacity: [0, 1] }), {
-      offset: ['start start', '100px']
+      offset: ['start start', '100px'],
     })
 
     // Animate scroll indicator depending on the window scroll position
     scroll(animate('#progress-indicator', { scaleX: ['0', '1'] }), {
-      offset: ['100px', 'end end']
+      offset: ['100px', 'end end'],
     })
   }, [])
 
@@ -33,7 +33,7 @@ export default function BlogStickyHeader({ blog }: { blog: Blog }) {
       </div>
 
       <div className='bg-[#e6e6e6] dark:bg-slate-600 bottom-[-2px] h-[2px] left-0 absolute w-full'>
-        <div id='progress-indicator' className='bg-orange-400 h-full origin-[0%] scale-x-0'></div>
+        <div id='progress-indicator' className='bg-orange-400 h-full origin-[0%] scale-x-0' />
       </div>
     </header>
   )

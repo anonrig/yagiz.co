@@ -4,10 +4,16 @@ import { ChevronRight } from 'lucide-react'
 import type { Route } from 'next'
 import Link from 'next/link'
 
-export default function BlogRow({ blog }: { blog: Blog}) {
+export default function BlogRow({ blog }: { blog: Blog }) {
   return (
-    <Link href={blog.slug as Route} className='group relative flex items-center overflow-hidden py-3'>
-      <time dateTime={blog.date} className='mr-6 flex min-w-[45px] whitespace-nowrap text-xs font-extrabold uppercase text-orange-400'>
+    <Link
+      href={blog.slug as Route}
+      className='group relative flex items-center overflow-hidden py-3'
+    >
+      <time
+        dateTime={blog.date}
+        className='mr-6 flex min-w-[45px] whitespace-nowrap text-xs font-extrabold uppercase text-orange-400'
+      >
         {format(new Date(blog.date), 'MMM dd')}
       </time>
       <div className='overflow-hidden whitespace-nowrap text-ellipsis w-full pr-4 leading-6'>

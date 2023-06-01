@@ -29,7 +29,7 @@ export const Page = defineDocumentType(() => ({
     },
     feature_image_alt: {
       type: 'string',
-    }
+    },
   },
   computedFields: {
     slug: {
@@ -105,7 +105,7 @@ export const Blog = defineDocumentType(() => ({
     minute_to_read: {
       type: 'number',
       required: true,
-    }
+    },
   },
   computedFields: {
     slug: {
@@ -139,9 +139,7 @@ export default makeSource({
   contentDirPath: 'content',
   documentTypes: [Blog, Page, Tag],
   mdx: {
-    remarkPlugins: [
-      remarkGfm,
-    ],
+    remarkPlugins: [remarkGfm],
     rehypePlugins: [
       rehypeSlug,
       [
@@ -152,7 +150,7 @@ export default makeSource({
             // Prevent lines from collapsing in `display: grid` mode, and allow empty
             // lines to be copy/pasted
             if (node.children.length === 0) {
-              node.children = [{type: 'text', value: ' '}]
+              node.children = [{ type: 'text', value: ' ' }]
             }
           },
           onVisitHighlightedLine(node: any) {

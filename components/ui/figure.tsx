@@ -1,21 +1,18 @@
-import { cva, VariantProps } from 'class-variance-authority'
+import { VariantProps, cva } from 'class-variance-authority'
 import clsx from 'clsx'
 import Image from 'next/image'
 
-const figureVariants = cva(
-  'mt-6',
-  {
-    variants: {
-      size: {
-        wide: 'col-wide',
-        main: 'col-main',
-      },
+const figureVariants = cva('mt-6', {
+  variants: {
+    size: {
+      wide: 'col-wide',
+      main: 'col-main',
     },
-    defaultVariants: {
-      size: 'wide'
-    }
-  }
-)
+  },
+  defaultVariants: {
+    size: 'wide',
+  },
+})
 
 interface Props extends VariantProps<typeof figureVariants> {
   className?: string
@@ -37,9 +34,7 @@ export default function Figure({ size, className, ...props }: Props) {
         />
       </div>
       {props.caption !== undefined && (
-        <figcaption className='mt-4 text-sm text-neutral-400'>
-          {props.caption}
-        </figcaption>
+        <figcaption className='mt-4 text-sm text-neutral-400'>{props.caption}</figcaption>
       )}
     </figure>
   )

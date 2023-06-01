@@ -8,7 +8,8 @@ export const runtime = 'nodejs'
 export async function GET() {
   const feed = new Feed({
     title: 'Engineering with Yagiz',
-    description: 'Here\'s a collection of posts about my thoughts, stories, ideas and experiences as a human, and an engineer working with different technologies.',
+    description:
+      "Here's a collection of posts about my thoughts, stories, ideas and experiences as a human, and an engineer working with different technologies.",
     id: websiteDomain,
     link: websiteDomain,
     language: 'en-us',
@@ -21,14 +22,16 @@ export async function GET() {
     },
   })
 
-  sortedBlogs.forEach(blog => {
+  sortedBlogs.forEach((blog) => {
     feed.addItem({
       title: blog.title,
       id: blog.url,
       link: blog.url,
       description: blog.description,
       date: new Date(blog.date),
-      image: blog.feature_image ? `${websiteDomain}${blog.feature_image}` : `${blog.url}/opengraph-image`,
+      image: blog.feature_image
+        ? `${websiteDomain}${blog.feature_image}`
+        : `${blog.url}/opengraph-image`,
     })
   })
 

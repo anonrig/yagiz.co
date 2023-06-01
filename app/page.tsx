@@ -21,7 +21,8 @@ export default function Home() {
             />
           </div>
           <div className='text-lg dark:text-zinc-200'>
-            Here's a collection of posts about my thoughts, stories, ideas and experiences as a human, and an engineer working with different technologies.
+            Here's a collection of posts about my thoughts, stories, ideas and experiences as a
+            human, and an engineer working with different technologies.
           </div>
 
           <SubscribeButton
@@ -33,7 +34,9 @@ export default function Home() {
 
       <div className='flex grow pt-8'>
         <Container size='tight' className='divide-y divide-slate-200 dark:divide-neutral-700'>
-          {sortedBlogs.map((blog) => <BlogRow blog={blog} key={blog._id}/>)}
+          {sortedBlogs.map((blog) => (
+            <BlogRow blog={blog} key={blog._id} />
+          ))}
         </Container>
       </div>
     </>

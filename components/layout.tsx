@@ -1,16 +1,15 @@
 import clsx from 'clsx'
 import { Rss, Twitter } from 'lucide-react'
-import type { Route } from 'next'
-import Link from "next/link";
+import Link from 'next/link'
 
-import { rssUrl, twitterUrl } from "@/app/content";
+import { rssUrl, twitterUrl } from '@/app/content'
 import SubscribeButton from '@/components/subscribe'
 
-import { MobileNavigationContextProvider,MobileNavigationToggle } from "./mobile-navigation-toggle";
+import { MobileNavigationContextProvider, MobileNavigationToggle } from './mobile-navigation-toggle'
 
 export type Item = {
   title: string
-  href: Route<string>
+  href: string
 }
 
 const headerItems: Item[] = [
@@ -29,13 +28,17 @@ export function Header() {
     <MobileNavigationContextProvider>
       <header className='flex h-navigation-bar items-center px-[4vw] mx-auto w-full max-w-[calc(1130px+8vw)]'>
         <div className='flex flex-[2] items-center'>
-          <Link href='/' className='text-lg font-extrabold text-slate-400 dark:text-neutral-200' aria-label='Navigate to the homepage'>
+          <Link
+            href='/'
+            className='text-lg font-extrabold text-slate-400 dark:text-neutral-200'
+            aria-label='Navigate to the homepage'
+          >
             Yagiz Nizipli
           </Link>
         </div>
 
         <nav className='hidden items-center md:flex'>
-          {headerItems.map(item => (
+          {headerItems.map((item) => (
             <Link
               href={item.href}
               key={item.href}
@@ -69,7 +72,7 @@ export function Footer() {
           target='_blank'
           aria-label='Twitter'
         >
-          <Twitter size={18} className='rounded-sm bg-[#999] hover:bg-[#CCC]' fill='white'/>
+          <Twitter size={18} className='rounded-sm bg-[#999] hover:bg-[#CCC]' fill='white' />
         </a>
 
         <a
@@ -79,7 +82,10 @@ export function Footer() {
           target='_blank'
           aria-label='RSS'
         >
-          <Rss size={18} className='rounded-sm bg-[#999] p-0.5 hover:bg-[#CCC] dark:bg-neutral-400 hover:dark:bg-neutral-500'/>
+          <Rss
+            size={18}
+            className='rounded-sm bg-[#999] p-0.5 hover:bg-[#CCC] dark:bg-neutral-400 hover:dark:bg-neutral-500'
+          />
         </a>
       </div>
       <nav className='flex flex-wrap items-center justify-center'>
@@ -89,7 +95,8 @@ export function Footer() {
             key={item.href}
             className={clsx(
               'flex items-center text-xs font-normal text-slate-500 dark:text-neutral-400',
-              index !== 0 && "before:block before:px-[0.7rem] before:font-serif before:leading-[1] before:content-['\\02022']",
+              index !== 0 &&
+                "before:block before:px-[0.7rem] before:font-serif before:leading-[1] before:content-['\\02022']",
             )}
           >
             {item.title}

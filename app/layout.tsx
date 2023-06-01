@@ -1,17 +1,18 @@
 import './globals.css'
 
-import {Analytics} from "@vercel/analytics/react";
-import clsx from "clsx";
-import {Metadata} from "next";
-import {Mulish} from "next/font/google";
-import {PropsWithChildren} from "react";
+import { Analytics } from '@vercel/analytics/react'
+import clsx from 'clsx'
+import { Metadata } from 'next'
+import { Mulish } from 'next/font/google'
+import { PropsWithChildren } from 'react'
 
-import { websiteDomain } from '@/app/content';
-import { Footer, Header }from '@/components/layout'
+import { websiteDomain } from '@/app/content'
+import { Footer, Header } from '@/components/layout'
 
-import Providers from './providers';
+import Providers from './providers'
 
-const description = "Here's a collection of posts about my thoughts, stories, ideas and experiences as a human, and an engineer working with different technologies.";
+const description =
+  "Here's a collection of posts about my thoughts, stories, ideas and experiences as a human, and an engineer working with different technologies."
 export const metadata: Metadata = {
   title: {
     default: 'Engineering with Yagiz',
@@ -59,25 +60,20 @@ const mulish = Mulish({
   display: 'swap',
   subsets: ['latin'],
   variable: '--font-mulish',
-  fallback: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Helvetica', 'Arial', 'sans-serif']
+  fallback: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Helvetica', 'Arial', 'sans-serif'],
 })
 
 export default function RootLayout({ children }: PropsWithChildren<unknown>) {
   return (
     <html
       lang='en'
-      className={clsx(
-        'bg-white text-black dark:bg-white-reversed',
-        mulish.className,
-      )}
+      className={clsx('bg-white text-black dark:bg-white-reversed', mulish.className)}
       suppressHydrationWarning
     >
       <body>
         <Providers>
           <Header />
-          <main className='grow py-14'>
-            {children}
-          </main>
+          <main className='grow py-14'>{children}</main>
         </Providers>
         <Footer />
         <Analytics />

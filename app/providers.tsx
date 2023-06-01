@@ -1,7 +1,15 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import {createContext, Dispatch, PropsWithChildren, SetStateAction, Suspense, useContext, useState} from 'react'
+import {
+  Dispatch,
+  PropsWithChildren,
+  SetStateAction,
+  Suspense,
+  createContext,
+  useContext,
+  useState,
+} from 'react'
 
 const SubscribeModal = dynamic(() => import('@/components/subscribe-modal'))
 

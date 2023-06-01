@@ -23,12 +23,12 @@ export const dynamic = 'force-static'
 export const dynamicParams = false
 
 export function generateStaticParams(): Props['params'][] {
-  return sortedBlogs.map(blog => ({ slug: blog.slug }))
+  return sortedBlogs.map((blog) => ({ slug: blog.slug }))
 }
 
 export function generateMetadata({ params }: Props): Metadata {
   // No need to check if blog exists, dynamicParams=false will return a 404.
-  const blog = sortedBlogs.find(b => b.slug === params.slug)!
+  const blog = sortedBlogs.find((b) => b.slug === params.slug)!
 
   return {
     title: blog.title,
@@ -57,12 +57,11 @@ export function generateMetadata({ params }: Props): Metadata {
 }
 
 export default function BlogDetail({ params }: Props) {
-  const index = sortedBlogs.findIndex(b => b.slug === params.slug)
+  const index = sortedBlogs.findIndex((b) => b.slug === params.slug)
   const blog = sortedBlogs[index]
-  const suggestions = [
-    sortedBlogs.at(index - 2),
-    sortedBlogs.at(index - 1),
-  ].filter(Boolean) as Blog[]
+  const suggestions = [sortedBlogs.at(index - 2), sortedBlogs.at(index - 1)].filter(
+    Boolean,
+  ) as Blog[]
 
   return (
     <>
@@ -82,7 +81,10 @@ export default function BlogDetail({ params }: Props) {
             </span>
             {blog.tag !== undefined && (
               <span className="before:px-2 before:font-serif before:leading-[1] before:content-['\02022']">
-                <Link href={`/tag/${blog.tag.slug}`} className='text-orange-400 hover:text-orange-300'>
+                <Link
+                  href={`/tag/${blog.tag.slug}`}
+                  className='text-orange-400 hover:text-orange-300'
+                >
                   {blog.tag.title}
                 </Link>
               </span>
@@ -107,16 +109,18 @@ export default function BlogDetail({ params }: Props) {
         <BlogFooter index={index} />
       </article>
 
-      {suggestions.length > 0 && <section className='mt-24 bg-[#f6f6f6] dark:bg-[#2f333c] py-12'>
-        <Container size='tight'>
-          <h3 className='mb-4 text-xl font-extrabold dark:text-white'>
-            You might also like...
-          </h3>
-          <div className='divide-y divide-slate-200 dark:divide-neutral-700'>
-            {suggestions.map(blog => (<BlogRow blog={blog} key={blog._id} />))}
-          </div>
-        </Container>
-      </section>}
+      {suggestions.length > 0 && (
+        <section className='mt-24 bg-[#f6f6f6] dark:bg-[#2f333c] py-12'>
+          <Container size='tight'>
+            <h3 className='mb-4 text-xl font-extrabold dark:text-white'>You might also like...</h3>
+            <div className='divide-y divide-slate-200 dark:divide-neutral-700'>
+              {suggestions.map((blog) => (
+                <BlogRow blog={blog} key={blog._id} />
+              ))}
+            </div>
+          </Container>
+        </section>
+      )}
     </>
   )
 }

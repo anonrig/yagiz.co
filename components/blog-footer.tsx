@@ -2,8 +2,8 @@ import { ArrowLeft, ArrowRight } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { sortedBlogs } from '@/app/content';
-import Container from '@/components/ui/container';
+import { sortedBlogs } from '@/app/content'
+import Container from '@/components/ui/container'
 
 export default function BlogFooter({ index }: { index: number }) {
   // Newest blog post is at the 0th index

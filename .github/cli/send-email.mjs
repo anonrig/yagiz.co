@@ -1,51 +1,54 @@
-import fs from 'node:fs'
 import mjml2html from 'mjml'
 import Mailjet from 'node-mailjet'
+import fs from 'node:fs'
 
-import {select, cancel, group, spinner, confirm} from '@clack/prompts'
-import {allBlogs} from '../../.contentlayer/generated/index.mjs'
-import {compareDesc} from 'date-fns'
+import { allBlogs } from '../../.contentlayer/generated/index.mjs'
+import { cancel, confirm, group, select, spinner } from '@clack/prompts'
+import { compareDesc } from 'date-fns'
 import Handlebars from 'handlebars'
 
 const publishedBlogs = allBlogs
-  .filter(b => b.status === 'published')
+  .filter((b) => b.status === 'published')
   .sort((a, b) => compareDesc(new Date(a.date), new Date(b.date)))
 
-const { pathname: templatePath} = new URL('../blog.mjml', import.meta.url)
+const { pathname: templatePath } = new URL('../blog.mjml', import.meta.url)
 const template = await fs.promises.readFile(templatePath, 'utf-8')
 
 export async function sendEmail() {
-  const {
-    slug
-  } = await group({
-    slug: () => select({
-      message: 'Which blog post do you want to write about?',
-      options: publishedBlogs
-        .map(blog => ({
-          label: blog.title,
-          value: blog.slug,
-        }))
-    })
-  }, {
-    onCancel() {
-      cancel('Operation cancelled')
-      process.exit(0)
-    }
-  })
+  const { slug } = await group(
+    {
+      slug: () =>
+        select({
+          message: 'Which blog post do you want to write about?',
+          options: publishedBlogs.map((blog) => ({
+            label: blog.title,
+            value: blog.slug,
+          })),
+        }),
+    },
+    {
+      onCancel() {
+        cancel('Operation cancelled')
+        process.exit(0)
+      },
+    },
+  )
 
-  const blog = allBlogs.find(b => b.slug === slug)
-  const {errors, html} = mjml2html(template, {
+  const blog = allBlogs.find((b) => b.slug === slug)
+  const { errors, html } = mjml2html(template, {
     validationLevel: 'strict',
-    preprocessors: [(raw) => {
-      const handle = Handlebars.compile(raw)
-      return handle({
-        heading: 'Engineering with Yagiz',
-        imageUrl: 'https://www.yagiz.co/family.png',
-        title: blog.title,
-        description: blog.description,
-        url: blog.url,
-      })
-    }]
+    preprocessors: [
+      (raw) => {
+        const handle = Handlebars.compile(raw)
+        return handle({
+          heading: 'Engineering with Yagiz',
+          imageUrl: 'https://www.yagiz.co/family.png',
+          title: blog.title,
+          description: blog.description,
+          url: blog.url,
+        })
+      },
+    ],
   })
 
   if (errors.length > 0) {
@@ -86,30 +89,34 @@ export async function sendEmail() {
   mailSpinner.start('Sending email through Mailjet')
 
   // @see https://dev.mailjet.com/email/reference/send-emails#v3_1_post_send
-  const { body } = await mailjet
-    .post('send', { version: 'v3.1' })
-    .request({
-      SandboxMode: false,
-      AdvanceErrorHandling: true,
-      Messages: [{
+  const { body } = await mailjet.post('send', { version: 'v3.1' }).request({
+    SandboxMode: false,
+    AdvanceErrorHandling: true,
+    Messages: [
+      {
         From: {
           Email: 'newsletter@yagiz.co',
           Name: 'Engineering with Yagiz',
         },
-        To: [{
-          Email: listEmail,
-        }],
-        Bcc: [{
-          Email: 'yagiz@nizipli.com',
-          Name: 'Yagiz Nizipli'
-        }],
+        To: [
+          {
+            Email: listEmail,
+          },
+        ],
+        Bcc: [
+          {
+            Email: 'yagiz@nizipli.com',
+            Name: 'Yagiz Nizipli',
+          },
+        ],
         Subject: `New post: ${blog.title}`,
         HTMLPart: html,
         TrackOpens: 'enabled',
         TrackClicks: 'enabled',
         CustomCampaign: `blog-${blog.slug}`,
-      }],
-    })
+      },
+    ],
+  })
 
   mailSpinner.stop('Email sent')
 

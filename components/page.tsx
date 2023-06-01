@@ -10,8 +10,10 @@ import Markdown from '@/components/ui/markdown'
 type Props = { slug: string }
 
 export function getPageMetadata({ slug }: Props): Metadata {
-  const page = allPages.find(p => p.slug === slug)
-  if (!page) { return { title: 'Not found' } }
+  const page = allPages.find((p) => p.slug === slug)
+  if (!page) {
+    return { title: 'Not found' }
+  }
   return {
     title: page.title,
     description: page.description,
@@ -19,13 +21,13 @@ export function getPageMetadata({ slug }: Props): Metadata {
       title: page.title,
       description: page.description,
       type: 'website',
-      url: `https://www.yagiz.co/${page.slug}`
+      url: `https://www.yagiz.co/${page.slug}`,
     },
   }
 }
 
 export default function Page({ children, slug }: PropsWithChildren<Props>) {
-  const page = allPages.find(p => p.slug === slug)
+  const page = allPages.find((p) => p.slug === slug)
 
   if (!page) {
     notFound()

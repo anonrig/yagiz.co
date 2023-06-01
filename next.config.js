@@ -1,32 +1,21 @@
-import { withContentlayer } from 'next-contentlayer'
+const { withContentlayer } = require('next-contentlayer')
 
-const plugins = [
-  withContentlayer,
-];
+const plugins = [withContentlayer]
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
-  eslint: {
-    dirs: ['components', 'app', 'content'],
-  },
-  experimental: {
-    appDir: true,
-    typedRoutes: true,
-  },
   headers() {
     return [
       {
         source: '/(.*)',
         headers: securityHeaders,
       },
-    ];
+    ]
   },
   redirects() {
-    return [
-      { source: '/rss.xml', destination: '/rss', permanent: true }
-    ]
+    return [{ source: '/rss.xml', destination: '/rss', permanent: true }]
   },
   images: {
     formats: ['image/avif', 'image/webp'],
@@ -48,7 +37,7 @@ const ContentSecurityPolicy = `
   media-src 'none';
   connect-src *;
   font-src 'self';
-`;
+`
 
 const securityHeaders = [
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
@@ -86,6 +75,6 @@ const securityHeaders = [
     key: 'Permissions-Policy',
     value: 'camera=(), microphone=(), geolocation=()',
   },
-];
+]
 
-export default plugins.reduce((acc, next) => next(acc), nextConfig)
+module.exports = plugins.reduce((acc, next) => next(acc), nextConfig)

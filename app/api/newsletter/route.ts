@@ -2,7 +2,9 @@ import { NextResponse } from 'next/server'
 
 const headers = {
   'content-type': 'application/json',
-  'authorization': 'Basic ' + btoa(`${process.env.MAILJET_API_KEY}:${process.env.MAILJET_SECRET_KEY}`)
+  authorization: `Basic ${btoa(
+    `${process.env.MAILJET_API_KEY}:${process.env.MAILJET_SECRET_KEY}`,
+  )}`,
 }
 
 export const runtime = 'edge'
@@ -28,7 +30,7 @@ export async function POST(request: Request) {
         IsExcludedFromCampaigns: 'true',
         Name: body.name,
         Email: body.email,
-      })
+      }),
     })
     const contactJson = await contactResponse.json()
     if (contactJson.ErrorMessage) {
@@ -47,8 +49,8 @@ export async function POST(request: Request) {
       headers,
       method: 'POST',
       body: JSON.stringify({
-        'ContactID': contactId,
-        'ListID': process.env.MAILJET_CONTACT_LIST_ID ?? '',
+        ContactID: contactId,
+        ListID: process.env.MAILJET_CONTACT_LIST_ID ?? '',
       }),
     })
     const listJson = await listResponse.json()

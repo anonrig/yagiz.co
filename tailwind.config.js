@@ -16,7 +16,7 @@ module.exports = {
         sans: ['var(--font-mulish)'],
       },
       flex: {
-        '2': '2'
+        2: '2',
       },
       height: {
         'navigation-bar': navigation_height,
@@ -26,21 +26,20 @@ module.exports = {
         'navigation-bar': navigation_height,
       },
       gridTemplateColumns: {
-        'canvas': '[full-start] minmax(4vw,auto) [wide-start] minmax(auto,140px) [main-start] min(640px,calc(100% - 8vw)) [main-end] minmax(auto,140px) [wide-end] minmax(4vw,auto) [full-end]',
+        canvas:
+          '[full-start] minmax(4vw,auto) [wide-start] minmax(auto,140px) [main-start] min(640px,calc(100% - 8vw)) [main-end] minmax(auto,140px) [wide-end] minmax(4vw,auto) [full-end]',
       },
       gridColumn: {
-        'main': 'main-start/main-end',
-        'wide': 'wide-start/wide-end'
+        main: 'main-start/main-end',
+        wide: 'wide-start/wide-end',
       },
       transitionProperty: {
-        'margin': 'margin',
+        margin: 'margin',
       },
     },
   },
   future: {
     hoverOnlyWhenSupported: true,
   },
-  plugins: [
-    require('@tailwindcss/typography'),
-  ],
+  plugins: [require('@tailwindcss/typography')],
 }
