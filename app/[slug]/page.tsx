@@ -53,6 +53,9 @@ export function generateMetadata({ params }: Props): Metadata {
       creator: '@yagiznizipli',
       creatorId: '1589638196',
     },
+    alternates: {
+      canonical: blog.canonical_url,
+    }
   }
 }
 
