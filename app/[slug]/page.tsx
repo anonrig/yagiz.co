@@ -55,7 +55,7 @@ export function generateMetadata({ params }: Props): Metadata {
     },
     alternates: {
       canonical: blog.canonical_url,
-    }
+    },
   }
 }
 

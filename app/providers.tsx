@@ -32,7 +32,7 @@ export default function Providers(props: PropsWithChildren<unknown>) {
   return (
     <SubscribeContext.Provider value={{ visible, setVisible }}>
       {props.children}
-      <Suspense>
+      <Suspense fallback={null}>
         <SubscribeModal />
       </Suspense>
     </SubscribeContext.Provider>
