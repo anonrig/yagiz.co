@@ -106,6 +106,9 @@ export const Blog = defineDocumentType(() => ({
       type: 'number',
       required: true,
     },
+    canonical_url: {
+      type: 'string',
+    },
   },
   computedFields: {
     slug: {
