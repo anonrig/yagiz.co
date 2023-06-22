@@ -3,7 +3,7 @@
         <mj-font name="Mulish"
                  href="https://fonts.googleapis.com/css?family=Mulish" />
         <mj-attributes>
-            <mj-text font-family="Mulish" />
+            <mj-text font-family="Mulish, Arial, sans-serif, 'Open Sans'" />
         </mj-attributes>
         <mj-title>{{title}}</mj-title>
     </mj-head>
@@ -36,6 +36,7 @@
 
                 <mj-button font-size="12px"
                            font-weight="400"
+                           font-family="Mulish, Arial, sans-serif, 'Open Sans'"
                            href="{{url}}">
                     READ MORE
                 </mj-button>
