@@ -149,6 +149,7 @@ export default makeSource({
         rehypePrettyCode,
         {
           theme: 'one-dark-pro',
+          keepBackground: false,
           onVisitLine(node: any) {
             // Prevent lines from collapsing in `display: grid` mode, and allow empty
             // lines to be copy/pasted
@@ -159,7 +160,7 @@ export default makeSource({
           onVisitHighlightedLine(node: any) {
             node.properties.className.push('line--highlighted')
           },
-          onVisitHighlightedWord(node: any) {
+          onVisitHighlightedChars(node: any) {
             node.properties.className = ['word--highlighted']
           },
         },
