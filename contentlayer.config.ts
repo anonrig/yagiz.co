@@ -6,6 +6,8 @@ import rehypePrettyCode, { CharsElement, LineElement } from 'rehype-pretty-code'
 import rehypeSlug from 'rehype-slug'
 import remarkGfm from 'remark-gfm'
 
+import readingTime from 'reading-time'
+
 export const websiteDomain = 'https://www.yagiz.co'
 
 export const Page = defineDocumentType(() => ({
@@ -102,10 +104,6 @@ export const Blog = defineDocumentType(() => ({
       options: ['published', 'draft'],
       default: 'draft',
     },
-    minute_to_read: {
-      type: 'number',
-      required: true,
-    },
     canonical_url: {
       type: 'string',
     },
@@ -134,6 +132,10 @@ export const Blog = defineDocumentType(() => ({
           name: 'Yagiz Nizipli',
         },
       }),
+    },
+    minute_to_read: {
+      type: 'string',
+      resolve: (doc) => readingTime(doc.body.raw).text,
     },
   },
 }))

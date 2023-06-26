@@ -23,7 +23,7 @@ export default function BlogRow({ blog }: { blog: Blog }) {
       </div>
       <div className='flex items-center transition-margin delay-0 duration-200 ease-in-out group-hover:mr-2'>
         <div className='whitespace-nowrap text-sm text-neutral-500'>
-          {blog.minute_to_read} min read
+          {blog.minute_to_read}
         </div>
       </div>
       <ChevronRight

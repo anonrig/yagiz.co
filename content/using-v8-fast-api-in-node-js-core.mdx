@@ -6,7 +6,6 @@ date: '2023-01-13'
 tag: tags/coding.mdx
 status: published
 type: Blog
-minute_to_read: 2
 ---
 
 Node.js uses [V8](https://github.com/v8/v8) as the JavaScript engine. Embedder functions implemented in C++ incur a high overhead, so V8 provides an API to implement fast-path C functions which may be invoked directly from JITted code. These functions also come with additional constraints, for example, they may not trigger garbage collection.

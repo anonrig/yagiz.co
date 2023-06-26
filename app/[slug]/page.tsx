@@ -80,7 +80,7 @@ export default function BlogDetail({ params }: Props) {
               <time dateTime={blog.date}>{format(new Date(blog.date), 'MMM dd, yyyy')}</time>
             </span>
             <span className="before:px-2 before:font-serif before:leading-[1] before:content-['\02022']">
-              {blog.minute_to_read} min read
+              {blog.minute_to_read}
             </span>
             {blog.tag !== undefined && (
               <span className="before:px-2 before:font-serif before:leading-[1] before:content-['\02022']">

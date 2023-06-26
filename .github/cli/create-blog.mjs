@@ -17,7 +17,6 @@ type: Blog
 date: '${format(new Date(), 'yyyy-MM-dd')}'
 tag: ${tag}
 status: ${status}
-minute_to_read: 1
 ---
 `.trim()
 
