@@ -20,7 +20,7 @@
     "contentlayer": "^0.3.4",
     "date-fns": "^2.30.0",
     "feed": "^4.2.2",
-    "lucide-react": "^0.261.0",
+    "lucide-react": "^0.263.1",
     "markdown-wasm": "^1.2.0",
     "motion": "^10.16.2",
     "next": "13.4.12",
