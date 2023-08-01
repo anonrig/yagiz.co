@@ -107,8 +107,8 @@ devDependencies:
     specifier: ^4.14.1
     version: 4.14.1
   node-mailjet:
-    specifier: ^6.0.3
-    version: 6.0.3
+    specifier: ^6.0.4
+    version: 6.0.4
   postcss:
     specifier: ^8.4.26
     version: 8.4.26
@@ -5180,8 +5180,8 @@ packages:
       formdata-polyfill: 4.0.10
     dev: false
 
-  /node-mailjet@6.0.3:
-    resolution: {integrity: sha512-dPOrojEtqbg2GDBM1uWV7ExjfsvgHXG65BbicJ/l4nMzHNLdHW05LsbID9wdqK1FuBzRmlzo2tBxQTMpVUBRlA==}
+  /node-mailjet@6.0.4:
+    resolution: {integrity: sha512-gNWfbVnsH+KxkhfDLPA8OrQ2Q25OgyKp19C7DSJYmN2zNfqTKIXzhB9BZwgxZtErmPxz2Fp1NR18WPCmrJDuwg==}
     engines: {node: '>= 12.0.0', npm: '>= 6.9.0'}
     dependencies:
       axios: 0.27.2
