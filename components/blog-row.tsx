@@ -7,7 +7,7 @@ import Link from 'next/link'
 export default function BlogRow({ blog }: { blog: Blog }) {
   return (
     <Link
-      href={blog.slug as Route}
+      href={`/${blog.slug}` as Route}
       className='group relative flex items-center overflow-hidden py-3'
     >
       <time
