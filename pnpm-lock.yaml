@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@formspree/react':
-    specifier: ^2.5.0
-    version: 2.5.0(react-dom@18.2.0)(react@18.2.0)
+    specifier: ^2.5.1
+    version: 2.5.1(react-dom@18.2.0)(react@18.2.0)
   '@radix-ui/react-dialog':
     specifier: ^1.0.4
     version: 1.0.4(@types/react-dom@18.2.7)(@types/react@18.2.20)(react-dom@18.2.0)(react@18.2.0)
@@ -588,19 +588,19 @@ packages:
     resolution: {integrity: sha512-cEee/Z+I12mZcFJshKcCqC8tuX5hG3s+d+9nZ3LabqKF1vKdF41B92pJVCBggjAGORAeOzyyDDKrZwIkLffeOQ==}
     dev: false
 
-  /@formspree/core@3.0.0:
-    resolution: {integrity: sha512-bDvM8c+AtIZOmgZq+Buk3DEmspEJU7kdpUrQTWZdyEjM4KRgNPYTd+LWVMchNX4q73F+DaY1mBG0hO0ioB6MjQ==}
+  /@formspree/core@3.0.1:
+    resolution: {integrity: sha512-jGNgrEtL8mx8k1kkmeNfyeoP1a+H2kci8TMG7CT3R5k3ssqr0Sl1j10SIKo74CFZVewMW4JjMYwcunWUPfutSQ==}
     dependencies:
       '@stripe/stripe-js': 1.52.1
     dev: false
 
-  /@formspree/react@2.5.0(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-R2UyaKXAEaaV5lRnE7fUw1xr+Cp+TEzfIyT1r2iH4/hUdcg2od35kU33LOOZo4CPEk2KEuF2RPblnJWSPOvBCw==}
+  /@formspree/react@2.5.1(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-Yhxyn32m3zH63i0DNpnBq55zargDlbihqC0wlK18dqU7GOUqJXKY+WywLXuTRGfqo79/hT+Qx6eFS6M0J6eh0A==}
     peerDependencies:
       react: ^16.8 || ^17.0 || ^18.0
       react-dom: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@formspree/core': 3.0.0
+      '@formspree/core': 3.0.1
       '@stripe/react-stripe-js': 1.16.5(@stripe/stripe-js@1.52.1)(react-dom@18.2.0)(react@18.2.0)
       '@stripe/stripe-js': 1.52.1
       react: 18.2.0
