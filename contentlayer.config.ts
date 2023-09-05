@@ -148,7 +148,8 @@ export default makeSource({
     rehypePlugins: [
       rehypeSlug,
       [
-        rehypePrettyCode,
+        // TODO: Remove this typescript force cast.
+        rehypePrettyCode as any,
         {
           theme: 'one-dark-pro',
           keepBackground: false,
