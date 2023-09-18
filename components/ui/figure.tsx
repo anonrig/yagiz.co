@@ -29,12 +29,12 @@ export default function Figure({ size, className, ...props }: Props) {
           alt={props.alt}
           src={props.src}
           fill
-          className='object-cover duration-300 ease-in-out'
+          className="object-cover duration-300 ease-in-out"
           priority
         />
       </div>
       {props.caption !== undefined && (
-        <figcaption className='mt-4 text-sm text-neutral-400'>{props.caption}</figcaption>
+        <figcaption className="mt-4 text-sm text-neutral-400">{props.caption}</figcaption>
       )}
     </figure>
   )

@@ -8,5 +8,5 @@ export const dynamic = 'force-static'
 export const metadata: Metadata = getPageMetadata({ slug: 'about' })
 
 export default function About() {
-  return <Page slug='about' />
+  return <Page slug="about" />
 }

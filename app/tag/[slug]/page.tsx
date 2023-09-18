@@ -46,18 +46,18 @@ export default function Tag({ params }: Props) {
 
   return (
     <section>
-      <Container size='tight' className='-mt-6 flex flex-col gap-8 text-center'>
-        <h1 className='text-2xl font-extrabold text-orange-400'>#{tag.title}</h1>
+      <Container size="tight" className="-mt-6 flex flex-col gap-8 text-center">
+        <h1 className="text-2xl font-extrabold text-orange-400">#{tag.title}</h1>
 
-        <div className='leading-6 dark:text-white'>{tag.description}</div>
+        <div className="leading-6 dark:text-white">{tag.description}</div>
 
         <div>
-          <span className='mr-2 mt-2 font-bold dark:text-white'>More:</span>
+          <span className="mr-2 mt-2 font-bold dark:text-white">More:</span>
           {otherTags.map((tag) => (
             <Link
               href={`/tag/${tag.slug}` as Route}
               key={tag.slug}
-              className='ml-1 break-keep font-bold text-neutral-500 hover:text-neutral-400 dark:text-neutral-500 dark:hover:text-neutral-400'
+              className="ml-1 break-keep font-bold text-neutral-500 hover:text-neutral-400 dark:text-neutral-500 dark:hover:text-neutral-400"
             >
               #{tag.title}
             </Link>
@@ -65,8 +65,8 @@ export default function Tag({ params }: Props) {
         </div>
       </Container>
 
-      <div className='flex grow py-14'>
-        <Container size='tight' className='divide-y divide-slate-200 dark:divide-neutral-700'>
+      <div className="flex grow py-14">
+        <Container size="tight" className="divide-y divide-slate-200 dark:divide-neutral-700">
           {blogs.map((blog) => (
             <BlogRow blog={blog} key={blog._id} />
           ))}

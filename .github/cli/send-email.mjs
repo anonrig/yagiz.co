@@ -1,11 +1,11 @@
+import fs from 'node:fs'
 import mjml2html from 'mjml'
 import Mailjet from 'node-mailjet'
-import fs from 'node:fs'
 
-import { allBlogs } from '../../.contentlayer/generated/index.mjs'
 import { cancel, confirm, group, select, spinner } from '@clack/prompts'
 import { compareDesc } from 'date-fns'
 import Handlebars from 'handlebars'
+import { allBlogs } from '../../.contentlayer/generated/index.mjs'
 
 const publishedBlogs = allBlogs
   .filter((b) => b.status === 'published')

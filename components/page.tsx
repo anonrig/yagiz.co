@@ -35,7 +35,7 @@ export default function Page({ children, slug }: PropsWithChildren<Props>) {
 
   return (
     <section>
-      <header className='mb-[4.5rem] grid grid-cols-canvas text-center'>
+      <header className="mb-[4.5rem] grid grid-cols-canvas text-center">
         <Heading text={page.title} />
 
         {page.feature_image && (

@@ -8,5 +8,5 @@ export const dynamic = 'force-static'
 export const metadata: Metadata = getPageMetadata({ slug: 'press' })
 
 export default function Press() {
-  return <Page slug='press' />
+  return <Page slug="press" />
 }

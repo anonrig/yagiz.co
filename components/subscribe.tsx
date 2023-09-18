@@ -29,10 +29,10 @@ const SubscribeButton = forwardRef<HTMLButtonElement, SubscribeButtonProps>(
 
     return (
       <button
-        type='button'
+        type="button"
         ref={ref}
         className={clsx(subscribeButtonVariants({ variant, className }))}
-        aria-label='Subscribe to the newsletter'
+        aria-label="Subscribe to the newsletter"
         onClick={() => setVisible(true)}
       >
         {label ?? 'Subscribe'}

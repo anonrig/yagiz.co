@@ -21,19 +21,19 @@ export default function BlogStickyHeader({ blog }: { blog: Blog }) {
 
   return (
     <header
-      id='sticky-header'
-      className='top-0 inset-x-0 items-center backdrop-blur-sm bg-[hsla(0,0%,100%,.8)] dark:bg-white-reversed/50 flex h-[50px] justify-between px-8 fixed z-[90] top-[-50px]'
+      id="sticky-header"
+      className="top-0 inset-x-0 items-center backdrop-blur-sm bg-[hsla(0,0%,100%,.8)] dark:bg-white-reversed/50 flex h-[50px] justify-between px-8 fixed z-[90] top-[-50px]"
     >
-      <div className='flex flex-row justify-between w-full items-center'>
-        <div className='overflow-hidden text-ellipsis whitespace-nowrap text-slate-800 dark:text-white leading-[1.3] mr-4 overflow-hidden overflow-ellipsis whitespace-nowrap text-sm font-bold'>
+      <div className="flex flex-row justify-between w-full items-center">
+        <div className="overflow-hidden text-ellipsis whitespace-nowrap text-slate-800 dark:text-white leading-[1.3] mr-4 overflow-hidden overflow-ellipsis whitespace-nowrap text-sm font-bold">
           {blog.title}
         </div>
 
-        <SubscribeButton className='text-sm whitespace-nowrap' />
+        <SubscribeButton className="text-sm whitespace-nowrap" />
       </div>
 
-      <div className='bg-[#e6e6e6] dark:bg-slate-600 bottom-[-2px] h-[2px] left-0 absolute w-full'>
-        <div id='progress-indicator' className='bg-orange-400 h-full origin-[0%] scale-x-0' />
+      <div className="bg-[#e6e6e6] dark:bg-slate-600 bottom-[-2px] h-[2px] left-0 absolute w-full">
+        <div id="progress-indicator" className="bg-orange-400 h-full origin-[0%] scale-x-0" />
       </div>
     </header>
   )

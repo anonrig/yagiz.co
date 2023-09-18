@@ -9,31 +9,31 @@ import FamilyPhoto from '@/public/family.png'
 export default function Home() {
   return (
     <>
-      <Container className='-mt-8'>
-        <div className='mx-auto mb-4 flex max-w-lg flex-col items-center text-center'>
-          <div className='relative mb-8'>
+      <Container className="-mt-8">
+        <div className="mx-auto mb-4 flex max-w-lg flex-col items-center text-center">
+          <div className="relative mb-8">
             <Image
-              alt='Engineering with Yagiz'
+              alt="Engineering with Yagiz"
               src={FamilyPhoto}
               width={150}
               height={150}
-              className='rounded-full'
+              className="rounded-full"
             />
           </div>
-          <div className='text-lg dark:text-zinc-200'>
+          <div className="text-lg dark:text-zinc-200">
             Here's a collection of posts about my thoughts, stories, ideas and experiences as a
             human, and an engineer working with different technologies.
           </div>
 
           <SubscribeButton
-            label='Subscribe Now'
-            className='mt-6 h-9 items-center justify-center rounded-md border-[1px] border-solid border-slate-200 bg-white px-[15px] text-[11px] font-extrabold uppercase tracking-wider text-orange-400 outline-none hover:border-slate-300 dark:border-neutral-600 dark:bg-white-reversed dark:hover:border-neutral-500'
+            label="Subscribe Now"
+            className="mt-6 h-9 items-center justify-center rounded-md border-[1px] border-solid border-slate-200 bg-white px-[15px] text-[11px] font-extrabold uppercase tracking-wider text-orange-400 outline-none hover:border-slate-300 dark:border-neutral-600 dark:bg-white-reversed dark:hover:border-neutral-500"
           />
         </div>
       </Container>
 
-      <div className='flex grow pt-8'>
-        <Container size='tight' className='divide-y divide-slate-200 dark:divide-neutral-700'>
+      <div className="flex grow pt-8">
+        <Container size="tight" className="divide-y divide-slate-200 dark:divide-neutral-700">
           {sortedBlogs.map((blog) => (
             <BlogRow blog={blog} key={blog._id} />
           ))}

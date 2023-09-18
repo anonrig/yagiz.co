@@ -46,10 +46,10 @@ export function MobileNavigationToggle({ items }: { items: Item[] }) {
   return (
     <>
       <button
-        type='button'
-        className='px-4'
+        type="button"
+        className="px-4"
         onClick={() => setOpen(!open)}
-        aria-label='Toggle mobile navigation menu visibility'
+        aria-label="Toggle mobile navigation menu visibility"
       >
         {open ? <XIcon size={20} /> : <MenuIcon size={20} />}
       </button>
@@ -61,19 +61,19 @@ export function MobileNavigationToggle({ items }: { items: Item[] }) {
         )}
       >
         <Container>
-          <nav className='flex flex-col gap-6'>
+          <nav className="flex flex-col gap-6">
             {items.map((item) => (
               <Link
                 href={item.href}
                 key={item.href}
-                className='text-lg text-right font-bold'
+                className="text-lg text-right font-bold"
                 onClick={() => setOpen(false)}
               >
                 {item.title}
               </Link>
             ))}
 
-            <SubscribeButton className='text-right text-lg' />
+            <SubscribeButton className="text-right text-lg" />
           </nav>
         </Container>
       </div>

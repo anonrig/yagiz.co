@@ -19,7 +19,7 @@ function CustomLink(props: LinkHTMLAttributes<HTMLAnchorElement>) {
     return <a {...props} />
   }
 
-  return <a target='_blank' rel='noopener noreferrer' {...props} />
+  return <a target="_blank" rel="noopener noreferrer" {...props} />
 }
 
 function RoundedImage({ alt, ...props }: ImageProps) {
@@ -27,7 +27,7 @@ function RoundedImage({ alt, ...props }: ImageProps) {
     <Image
       alt={alt}
       fill
-      className='rounded-lg object-contain w-full !h-[unset] !relative bg-white dark:bg-white-reversed col-wide'
+      className="rounded-lg object-contain w-full !h-[unset] !relative bg-white dark:bg-white-reversed col-wide"
       {...props}
     />
   )
@@ -35,7 +35,7 @@ function RoundedImage({ alt, ...props }: ImageProps) {
 
 function Blockquote(props: PropsWithChildren<unknown>) {
   return (
-    <blockquote className='border-l-[5px] mb-0 border-orange-400 bg-gray-100 py-0.5 px-6 font-bold not-italic tracking-tight text-slate-600 dark:bg-[#1c1c1c] dark:text-neutral-400'>
+    <blockquote className="border-l-[5px] mb-0 border-orange-400 bg-gray-100 py-0.5 px-6 font-bold not-italic tracking-tight text-slate-600 dark:bg-[#1c1c1c] dark:text-neutral-400">
       {props.children}
     </blockquote>
   )
@@ -43,8 +43,8 @@ function Blockquote(props: PropsWithChildren<unknown>) {
 
 function Table(props: PropsWithChildren<unknown>) {
   return (
-    <div className='bg-[#f6f6f6] dark:bg-[#2f333c] px-2 py-4 rounded-md'>
-      <table className='my-0'>{props.children}</table>
+    <div className="bg-[#f6f6f6] dark:bg-[#2f333c] px-2 py-4 rounded-md">
+      <table className="my-0">{props.children}</table>
     </div>
   )
 }

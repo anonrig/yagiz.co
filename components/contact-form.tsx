@@ -14,77 +14,77 @@ export default function ContactForm(props: Props) {
       className={clsx('grid grid-cols-canvas [&>*]:col-main gap-y-4', props.className)}
     >
       {state.succeeded && !state.submitting && (
-        <div className='bg-[#f6f6f6] dark:bg-[#2f333c] text-neutral-800 px-4 sm:px-6 py-2 rounded-md text-sm flex flex-col sm:flex-row sm:gap-x-2'>
-          <div className='font-extrabold'>Message sent succesfully.</div> I'll respond to your
+        <div className="bg-[#f6f6f6] dark:bg-[#2f333c] text-neutral-800 px-4 sm:px-6 py-2 rounded-md text-sm flex flex-col sm:flex-row sm:gap-x-2">
+          <div className="font-extrabold">Message sent succesfully.</div> I'll respond to your
           message as soon as possible.
         </div>
       )}
 
-      <Form.Field name='email' className='flex flex-col gap-y-2'>
-        <Form.Label className='block text-black dark:text-white font-bold'>
+      <Form.Field name="email" className="flex flex-col gap-y-2">
+        <Form.Label className="block text-black dark:text-white font-bold">
           Email Address:
         </Form.Label>
         <Form.Control
           required
-          type='email'
-          placeholder='What is your email?'
-          className='font-normal focus:border-slate-300 bg-white dark:bg-white-reversed border-[1px] border-slate-200 dark:border-neutral-600 border-solid leading-[1.15] rounded-md text-slate-800 dark:text-white h-[44px] outline-none px-4 dark:focus:border-neutral-500'
+          type="email"
+          placeholder="What is your email?"
+          className="font-normal focus:border-slate-300 bg-white dark:bg-white-reversed border-[1px] border-slate-200 dark:border-neutral-600 border-solid leading-[1.15] rounded-md text-slate-800 dark:text-white h-[44px] outline-none px-4 dark:focus:border-neutral-500"
         />
         <Form.Message
-          className='text-sm text-black dark:text-white opacity-80'
-          match='valueMissing'
+          className="text-sm text-black dark:text-white opacity-80"
+          match="valueMissing"
         >
           Please enter your email
         </Form.Message>
         <Form.Message
-          className='text-sm text-black dark:text-white opacity-80'
-          match='typeMismatch'
+          className="text-sm text-black dark:text-white opacity-80"
+          match="typeMismatch"
         >
           Please provide a valid email
         </Form.Message>
       </Form.Field>
 
-      <Form.Field name='subject' className='flex flex-col gap-y-2'>
-        <Form.Label className='block text-black dark:text-white font-bold'>Subject:</Form.Label>
+      <Form.Field name="subject" className="flex flex-col gap-y-2">
+        <Form.Label className="block text-black dark:text-white font-bold">Subject:</Form.Label>
         <Form.Control
           required
-          type='text'
-          placeholder='What is your message about?'
-          className='font-normal focus:border-slate-300 bg-white dark:bg-white-reversed border-[1px] border-slate-200 dark:border-neutral-600 border-solid leading-[1.15] rounded-md text-slate-800 dark:text-white h-[44px] outline-none px-4 dark:focus:border-neutral-500'
+          type="text"
+          placeholder="What is your message about?"
+          className="font-normal focus:border-slate-300 bg-white dark:bg-white-reversed border-[1px] border-slate-200 dark:border-neutral-600 border-solid leading-[1.15] rounded-md text-slate-800 dark:text-white h-[44px] outline-none px-4 dark:focus:border-neutral-500"
         />
         <Form.Message
-          className='text-sm text-black dark:text-white opacity-80'
-          match='valueMissing'
+          className="text-sm text-black dark:text-white opacity-80"
+          match="valueMissing"
         >
           Please enter the subject of your message
         </Form.Message>
         <Form.Message
-          className='text-sm text-black dark:text-white opacity-80'
-          match='typeMismatch'
+          className="text-sm text-black dark:text-white opacity-80"
+          match="typeMismatch"
         >
           Please provide a valid subject
         </Form.Message>
       </Form.Field>
 
-      <Form.Field name='message' className='flex flex-col gap-y-2'>
-        <Form.Label className='block text-black dark:text-white font-bold'>Message:</Form.Label>
+      <Form.Field name="message" className="flex flex-col gap-y-2">
+        <Form.Label className="block text-black dark:text-white font-bold">Message:</Form.Label>
         <Form.Control asChild>
           <textarea
-            className='w-full p-4 resize-y min-h-[150px] font-normal focus:border-slate-300 bg-white dark:bg-white-reversed border-[1px] border-slate-200 dark:border-neutral-600 border-solid leading-[1.15] rounded-md text-slate-800 dark:text-white h-44 outline-none dark:focus:border-neutral-500'
+            className="w-full p-4 resize-y min-h-[150px] font-normal focus:border-slate-300 bg-white dark:bg-white-reversed border-[1px] border-slate-200 dark:border-neutral-600 border-solid leading-[1.15] rounded-md text-slate-800 dark:text-white h-44 outline-none dark:focus:border-neutral-500"
             rows={6}
             required
             minLength={50}
           />
         </Form.Control>
         <Form.Message
-          className='text-sm text-black dark:text-white opacity-80'
-          match='valueMissing'
+          className="text-sm text-black dark:text-white opacity-80"
+          match="valueMissing"
         >
           Please enter a message
         </Form.Message>
         <Form.Message
-          className='text-sm text-black dark:text-white opacity-80'
-          match='typeMismatch'
+          className="text-sm text-black dark:text-white opacity-80"
+          match="typeMismatch"
         >
           Please provide a message with more than 50 characters
         </Form.Message>

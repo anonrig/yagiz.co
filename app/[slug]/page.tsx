@@ -70,12 +70,12 @@ export default function BlogDetail({ params }: Props) {
     <>
       <article>
         <script
-          type='application/ld+json'
+          type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(blog.structuredData) }}
         />
 
-        <header className='mb-6 grid grid-cols-canvas text-center'>
-          <div className='col-main mb-4 text-xs font-extrabold uppercase text-slate-400'>
+        <header className="mb-6 grid grid-cols-canvas text-center">
+          <div className="col-main mb-4 text-xs font-extrabold uppercase text-slate-400">
             <span>
               <time dateTime={blog.date}>{format(new Date(blog.date), 'MMM dd, yyyy')}</time>
             </span>
@@ -86,7 +86,7 @@ export default function BlogDetail({ params }: Props) {
               <span className="before:px-2 before:font-serif before:leading-[1] before:content-['\02022']">
                 <Link
                   href={`/tag/${blog.tag.slug}`}
-                  className='text-orange-400 hover:text-orange-300'
+                  className="text-orange-400 hover:text-orange-300"
                 >
                   {blog.tag.title}
                 </Link>
@@ -113,10 +113,10 @@ export default function BlogDetail({ params }: Props) {
       </article>
 
       {suggestions.length > 0 && (
-        <section className='mt-24 bg-[#f6f6f6] dark:bg-[#2f333c] py-12'>
-          <Container size='tight'>
-            <h3 className='mb-4 text-xl font-extrabold dark:text-white'>You might also like...</h3>
-            <div className='divide-y divide-slate-200 dark:divide-neutral-700'>
+        <section className="mt-24 bg-[#f6f6f6] dark:bg-[#2f333c] py-12">
+          <Container size="tight">
+            <h3 className="mb-4 text-xl font-extrabold dark:text-white">You might also like...</h3>
+            <div className="divide-y divide-slate-200 dark:divide-neutral-700">
               {suggestions.map((blog) => (
                 <BlogRow blog={blog} key={blog._id} />
               ))}

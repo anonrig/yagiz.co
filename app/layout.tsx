@@ -66,14 +66,14 @@ const mulish = Mulish({
 export default function RootLayout({ children }: PropsWithChildren<unknown>) {
   return (
     <html
-      lang='en'
+      lang="en"
       className={clsx('bg-white text-black dark:bg-white-reversed', mulish.className)}
       suppressHydrationWarning
     >
       <body>
         <Providers>
           <Header />
-          <main className='grow py-14'>{children}</main>
+          <main className="grow py-14">{children}</main>
         </Providers>
         <Footer />
         <Analytics />
