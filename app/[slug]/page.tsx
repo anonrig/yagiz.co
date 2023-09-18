@@ -27,7 +27,7 @@ export function generateStaticParams(): Props['params'][] {
 }
 
 export function generateMetadata({ params }: Props): Metadata {
-  // No need to check if blog exists, dynamicParams=false will return a 404.
+  // biome-ignore lint/style/noNonNullAssertion: No need to check if blog exists, dynamicParams=false will return a 404.
   const blog = sortedBlogs.find((b) => b.slug === params.slug)!
 
   return {
@@ -71,6 +71,7 @@ export default function BlogDetail({ params }: Props) {
       <article>
         <script
           type="application/ld+json"
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: Invalid
           dangerouslySetInnerHTML={{ __html: JSON.stringify(blog.structuredData) }}
         />
 

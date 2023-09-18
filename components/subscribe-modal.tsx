@@ -8,6 +8,11 @@ import { FormEvent, useCallback, useState } from 'react'
 
 import { useSubscribe } from '@/app/providers'
 
+type FormData = {
+  email: string
+  name: string
+}
+
 export default function SubscribeModal() {
   const { visible, setVisible } = useSubscribe()
   const [loading, setLoading] = useState(false)
@@ -16,6 +21,7 @@ export default function SubscribeModal() {
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault()
 
+      // biome-ignore lint/suspicious/noExplicitAny: Unnecessary
       const { email, name } = event.target as any
       setLoading(true)
       setMessage('')

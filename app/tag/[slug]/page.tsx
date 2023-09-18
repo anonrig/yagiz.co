@@ -20,7 +20,7 @@ export function generateStaticParams(): Props['params'][] {
 }
 
 export function generateMetadata({ params }: Props): Metadata {
-  // No need to check if tag exists, dynamicParams=false will return a 404.
+  // biome-ignore lint/style/noNonNullAssertion: No need to check if tag exists, dynamicParams=false will return a 404.
   const tag = sortedTags.find((t) => t.slug === params.slug)!
 
   return {
@@ -40,6 +40,7 @@ export function generateMetadata({ params }: Props): Metadata {
 }
 
 export default function Tag({ params }: Props) {
+  // biome-ignore lint/style/noNonNullAssertion: No need to check if tag exists, dynamicParams=false will return a 404.
   const tag = sortedTags.find((t) => t.slug === params.slug)!
   const otherTags = sortedTags.filter((t) => t._id !== tag._id)
   const blogs = sortedBlogs.filter((b) => b.tag?._id === tag._id)

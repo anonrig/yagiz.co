@@ -57,6 +57,7 @@ export async function POST(request: Request) {
     if (listJson.ErrorMessage) {
       throw new Error(listJson.ErrorMessage)
     }
+    // biome-ignore lint/suspicious/noExplicitAny: Unnecessary validation
   } catch (error: any) {
     console.error(error)
     const message = error.response?.statusText ?? error.message ?? ''

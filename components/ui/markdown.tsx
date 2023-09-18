@@ -9,7 +9,7 @@ function CustomLink(props: LinkHTMLAttributes<HTMLAnchorElement>) {
 
   if (href?.startsWith('/')) {
     return (
-      <Link href={href as any} {...props}>
+      <Link href={href as string} {...props}>
         {props.children}
       </Link>
     )
@@ -49,6 +49,7 @@ function Table(props: PropsWithChildren<unknown>) {
   )
 }
 
+// biome-ignore lint/suspicious/noExplicitAny: TMI
 const components: Record<string, any> = {
   img: RoundedImage,
   a: CustomLink,

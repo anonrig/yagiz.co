@@ -148,7 +148,7 @@ export default makeSource({
     rehypePlugins: [
       rehypeSlug,
       [
-        // TODO: Remove this typescript force cast.
+        // biome-ignore lint/suspicious/noExplicitAny: Package doesn't have proper types.
         rehypePrettyCode as any,
         {
           theme: 'one-dark-pro',
