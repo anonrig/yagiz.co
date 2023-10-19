@@ -16,10 +16,12 @@ const headerItems: Item[] = [
   { title: 'Home', href: '/' },
   { title: 'About', href: '/about' },
   { title: 'Press', href: '/press' },
+  { title: 'Supporters', href: '/supporters' },
   { title: 'Contact', href: '/contact' },
 ]
 const footerItems: Item[] = [
   { title: 'Press', href: '/press' },
+  { title: 'Supporters', href: '/supporters' },
   { title: 'Contact', href: '/contact' },
 ]
 

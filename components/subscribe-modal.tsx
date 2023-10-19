@@ -52,7 +52,7 @@ export default function SubscribeModal() {
         setLoading(false)
       }
     },
-    [setLoading, setVisible],
+    [setVisible],
   )
 
   return (

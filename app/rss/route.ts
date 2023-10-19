@@ -22,7 +22,7 @@ export async function GET() {
     },
   })
 
-  sortedBlogs.forEach((blog) => {
+  for (const blog of sortedBlogs) {
     feed.addItem({
       title: blog.title,
       id: blog.url,
@@ -33,7 +33,7 @@ export async function GET() {
         ? `${websiteDomain}${blog.feature_image}`
         : `${blog.url}/opengraph-image`,
     })
-  })
+  }
 
   return new Response(feed.rss2(), {
     status: 200,

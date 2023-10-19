@@ -41,3 +41,5 @@ next-env.d.ts
 
 # Dotenv
 .env
+
+.github/sponsorships.json
