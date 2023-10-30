@@ -20,6 +20,9 @@ const nextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
   },
+  experimental: {
+    webpackBuildWorker: true,
+  },
 }
 
 const domains = [

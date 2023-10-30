@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 
-import { ImageResponse } from 'next/server'
+import { ImageResponse } from 'next/og'
 
 import { githubImage } from '@/app/content'
 import { sortedBlogs } from '@/app/content'

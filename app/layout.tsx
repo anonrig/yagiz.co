@@ -2,7 +2,7 @@ import './globals.css'
 
 import { Analytics } from '@vercel/analytics/react'
 import clsx from 'clsx'
-import { Metadata } from 'next'
+import { Metadata, Viewport } from 'next'
 import { Mulish } from 'next/font/google'
 import { PropsWithChildren } from 'react'
 
@@ -50,10 +50,11 @@ export const metadata: Metadata = {
     creator: '@yagiznizipli',
     creatorId: '1589638196',
   },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-  },
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
 }
 
 const mulish = Mulish({
