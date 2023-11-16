@@ -24,9 +24,6 @@
     "indentStyle": "space",
     "lineWidth": 100
   },
-  "files": {
-    "ignore": ["node_modules", "public", ".next", ".contentlayer", ".vercel"]
-  },
   "javascript": {
     "formatter": {
       "quoteStyle": "single",
