@@ -1,7 +1,8 @@
 import fs from 'node:fs'
+import { cancel, confirm, isCancel, spinner } from '@clack/prompts'
+import open from 'open'
 // Go to https://github.com/sponsors/anonrig/dashboard/your_sponsors
 // Click to Export button and save it to .github/sponsorships.json
-import sponsorships from '../sponsorships.json' assert { type: 'json' }
 
 function get_tier(transaction) {
   switch (transaction?.tier_name.split(' ')[0]) {
@@ -22,26 +23,58 @@ function get_tier(transaction) {
   }
 }
 
-const tiers = new Map([
-  ['supporter', []], // $10 a month
-  ['top-supporter', []], // $50 a month
-  ['silver-sponsor', []], // $100 a month
-  ['gold-sponsor', []], // $500 a month
-  ['platinum-sponsor', []], // $1000 a month
-])
+export async function updateSponsorships() {
+  const s = spinner()
 
-for (const sponsor of sponsorships) {
-  const last_transaction = sponsor.transactions.at(-1)
-  const tier = get_tier(last_transaction)
+  const should_open_github = await confirm({
+    message: 'Do you want to open GitHub Sponsors dashboard?',
+  })
 
-  if (tier == null) continue
+  if (isCancel(should_open_github)) {
+    cancel('Operation cancelled.')
+    process.exit(0)
+  }
 
-  tiers
-    .get(tier)
-    .push(`- [${sponsor.sponsor_profile_name}](https://github.com/${sponsor.sponsor_handle})`)
-}
+  if (should_open_github) {
+    s.start('Opening GitHub Sponsors dashboard...')
+    await open('https://github.com/sponsors/anonrig/dashboard/your_sponsors')
+    s.stop('Github sponsors dashboard opened.')
+  }
 
-const content = `
+  const is_exported = await confirm({
+    message: 'Did you export sponsorships from GitHub to sponsorships.json?',
+  })
+
+  if (isCancel(is_exported)) {
+    cancel('Operation cancelled.')
+    process.exit(0)
+  }
+
+  const raw_sponsorships = await fs.readFileSync(
+    new URL('../../sponsorships.json', import.meta.url),
+    'utf8',
+  )
+  const sponsorships = JSON.parse(raw_sponsorships)
+  const tiers = new Map([
+    ['supporter', []], // $10 a month
+    ['top-supporter', []], // $50 a month
+    ['silver-sponsor', []], // $100 a month
+    ['gold-sponsor', []], // $500 a month
+    ['platinum-sponsor', []], // $1000 a month
+  ])
+
+  for (const sponsor of sponsorships) {
+    const last_transaction = sponsor.transactions.at(-1)
+    const tier = get_tier(last_transaction)
+
+    if (tier == null) continue
+
+    tiers
+      .get(tier)
+      .push(`- [${sponsor.sponsor_profile_name}](https://github.com/${sponsor.sponsor_handle})`)
+  }
+
+  const content = `
 ---
 title: Supporters
 description: >-
@@ -74,10 +107,13 @@ ${tiers.get('top-supporter').join('\n')}
 ### Supporters
 
 ${tiers.get('supporter').join('\n')}
-`.trim()
 
-fs.writeFileSync(
-  new URL('../../content/pages/supporters.mdx', import.meta.url),
-  `${content}\n`,
-  'utf8',
-)
+This page is updated on the first day of every month.
+  `.trim()
+
+  fs.writeFileSync(
+    new URL('../../content/pages/supporters.mdx', import.meta.url),
+    `${content}\n`,
+    'utf8',
+  )
+}
