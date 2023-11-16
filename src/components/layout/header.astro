@@ -1,0 +1,39 @@
+---
+const headerItems = [
+  { title: 'Home', href: '/' },
+  { title: 'About', href: '/about' },
+  { title: 'Press', href: '/press' },
+  { title: 'Supporters', href: '/supporters' },
+  { title: 'Contact', href: '/contact' },
+]
+---
+<header class="flex h-navigation-bar items-center px-[4vw] mx-auto w-full max-w-[calc(1130px+8vw)]">
+  <div class="flex flex-[2] items-center">
+    <a
+      href="/"
+      class="text-lg font-extrabold text-slate-400 dark:text-neutral-200"
+      aria-label="Navigate to the homepage"
+    >
+      Yagiz Nizipli
+    </a>
+  </div>
+
+  <nav class="hidden items-center md:flex">
+    {headerItems.map((item) => (
+      <a
+        href={item.href}
+        class="mx-4 font-bold text-slate-800 dark:text-zinc-200 hover:text-slate-600 text-sm"
+      >
+        {item.title}
+      </a>
+    ))}
+  </nav>
+
+  <div class="hidden items-center justify-end md:flex md:flex-[2]">
+    <!--<SubscribeButton />-->
+  </div>
+
+  <div class="pointer h-30 w-30 md:hidden items-center flex text-black dark:text-neutral-300">
+    <!--<MobileNavigationToggle items={headerItems} />-->
+  </div>
+</header>

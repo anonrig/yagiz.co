@@ -1,0 +1,50 @@
+---
+import { rss_url, twitter_url } from "@/consts";
+import { Rss, Twitter } from 'lucide-astro'
+
+const footerItems = [
+  { title: 'Press', href: '/press' },
+  { title: 'Supporters', href: '/supporters' },
+  { title: 'Contact', href: '/contact' },
+]
+---
+<footer class="flex flex-col items-center pb-20 pt-12 mx-auto w-full max-w-6xl">
+  <div class="mb-8 flex">
+    <a
+      href={twitter_url}
+      class="mx-[4px] p-[3px] leading-[0] text-[#999] hover:text-[#CCC] dark:text-neutral-400"
+      rel="noopener noreferrer"
+      target="_blank"
+      aria-label="Twitter"
+    >
+      <Twitter size={18} class="rounded-sm bg-[#999] hover:bg-[#CCC]" fill="white" />
+    </a>
+
+    <a
+      href={rss_url}
+      class="mx-[4px] p-[3px] leading-[0] text-white dark:text-white-reversed"
+      rel="noopener noreferrer"
+      target="_blank"
+      aria-label="RSS"
+    >
+      <Rss
+        size={18}
+        class="rounded-sm bg-[#999] p-0.5 hover:bg-[#CCC] dark:bg-neutral-400 hover:dark:bg-neutral-500"
+      />
+    </a>
+  </div>
+  <nav class="flex flex-wrap items-center justify-center">
+    {footerItems.map((item, index) => (
+      <a
+        href={item.href}
+        class:list={[
+          'flex items-center text-xs font-normal text-slate-500 dark:text-neutral-400',
+          index !== 0 &&
+            "before:block before:px-[0.7rem] before:font-serif before:leading-[1] before:content-['\\02022']",
+        ]}
+      >
+        {item.title}
+      </a>
+    ))}
+  </nav>
+</footer>

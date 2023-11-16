@@ -1,0 +1,64 @@
+---
+title: 'Working with 1000+ tests on a stable C++ library'
+description: >-
+  Working on a project that handles every edge case of a URL specification and has over 1000 unit tests can be quite challenging. Recently, I had the opportunity to work on a refactor and a new API for the Ada URL Parser.
+date: '2023-03-18'
+tag: coding
+status: published
+---
+
+Working on a project that handles every edge case of a URL specification and has over 1000 unit tests can be quite challenging. Recently, I had the opportunity to work on a refactor and a new API for [the Ada URL parser library](https://github.com/ada-url/ada) with Daniel Lemire. This project presented interesting challenges that tested the limits of our motivation, determination, and productivity. In this blog post, I will share my experience working on a stable and well-tested C++ project and discuss some of the issues we faced along the way.
+
+## Story begins
+
+Our overall test suite for Ada, consists of 5+ files, running using CTest. For reasons which are unrelevant of this article, we've implemented our own macros for assertion, succeeding and failing the test suites. Here's an exaple of a C++ macro for our assertion function.
+
+```cpp title="Definition of the TEST_ASSERT macro"
+#define TEST_ASSERT(LHS, RHS, MESSAGE)                                         \
+  do {                                                                         \
+    if (LHS != RHS)  {                                                         \
+      std::cerr << "Mismatch: '" << LHS << "' - '" << RHS << "'" << std::endl; \
+      TEST_FAIL(MESSAGE);                                                      \
+    }                                                                          \
+  } while (0);
+```
+
+Knowing the internals of how our tests are executed helped a new C++ developer like me and increased the onboarding process.
+
+## Logging
+
+As we progressed through the development process, we found that we were spending a lot of time on debugging, so we made the decision to implement our own logging system to capture valuable information. With this approach, whenever we encountered a bug, we could easily run the test suite and debug values through the terminal output. Daniel played a crucial role in this effort and was able to add a simple yet effective logger to the project in no time at all!
+
+```cpp title="Definition of our internal log function"
+template<typename T>
+ada_really_inline void log([[maybe_unused]] T t) {
+#if ADA_LOGGING
+    std::cout << "ADA_LOG: " <<  t << std::endl;
+#endif
+```
+
+At the time, we were in the process of implementing the first version of Ada, so it wasn't an issue that the logs prior to the failed test were irrelevant. In fact, this helped us to pinpoint the root cause of the issue more easily.
+
+## The struggle
+
+After releasing version 1.0 of the Ada URL parser library, we turned our attention to performance optimizations and identified a bottleneck in the string creation process. We began working on a new API that would run parallel to the existing implementation, as each is suited for different use cases. However, this decision presented a new set of challenges that we were not prepared for.
+
+Despite having started work on the new API over a month ago, we found that our productivity was decreasing and we were losing motivation. Upon discussing the matter with Daniel, we identified several key issues that were holding us back:
+
+### Debugging
+
+**Problem:** After enabling debug mode for logging, the test runner output made it really difficult to find the starting point of a test in the logger. This could be easily resolved by a visual element, but due to the nature of our implementation, the the parser could have been called multiple times in a single test. For example; having a base URL with a input would call the URL parser 2 times.
+
+**Proposed solution:** We should only print logs when necessary, and the test runner should know the context of the log and print them to the console only when a test fails.
+
+### Motivation
+
+**Problem:** We didn't have visibility into our progress. We only knew if we passed or failed the test suite, but didn't know how many tests were passing or how far we were from achieving our goals.
+
+**Proposed solution:** Presenting our current state to the developer using basic gamification techniques to create a dopamine effect for manipulating how we interpret our perspective towards the result. An example of this could be a progress bar, a percentage of succeeded tests, showing the difference between previous test executions with green/red highlights.
+
+### Test Execution
+
+**Problem:** We were stopping the test suite as soon as a test failed, which prevented us from seeing the output of tests that might have been fixed by recent changes.
+
+**Proposed solution:** We should continue running the test suite even after encountering a failed test, so that we can see the output of all tests and ensure that we haven't introduced any new errors.

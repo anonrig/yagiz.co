@@ -1,0 +1,30 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import Figure from '@/components/ui/figure.astro'
+import Heading from '@/components/ui/heading.astro'
+import { Image } from 'astro:assets'
+
+interface Props {
+  entry: CollectionEntry<'page'>
+}
+
+const { entry } = Astro.props
+const { Content } = await entry.render();
+---
+<section>
+  <header class="mb-[4.5rem] grid grid-cols-canvas text-center">
+    <Heading text={entry.data.title} />
+
+    {entry.data.feature_image && (
+      <Figure
+        alt={entry.data.feature_image_alt ?? entry.data.title}
+        src={entry.data.feature_image}
+        caption={entry.data.feature_image_caption}
+      />
+    )}
+  </header>
+
+  <Content />
+
+  <slot />
+</section>

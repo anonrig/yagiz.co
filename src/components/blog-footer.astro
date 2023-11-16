@@ -1,0 +1,51 @@
+---
+import { Picture } from 'astro:assets'
+import { getCollection } from 'astro:content'
+import { ArrowLeft, ArrowRight } from 'lucide-astro'
+import compareDesc from 'date-fns/compareDesc'
+import Container from '@/components/ui/container.astro'
+
+interface Props {
+  index: number
+}
+
+const { index } = Astro.props
+const blogs = await getCollection('blog', ({ data }) => data.status === 'published')
+const sortedBlogs = blogs.sort((a, b) => compareDesc(a.data.date, b.data.date))
+const previous = index !== 0 ? sortedBlogs.at(index - 1) : undefined
+const next = index !== sortedBlogs.length - 1 ? sortedBlogs.at(index + 1) : undefined
+---
+<Container size="tight" className="mt-16 flex items-center" as="footer">
+  <div class="flex flex-2 text-black dark:text-neutral-400">
+    {previous !== undefined && (
+      <a href={`/${previous.slug}`} aria-label="Previous article">
+        <ArrowLeft size={20} />
+      </a>
+    )}
+  </div>
+
+  <div class="flex flex-col">
+    <div class="flex flex-col items-center gap-y-4">
+      <h3 class="mb-4 font-extrabold tracking-wide text-slate-800 dark:text-white">
+        Published by:
+      </h3>
+      <a href="/about">
+        <Picture
+          alt="A photo of Yagiz Nizipli"
+          src="/author-image.png"
+          width={50}
+          height={50}
+          class="rounded-full"
+        />
+      </a>
+    </div>
+  </div>
+
+  <div class="flex flex-2 justify-end text-black dark:text-neutral-400">
+    {next !== undefined && (
+      <a href={`/${next.slug}`} aria-label="Next article">
+        <ArrowRight size={20} />
+      </a>
+    )}
+  </div>
+</Container>

@@ -1,0 +1,77 @@
+---
+import '@fontsource/mulish/latin-400.css'
+import '@fontsource/mulish/latin-600.css'
+import '@fontsource/mulish/latin-700.css'
+import '@fontsource/mulish/latin-800.css'
+
+import '@/styles/global.css'
+
+import Footer from '@/components/layout/footer.astro'
+import Header from '@/components/layout/header.astro'
+
+interface Props {
+  title: string
+  description: string
+  canonical_url?: string
+}
+
+const { title, description, canonical_url } = Astro.props;
+const site_name = "Engineering with Yagiz"
+---
+<!doctype html>
+<html lang="en" class="bg-white text-black dark:bg-white-reversed">
+	<head>
+		<meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="48x48">
+    <link rel="apple-touch-icon" href="/apple-icon.png?fa34f759ea075044" type="image/png" sizes="180x180">
+
+    <link rel="preload" href="/fonts/atkinson-regular.woff" as="font" type="font/woff" crossorigin />
+    <link rel="preload" href="/fonts/atkinson-bold.woff" as="font" type="font/woff" crossorigin />
+
+    {canonical_url ? <link rel="canonical" href={canonical_url} /> : null}
+
+    <title>{title}</title>
+    <meta name="title" content={title} />
+    <meta name="description" content={description} />
+
+    <meta name="creator" content="Yagiz Nizipli">
+    <meta name="publisher" content="Yagiz Nizipli">
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1">
+    <meta name="category" content="technology">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:title" content={title}>
+    <meta property="og:description" content={description}>
+    <meta property="og:url" content={Astro.url}>
+    <meta property="og:site_name" content={site_name}>
+    <meta property="og:locale" content="en-US">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1920">
+    <meta property="og:image:height" content="1080">
+    <meta property="og:image" content="https://www.yagiz.co/opengraph-image.png?d066d4973a520592">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter -->
+    <meta name="twitter:url" content={Astro.url}>
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site:id" content="1589638196">
+    <meta name="twitter:creator" content="@yagiznizipli">
+    <meta name="twitter:creator:id" content="1589638196">
+    <meta name="twitter:title" content={title}>
+    <meta name="twitter:description" content={description}>
+    <meta name="twitter:image:type" content="image/png">
+    <meta name="twitter:image:width" content="1920">
+    <meta name="twitter:image:height" content="1080">
+    <meta name="twitter:image" content="https://www.yagiz.co/twitter-image.png?d066d4973a520592">
+	</head>
+
+	<body>
+    <Header />
+    <main class="grow py-14">
+      <slot />
+    </main>
+    <Footer />
+	</body>
+</html>

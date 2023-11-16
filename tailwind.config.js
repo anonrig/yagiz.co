@@ -1,11 +1,11 @@
+import default_theme from 'tailwindcss/defaultTheme'
+
 const navigation_height = '80px'
 
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   content: [
-    './app/**/*.{js,ts,jsx,tsx}',
-    './components/**/*.{js,ts,jsx,tsx}',
-    './content/**/*.mdx',
+    './src/**/*.astro',
   ],
   theme: {
     extend: {
@@ -13,7 +13,7 @@ module.exports = {
         'white-reversed': '#282c35',
       },
       fontFamily: {
-        sans: ['var(--font-mulish)'],
+        sans: ['Mulish', ...default_theme.fontFamily.sans],
       },
       flex: {
         2: '2',

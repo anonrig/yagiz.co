@@ -1,5 +1,11 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true,
+    "root": "."
+  },
   "organizeImports": {
     "enabled": true
   },
@@ -16,7 +22,8 @@
     "lineWidth": 100
   },
   "files": {
-    "ignore": ["node_modules", "public", ".next", ".contentlayer", ".vercel"]
+    "include": ["**/*.astro"],
+    "ignore": []
   },
   "javascript": {
     "formatter": {

@@ -1,0 +1,39 @@
+---
+import { Image, getImage } from 'astro:assets'
+import type { CollectionEntry } from 'astro:content'
+import { cva } from 'class-variance-authority'
+import type { VariantProps } from 'class-variance-authority'
+
+const figureVariants = cva('mt-6', {
+  variants: {
+    size: {
+      wide: 'col-wide',
+      main: 'col-main',
+    },
+  },
+  defaultVariants: {
+    size: 'wide',
+  },
+})
+
+interface Props extends VariantProps<typeof figureVariants> {
+  className?: string
+  caption?: string
+  src: CollectionEntry<'page'>['data']['feature_image']
+  alt: string
+}
+
+const { size, className, ...props } = Astro.props
+---
+<figure class:list={figureVariants({ size, className })}>
+  <div class='relative bg-gray-100 before:block before:pb-[50%] before:content-[""]'>
+    <Image
+      src={props.src}
+      alt={props.alt}
+      class="object-cover duration-300 ease-in-out"
+    />
+  </div>
+  {props.caption !== undefined && (
+    <figcaption class="mt-4 text-sm text-neutral-400">{props.caption}</figcaption>
+  )}
+</figure>
