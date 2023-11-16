@@ -8,11 +8,6 @@ import { FormEvent, useCallback, useState } from 'react'
 
 import { useSubscribe } from '@/app/providers'
 
-type FormData = {
-  email: string
-  name: string
-}
-
 export default function SubscribeModal() {
   const { visible, setVisible } = useSubscribe()
   const [loading, setLoading] = useState(false)
