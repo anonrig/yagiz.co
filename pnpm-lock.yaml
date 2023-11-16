@@ -83,8 +83,8 @@ devDependencies:
     specifier: ^4.7.4
     version: 4.7.4
   '@types/node':
-    specifier: 20.9.0
-    version: 20.9.0
+    specifier: 20.9.1
+    version: 20.9.1
   '@types/react':
     specifier: 18.2.37
     version: 18.2.37
@@ -637,7 +637,7 @@ packages:
     engines: {node: ^8.13.0 || >=10.10.0}
     dependencies:
       '@grpc/proto-loader': 0.7.6
-      '@types/node': 20.9.0
+      '@types/node': 20.9.1
     dev: false
 
   /@grpc/proto-loader@0.7.6:
@@ -1536,8 +1536,8 @@ packages:
     resolution: {integrity: sha512-iiUgKzV9AuaEkZqkOLDIvlQiL6ltuZd9tGcW3gwpnX8JbuiuhFlEGmmFXEXkN50Cvq7Os88IY2v0dkDqXYWVgA==}
     dev: false
 
-  /@types/node@20.9.0:
-    resolution: {integrity: sha512-nekiGu2NDb1BcVofVcEKMIwzlx4NjHlcjhoxxKBNLtz15Y1z7MYf549DFvkHSId02Ax6kGwWntIBPC3l/JZcmw==}
+  /@types/node@20.9.1:
+    resolution: {integrity: sha512-HhmzZh5LSJNS5O8jQKpJ/3ZcrrlG6L70hpGqMIAoM9YVD0YBRNWYsfwcXq8VnSjlNpCpgLzMXdiPo+dxcvSmiA==}
     dependencies:
       undici-types: 5.26.5
 
@@ -4390,7 +4390,7 @@ packages:
       '@protobufjs/path': 1.1.2
       '@protobufjs/pool': 1.1.0
       '@protobufjs/utf8': 1.1.0
-      '@types/node': 20.9.0
+      '@types/node': 20.9.1
       long: 5.2.3
     dev: false
 
