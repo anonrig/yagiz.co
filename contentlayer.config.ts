@@ -42,7 +42,7 @@ export const Page = defineDocumentType(() => ({
       type: 'string',
       resolve: (doc) => {
         const slug = path.basename(doc._raw.flattenedPath)
-        return `${websiteDomain}/${slug}`
+        return `/${slug}`
       },
     },
   },
@@ -65,7 +65,7 @@ export const Tag = defineDocumentType(() => ({
       type: 'string',
       resolve: (doc) => {
         const slug = path.basename(doc._raw.flattenedPath)
-        return `${websiteDomain}/tag/${slug}`
+        return `/tag/${slug}`
       },
     },
   },
@@ -73,7 +73,7 @@ export const Tag = defineDocumentType(() => ({
 
 export const Blog = defineDocumentType(() => ({
   name: 'Blog',
-  filePathPattern: '**/*.mdx',
+  filePathPattern: 'blog/**/*.mdx',
   contentType: 'mdx',
   fields: {
     title: {
@@ -111,11 +111,14 @@ export const Blog = defineDocumentType(() => ({
   computedFields: {
     slug: {
       type: 'string',
-      resolve: (doc) => doc._raw.flattenedPath,
+      resolve: (doc) => path.basename(doc._raw.flattenedPath),
     },
     url: {
       type: 'string',
-      resolve: (doc) => `${websiteDomain}/${doc._raw.flattenedPath}`,
+      resolve: (doc) => {
+        const slug = path.basename(doc._raw.flattenedPath)
+        return `/${slug}`
+      },
     },
     structuredData: {
       type: 'json',

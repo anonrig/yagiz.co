@@ -22,6 +22,7 @@ const nextConfig = {
   },
   experimental: {
     webpackBuildWorker: true,
+    optimizePackageImports: ['lucide-react', 'date-fns'],
   },
 }
 

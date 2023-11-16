@@ -2,8 +2,7 @@
 title: 'Using insecure npm package manager defaults to steal your macOS keyboard shortcuts'
 description: >-
   Node Package Manager (npm) provides a set of scripts for developers and package maintainers to maintain the life cycle events of a package.
-type: Blog
-date: '2023-06-28'
+date: 2023-06-28
 tag: tags/security.mdx
 status: published
 canonical_url: 'https://snyk.io/blog/using-insecure-npm-package-manager-defaults/'
@@ -81,9 +80,9 @@ surface for them to exploit.
 
 ![macOS Text Replacements](/content/macos-text-replacements.png)
 
-> Text Replacements feature is available through System Preferences application, under the `Keyboard` menu item. 
+> Text Replacements feature is available through System Preferences application, under the `Keyboard` menu item.
 
-## Exfiltrating keyboard text replacements 
+## Exfiltrating keyboard text replacements
 
 Keyboard shortcuts are stored under `defaults`, which corresponds to a filesystem backed `.plist`
 file somewhere in your local folder. Executing the following command will return your configured

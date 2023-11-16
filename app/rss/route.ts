@@ -31,14 +31,13 @@ export async function GET() {
       date: new Date(blog.date),
       image: blog.feature_image
         ? `${websiteDomain}${blog.feature_image}`
-        : `${blog.url}/opengraph-image`,
+        : `${websiteDomain}${blog.url}/opengraph-image`,
     })
   }
 
   return new Response(feed.rss2(), {
     status: 200,
     headers: {
-      'cache-control': 's-maxage=3600',
       'content-type': 'text/xml',
     },
   })
