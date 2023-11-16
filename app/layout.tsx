@@ -1,6 +1,5 @@
 import './globals.css'
 
-import { Analytics } from '@vercel/analytics/react'
 import clsx from 'clsx'
 import { Metadata, Viewport } from 'next'
 import { Mulish } from 'next/font/google'
@@ -77,7 +76,6 @@ export default function RootLayout({ children }: PropsWithChildren<unknown>) {
           <main className="grow py-14">{children}</main>
         </Providers>
         <Footer />
-        <Analytics />
       </body>
     </html>
   )
