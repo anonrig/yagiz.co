@@ -13,8 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: JustinBeckwith/linkinator-action@v1
+      - uses: gaurav-nelson/github-action-markdown-link-check@v1
         with:
-          paths: "content/**/*.mdx"
-          markdown: true
-          retry: true
+          folder-path: 'content'
