@@ -42,7 +42,6 @@
     "@types/react": "18.2.37",
     "@types/react-dom": "18.2.15",
     "autoprefixer": "^10.4.16",
-    "dotenv": "^16.3.1",
     "handlebars": "^4.7.8",
     "mjml": "^4.14.1",
     "node-mailjet": "^6.0.4",
