@@ -73,7 +73,6 @@ export default function ContactForm(props: Props) {
             className="w-full p-4 resize-y min-h-[150px] font-normal focus:border-slate-300 bg-white dark:bg-white-reversed border-[1px] border-slate-200 dark:border-neutral-600 border-solid leading-[1.15] rounded-md text-slate-800 dark:text-white h-44 outline-none dark:focus:border-neutral-500"
             rows={6}
             required
-            minLength={50}
           />
         </Form.Control>
         <Form.Message
