@@ -94,7 +94,7 @@ export default function ContactForm(props: Props) {
         <Form.Submit
           disabled={state.submitting || state.succeeded}
           className={clsx(
-            'disabled:opacity-60 disabled:cursor-not-allowed uppercase mt-2 items-center bg-white dark:bg-white-reversed border-[1px] border-slate-200 dark:border-neutral-600 hover:border-slate-300 dark:hover:border-neutral-500 border-solid rounded-md text-orange-400 text-[11px] font-extrabold h-[36px] justify-center tracking-[0.5px] outline-none px-[15px] uppercase',
+            'disabled:opacity-60 disabled:cursor-not-allowed uppercase mt-2 items-center bg-white dark:bg-white-reversed border-[1px] border-slate-200 dark:border-neutral-600 hover:border-slate-300 dark:hover:border-neutral-500 border-solid rounded-md text-orange-400 text-[11px] font-extrabold h-[36px] justify-center tracking-[0.5px] outline-none px-[15px]',
             {
               'cursor-not-allowed': state.succeeded,
               'cursor-progress': state.submitting,

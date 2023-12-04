@@ -1,4 +1,5 @@
 const { withContentlayer } = require('next-contentlayer')
+const { withSentryConfig } = require('@sentry/nextjs')
 
 const plugins = [withContentlayer]
 
@@ -81,4 +82,19 @@ const securityHeaders = [
   },
 ]
 
-module.exports = plugins.reduce((acc, next) => next(acc), nextConfig)
+module.exports = withSentryConfig(
+  plugins.reduce((acc, next) => next(acc), nextConfig),
+  {
+    silent: true,
+    org: 'yagiz-nb',
+    project: 'yagiz-co',
+  },
+  {
+    widenClientFileUpload: true,
+    transpileClientSDK: false,
+    tunnelRoute: '/elroy',
+    hideSourceMaps: true,
+    disableLogger: true,
+    automaticVercelMonitors: true,
+  },
+)
