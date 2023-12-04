@@ -15,6 +15,7 @@
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-form": "^0.0.3",
     "@sentry/nextjs": "^7.85.0",
+    "@sentry/profiling-node": "^1.2.6",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "contentlayer": "^0.3.4",
@@ -31,7 +32,8 @@
     "rehype-autolink-headings": "^7.1.0",
     "rehype-pretty-code": "^0.12.0",
     "rehype-slug": "^6.0.0",
-    "remark-gfm": "^3.0.1"
+    "remark-gfm": "^3.0.1",
+    "sharp": "^0.33.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.4.1",

@@ -3,9 +3,11 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import * as Sentry from '@sentry/nextjs'
+import { ProfilingIntegration } from '@sentry/profiling-node'
 import { SENTRY_DSN } from './next.constants'
 Sentry.init({
   dsn: SENTRY_DSN,
   tracesSampleRate: 1,
   debug: false,
+  integrations: [new ProfilingIntegration()],
 })
