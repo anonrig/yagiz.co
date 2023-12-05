@@ -18,6 +18,7 @@ const nextConfig = {
     optimizePackageImports: ['lucide-react', 'date-fns'],
     serverComponentsExternalPackages: ['@sentry/profiling-node'],
   },
+  transpilePackages: ['lucide-react', 'date-fns'],
 }
 
 module.exports = withSentryConfig(
