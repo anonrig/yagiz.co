@@ -4,7 +4,10 @@ import open from 'open'
 // Go to https://github.com/sponsors/anonrig/dashboard/your_sponsors
 // Click to Export button and save it to .github/sponsorships.json
 
-function get_tier(transaction) {
+function get_tier(transaction, sponsor) {
+  if (transaction == null && sponsor.is_yearly) {
+    return 'silver-sponsor'
+  }
   switch (transaction?.tier_name.split(' ')[0]) {
     case '$10':
       return 'supporter'
@@ -50,7 +53,7 @@ export async function updateSponsorships() {
     process.exit(0)
   }
 
-  const raw_sponsorships = await fs.readFileSync(
+  const raw_sponsorships = fs.readFileSync(
     new URL('../../sponsorships.json', import.meta.url),
     'utf8',
   )
@@ -65,7 +68,7 @@ export async function updateSponsorships() {
 
   for (const sponsor of sponsorships) {
     const last_transaction = sponsor.transactions.at(-1)
-    const tier = get_tier(last_transaction)
+    const tier = get_tier(last_transaction, sponsor)
 
     if (tier == null) continue
 
