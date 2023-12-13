@@ -1,4 +1,4 @@
-import { getCollection } from "astro:content";
+import { getCollection, getEntry } from "astro:content";
 import readingTime from "reading-time";
 import { compareDesc } from "date-fns";
 
@@ -8,32 +8,38 @@ export const rssUrl =
   "https://feedly.com/i/subscription/feed%2Fhttps%3A%2F%2Fwww.yagiz.co%2Frss%2F";
 
 export const getPosts = async () => {
-  const posts = (await getCollection("blog"))
-    .filter((post) => post.data.status === "published")
-    .map((post) => {
-      return {
-        ...post,
-        data: {
-          ...post.data,
-          url: `/${post.slug}`,
-          structuredData: ({ origin }: { origin: string }) => ({
-            "@context": "https://schema.org",
-            "@type": "BlogPosting",
-            headline: post.data.title,
-            datePublished: post.data.date,
-            dateModified: post.data.date,
-            description: post.data.description,
-            url: `${origin}/${post.slug}`,
-            author: {
-              "@type": "Person",
-              name: "Yagiz Nizipli",
+  const posts = (
+    await Promise.all(
+      (
+        await getCollection("blog")
+      )
+        .filter((post) => post.data.status === "published")
+        .map(async (post) => {
+          return {
+            ...post,
+            data: {
+              ...post.data,
+              tag: await getEntry(post.data.tag),
+              url: `/${post.slug}`,
+              structuredData: ({ origin }: { origin: string }) => ({
+                "@context": "https://schema.org",
+                "@type": "BlogPosting",
+                headline: post.data.title,
+                datePublished: post.data.date,
+                dateModified: post.data.date,
+                description: post.data.description,
+                url: `${origin}/${post.slug}`,
+                author: {
+                  "@type": "Person",
+                  name: "Yagiz Nizipli",
+                },
+              }),
+              minute_to_read: readingTime(post.body).text,
             },
-          }),
-          minute_to_read: readingTime(post.body).text,
-        },
-      };
-    })
-    .sort((a, b) => compareDesc(a.data.date, b.data.date));
+          };
+        })
+    )
+  ).sort((a, b) => compareDesc(a.data.date, b.data.date));
 
   return posts;
 };

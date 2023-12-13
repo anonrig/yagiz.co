@@ -1,0 +1,55 @@
+---
+import { getPosts } from "@/lib/content";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import Container from "@/components/ui/Container";
+
+interface Props {
+  index: number;
+}
+
+const { index } = Astro.props;
+const posts = await getPosts();
+const next = index !== 0 ? posts.at(index - 1) : undefined;
+const previous = index !== posts.length - 1 ? posts.at(index + 1) : undefined;
+---
+
+<Container size="tight" className="mt-16 flex items-center" as="footer">
+  <div class="flex flex-2 text-black dark:text-neutral-400">
+    {
+      previous !== undefined && (
+        <a href={`/${previous.slug}`} aria-label="Previous article">
+          <ArrowLeft size={20} />
+        </a>
+      )
+    }
+  </div>
+
+  <div class="flex flex-col">
+    <div class="flex flex-col items-center gap-y-4">
+      <h3
+        class="mb-4 font-extrabold tracking-wide text-slate-800 dark:text-white"
+      >
+        Published by:
+      </h3>
+      <a href="/about">
+        <img
+          alt="A photo of Yagiz Nizipli"
+          src="/author-image.png"
+          width={50}
+          height={50}
+          class="rounded-full"
+        />
+      </a>
+    </div>
+  </div>
+
+  <div class="flex flex-2 justify-end text-black dark:text-neutral-400">
+    {
+      next !== undefined && (
+        <a href={`/${next.slug}`} aria-label="Next article">
+          <ArrowRight size={20} />
+        </a>
+      )
+    }
+  </div>
+</Container>
