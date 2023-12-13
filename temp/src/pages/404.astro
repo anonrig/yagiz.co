@@ -1,0 +1,16 @@
+---
+import Container from "@/components/ui/Container";
+import Layout from "@/layouts/Layout.astro";
+import { Stethoscope } from "lucide-react";
+---
+
+<Layout metadata={{ title: "Page not found" }}>
+  <Container className="flex h-[calc(100vh-320px)] items-center justify-center">
+    <div class="flex flex-col items-center space-y-4">
+      <Stethoscope size={24} className="text-black dark:text-white" />
+      <p class="font-semibold text-neutral-500 dark:text-neutral-200">
+        This page could not be found.
+      </p>
+    </div>
+  </Container>
+</Layout>

@@ -1,0 +1,43 @@
+---
+import type { Post } from "@/types/content";
+import { format } from "date-fns";
+import { ChevronRight } from "lucide-react";
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+---
+
+<a
+  href={post.data.url}
+  class="group relative flex items-center overflow-hidden py-3"
+>
+  <time
+    datetime={post.data.date.toISOString()}
+    class="mr-6 flex min-w-[45px] whitespace-nowrap text-xs font-extrabold uppercase text-orange-400"
+  >
+    {format(post.data.date, "MMM dd")}
+  </time>
+  <div
+    class="overflow-hidden whitespace-nowrap text-ellipsis w-full pr-4 leading-6"
+  >
+    <h2
+      class="truncate font-normal dark:text-white dark:group-hover:text-neutral-300 group-hover:text-slate-600"
+    >
+      {post.data.title}
+    </h2>
+  </div>
+  <div
+    class="flex items-center transition-margin delay-0 duration-200 ease-in-out group-hover:mr-2"
+  >
+    <div class="whitespace-nowrap text-sm text-neutral-500">
+      {post.data.minute_to_read}
+    </div>
+  </div>
+  <ChevronRight
+    size={16}
+    className="translate-x-8 text-slate-600 transition-transform delay-0 duration-200 ease-in-out group-hover:translate-x-0"
+  />
+</a>
