@@ -18,6 +18,7 @@
     "@astrojs/sitemap": "^3.0.3",
     "@astrojs/tailwind": "^5.0.3",
     "@fontsource-variable/mulish": "^5.0.17",
+    "@formspree/react": "^2.5.1",
     "@nanostores/react": "^0.7.1",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-form": "^0.0.3",
