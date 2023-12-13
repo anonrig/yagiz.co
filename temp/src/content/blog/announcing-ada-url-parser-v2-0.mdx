@@ -47,7 +47,7 @@ As you may have realized, the public API of **ada::url** and **ada::url\_aggrega
 
 One of the key features of the **Ada URL Parser v2.0** is its ability to provide a comprehensive representation of the various components of a URL string. This representation is based on the [WHATWG URL specification](https://url.spec.whatwg.org/) and includes a range of offsets for different URL components. These offsets are used to identify the start and end indexes of different parts of the URL, such as the protocol, username, hostname, port, pathname, search, and hash. By using these offsets, developers can easily extract and manipulate different parts of a URL string without having to worry about the underlying parsing details.
 
-```text title="URL Components structure"
+```plaintext title="URL Components structure"
 https://user:pass@example.com:1234/foo/bar?baz#quux
       |     |    |          | ^^^^|       |   |
       |     |    |          | |   |       |   `----- hash_start
@@ -72,7 +72,7 @@ All benchmarks are executed using the Apple M1 Max processor.
 
 The following [benchmark code](https://github.com/ada-url/ada/tree/main/benchmarks) is available on GitHub as well as [the dataset](https://github.com/ada-url/url-dataset) of 100,000 URLs. We used cURL 8.0.1, Servo 2.3.1 (using Rust 1.64.0), and Boost 1.81.0 for benchmarking.
 
-```text title="Benchmark results of Ada"
+```plaintext title="Benchmark results of Ada"
 Benchmark                     time/url      url/s
 -------------------------------------------------
 ada::url_aggregator           222.298ns 4.49846M/s
@@ -90,7 +90,7 @@ Ada is currently **50% faster than Boost**, **3x faster than Servo** and **6x fa
 
 The following benchmark code is available on [GitHub](https://github.com/anonrig/node-benchmarks/tree/main/url) as well as [the dataset](https://github.com/ada-url/url-dataset) of 100,000 URLs. We used Node.js main branch, Bun 0.5.8 and Deno 1.32.1 for benchmarking.
 
-```text title="Comparing Node.js with Bun and Deno"
+```plaintext title="Comparing Node.js with Bun and Deno"
 benchmark            time (avg)                  (min … max)
 ------------------------------------------------------------
 Node              41.08 ms/iter        (40.97 ms … 41.32 ms)

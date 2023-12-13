@@ -1,0 +1,68 @@
+---
+import type { GetStaticPaths } from "astro";
+import { getPosts, getTags } from "@/lib/content";
+import Container from "@/components/ui/Container";
+import BlogRow from "@/components/BlogRow.astro";
+import Layout from "@/layouts/Layout.astro";
+
+export const getStaticPaths = (async () => {
+  const tags = await getTags();
+
+  return tags.map((tag) => ({ params: { slug: tag.slug }, props: { tag } }));
+}) satisfies GetStaticPaths;
+
+const { tag } = Astro.props;
+
+const otherTags = (await getTags()).filter((t) => t.slug !== tag.slug);
+const posts = (await getPosts()).filter(
+  (post) => post.data.tag.slug === tag.slug
+);
+---
+
+<Layout
+  metadata={{
+    title: tag.data.title,
+    description: tag.data.description,
+    openGraph: {
+      title: tag.data.title,
+      description: tag.data.description,
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: tag.data.title,
+      description: tag.data.description,
+    },
+  }}
+>
+  <section>
+    <Container size="tight" className="-mt-6 flex flex-col gap-8 text-center">
+      <h1 class="text-2xl font-extrabold text-orange-400">#{tag.data.title}</h1>
+
+      <div class="leading-6 dark:text-white">{tag.data.description}</div>
+
+      <div>
+        <span class="mr-2 mt-2 font-bold dark:text-white">More:</span>
+        {
+          otherTags.map((tag) => (
+            <a
+              href={`/tag/${tag.slug}`}
+              class="ml-1 break-keep font-bold text-neutral-500 hover:text-neutral-400 dark:text-neutral-500 dark:hover:text-neutral-400"
+            >
+              #{tag.data.title}
+            </a>
+          ))
+        }
+      </div>
+    </Container>
+
+    <div class="flex grow py-14">
+      <Container
+        size="tight"
+        className="divide-y divide-slate-200 dark:divide-neutral-700"
+      >
+        {posts.map((post) => <BlogRow {post} />)}
+      </Container>
+    </div>
+  </section>
+</Layout>

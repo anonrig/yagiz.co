@@ -1,0 +1,127 @@
+---
+import type { GetStaticPaths } from "astro";
+import { getPosts } from "@/lib/content";
+import Layout from "@/layouts/Layout.astro";
+import { format } from "date-fns";
+import Heading from "@/components/ui/Heading";
+import Figure from "@/components/ui/Figure";
+import Prose from "@/components/ui/Prose.astro";
+import { components } from "@/components/mdx";
+import type { Post } from "@/types/content";
+import Container from "@/components/ui/Container";
+import BlogRow from "@/components/BlogRow.astro";
+import BlogStickyHeader from "@/components/BlogStickyHeader";
+import BlogFooter from "@/components/BlogFooter.astro";
+
+export const getStaticPaths = (async () => {
+  const posts = await getPosts();
+
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}) satisfies GetStaticPaths;
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+const posts = await getPosts();
+const index = posts.findIndex((p) => p.slug === post.slug);
+const suggestions = [posts.at(index - 2), posts.at(index - 1)].filter(
+  Boolean
+) as Array<Post>;
+---
+
+<Layout
+  metadata={{
+    title: post.data.title,
+    description: post.data.description,
+    authors: [{ name: "Yagiz Nizipli" }],
+    category: "technology",
+    openGraph: {
+      title: post.data.title,
+      description: post.data.description,
+      type: "article",
+      publishedTime: format(new Date(post.data.date), "yyyy-MM-dd"),
+      tags: [post.data.tag.data.title],
+      siteName: "Engineering with Yagiz",
+      locale: "en-US",
+      authors: ["Yagiz Nizipli"],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.data.title,
+      description: post.data.description,
+      siteId: "1589638196",
+      creator: "@yagiznizipli",
+      creatorId: "1589638196",
+    },
+  }}
+>
+  <Fragment slot="head">
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(post.data.structuredData)}
+    />
+  </Fragment>
+  <article>
+    <header class="mb-6 grid grid-cols-canvas text-center">
+      <div
+        class="col-main mb-4 text-xs font-extrabold uppercase text-slate-400"
+      >
+        <span>
+          <time datetime={post.data.date.toISOString()}
+            >{format(post.data.date, "MMM dd, yyyy")}</time
+          >
+        </span>
+        <span class="px-2 leading-[1] font-serif">·</span>
+        <span>
+          {post.data.minute_to_read}
+        </span>
+        <span class="px-2 leading-[1] font-serif">·</span>
+        <span>
+          <a
+            href={`/tag/${post.data.tag.slug}`}
+            class="text-orange-400 hover:text-orange-300"
+          >
+            {post.data.tag.data.title}
+          </a>
+        </span>
+      </div>
+
+      <Heading text={post.data.title} />
+
+      {
+        post.data.feature_image && (
+          <Figure
+            alt={post.data.title}
+            src={post.data.feature_image}
+            caption={post.data.feature_image_caption}
+          />
+        )
+      }
+    </header>
+    <BlogStickyHeader {post} client:load />
+    <Prose>
+      <Content {components} />
+    </Prose>
+    <BlogFooter {index} />
+  </article>
+
+  {
+    suggestions.length > 0 && (
+      <section class="mt-24 bg-[#f6f6f6] dark:bg-[#2f333c] py-12">
+        <Container size="tight">
+          <h3 class="mb-4 text-xl font-extrabold dark:text-white">
+            You might also like...
+          </h3>
+          <div class="divide-y divide-slate-200 dark:divide-neutral-700">
+            {suggestions.map((post) => (
+              <BlogRow {post} />
+            ))}
+          </div>
+        </Container>
+      </section>
+    )
+  }
+</Layout>
