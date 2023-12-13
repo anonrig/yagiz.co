@@ -1,0 +1,15 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"img"> {}
+
+const { class: className, ...rest } = Astro.props;
+---
+
+<img
+  {...rest}
+  class:list={[
+    "rounded-lg object-contain w-full !h-[unset] !relative bg-white dark:bg-white-reversed col-wide",
+    className,
+  ]}
+/>

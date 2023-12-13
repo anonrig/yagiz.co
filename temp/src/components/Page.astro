@@ -1,0 +1,50 @@
+---
+import type { Page } from "@/types/content";
+import Figure from "@/components/ui/Figure";
+import Heading from "@/components/ui/Heading";
+import Prose from "@/components/ui/Prose.astro";
+import type { Props as LayoutProps } from "@/layouts/Layout.astro";
+import { components } from "@/components/mdx";
+
+interface Props {
+  page: Page;
+}
+
+const { page } = Astro.props;
+const { Content } = await page.render();
+
+export function getMetadata({ page }: Props): LayoutProps["metadata"] {
+  return {
+    title: page.data.title,
+    description: page.data.description,
+    openGraph: {
+      title: page.data.title,
+      description: page.data.description,
+      type: "website",
+      url: Astro.url,
+    },
+  };
+}
+---
+
+<section>
+  <header class="mb-[4.5rem] grid grid-cols-canvas text-center">
+    <Heading text={page.data.title} />
+
+    {
+      page.data.feature_image && (
+        <Figure
+          alt={page.data.feature_image_alt ?? page.data.title}
+          src={page.data.feature_image}
+          caption={page.data.feature_image_caption}
+        />
+      )
+    }
+  </header>
+
+  <Prose>
+    <Content {components} />
+  </Prose>
+
+  <slot />
+</section>

@@ -1,0 +1,15 @@
+<article
+  class:list={[
+    "grid grid-cols-canvas [&>*]:col-main",
+    "max-w-none [&_p:has(img.col-wide)]:col-wide",
+    "prose prose-neutral prose-tight dark:prose-invert marker:text-black dark:marker:text-white",
+    "text-base leading-7", // text
+    "prose-headings:font-extrabold prose-headings:mt-6",
+    "prose-h1:text-3xl", // h1
+    "prose-h2:text-2xl", // h2
+    "prose-h3:text-xl prose-h3:text-neutral-600 dark:prose-h3:text-neutral-300 ", // h3
+    "prose-strong:font-bold", // strong
+  ]}
+>
+  <slot />
+</article>

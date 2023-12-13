@@ -1,0 +1,14 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Page, { getMetadata } from "@/components/Page.astro";
+import { getPages } from "@/lib/content";
+import ContactForm from "@/components/ContactForm";
+
+const page = (await getPages()).find((page) => page.slug === "contact")!;
+---
+
+<Layout metadata={getMetadata({ page })}>
+  <Page {page}>
+    <ContactForm className="mt-6" client:visible />
+  </Page>
+</Layout>
