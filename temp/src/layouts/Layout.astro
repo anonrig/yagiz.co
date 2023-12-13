@@ -1,0 +1,141 @@
+---
+import SubscribeModal from "@/components/SubscribeModal";
+import Header from "@/components/layout/Header.astro";
+import "@/styles/globals.css";
+import "@fontsource-variable/mulish";
+import mulishFile from "@fontsource-variable/mulish/files/mulish-latin-wght-normal.woff2?url";
+import { Image } from "astro:assets";
+import familyImg from "@/assets/family.png";
+import Footer from "@/components/layout/Footer.astro";
+
+interface Props {
+  metadata: {
+    title: string;
+    description?: string;
+    category?: string;
+    creator?: string;
+    publisher?: string;
+    openGraph?: {
+      title?: string;
+      description?: string;
+      siteName?: string;
+      locale?: string;
+      type?: string;
+      url?: URL;
+    };
+    twitter?: {
+      title?: string;
+      description?: string;
+      card?: string;
+      siteId?: string;
+      creator?: string;
+      creatorId?: string;
+    };
+  };
+}
+
+const DEFAULT_TITLE = "Engineering with Yagiz";
+const DEFAULT_DESCRIPTION =
+  "Here's a collection of posts about my thoughts, stories, ideas and experiences as a human, and an engineer working with different technologies.";
+
+const {
+  description = DEFAULT_DESCRIPTION,
+  category = "technology",
+  creator = "Yagiz Nizipli",
+  publisher = "Yagiz Nizipli",
+  openGraph = {
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+    siteName: DEFAULT_TITLE,
+    locale: "en-US",
+    type: "website",
+    url: Astro.url,
+  },
+  twitter = {
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+    card: "summary_large_image",
+    siteId: "1589638196",
+    creator: "@yagiznizipli",
+    creatorId: "1589638196",
+  },
+} = Astro.props.metadata;
+
+const title = `${Astro.props.metadata.title} - ${DEFAULT_TITLE}`;
+---
+
+<html lang="en" class="bg-white text-black dark:bg-white-reversed">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <link
+      rel="preload"
+      as="font"
+      crossorigin="anonymous"
+      href={mulishFile}
+      type="font/woff2"
+    />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="category" content={category} />
+    <meta name="creator" content={creator} />
+    <meta name="publisher" content={publisher} />
+    <meta name="robots" content="index, follow" />
+    <meta
+      name="googlebot"
+      content="index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1"
+    />
+    <meta property="og:title" content={openGraph.title} />
+    <meta property="og:description" content={openGraph.description} />
+    <meta property="og:url" content={openGraph.url} />
+    <meta property="og:site_name" content={openGraph.siteName} />
+    <meta property="og:locale" content={openGraph.locale} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1920" />
+    <meta property="og:image:height" content="1080" />
+    <meta
+      property="og:image"
+      content={`${Astro.url.origin}/opengraph-image.png`}
+    />
+    <meta property="og:type" content={openGraph.type} />
+    <meta name="twitter:card" content={twitter.card} />
+    <meta name="twitter:site:id" content={twitter.siteId} />
+    <meta name="twitter:creator" content={twitter.creator} />
+    <meta name="twitter:creator:id" content={twitter.creatorId} />
+    <meta name="twitter:title" content={twitter.title} />
+    <meta name="twitter:description" content={twitter.description} />
+    <meta name="twitter:image:type" content="image/png" />
+    <meta name="twitter:image:width" content="1920" />
+    <meta name="twitter:image:height" content="1080" />
+    <meta
+      name="twitter:image"
+      content={`${Astro.url.origin}/opengraph-image.png`}
+    />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="48x48" />
+    <link
+      rel="apple-touch-icon"
+      href="/apple-icon.png"
+      type="image/png"
+      sizes="180x180"
+    />
+    <slot name="head" />
+  </head>
+  <body>
+    <Header />
+    <main class="grow py-14">
+      <slot />
+    </main>
+    <SubscribeModal client:load>
+      <Image
+        slot="image"
+        src={familyImg}
+        width={60}
+        height={60}
+        class="rounded-full"
+        alt="Yagiz Nizipli"
+      />
+    </SubscribeModal>
+    <Footer />
+  </body>
+</html>

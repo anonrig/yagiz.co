@@ -1,0 +1,44 @@
+{
+  "name": "yagiz-co",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "lint": "biome check . && biome format .",
+    "lint-fix": "biome check . --apply-unsafe"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^2.0.1",
+    "@astrojs/react": "^3.0.7",
+    "@astrojs/sitemap": "^3.0.3",
+    "@astrojs/tailwind": "^5.0.3",
+    "@fontsource-variable/mulish": "^5.0.17",
+    "@nanostores/react": "^0.7.1",
+    "@radix-ui/react-dialog": "^1.0.5",
+    "@radix-ui/react-form": "^0.0.3",
+    "@tailwindcss/typography": "^0.5.10",
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.17",
+    "astro": "^4.0.4",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "date-fns": "^2.30.0",
+    "lucide-react": "^0.294.0",
+    "nanostores": "^0.9.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "reading-time": "^1.5.0",
+    "sharp": "^0.33.0",
+    "tailwindcss": "^3.3.6"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.3.2",
+    "@biomejs/biome": "^1.4.1",
+    "typescript": "^5.3.3"
+  }
+}
