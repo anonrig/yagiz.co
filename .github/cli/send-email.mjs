@@ -45,7 +45,7 @@ export async function sendEmail() {
           imageUrl: 'https://www.yagiz.co/family.png',
           title: blog.title,
           description: blog.description,
-          url: blog.url,
+          url: `https://www.yagiz.co/${blog.slug}`,
         })
       },
     ],
