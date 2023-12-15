@@ -61,11 +61,5 @@
         "browsers": ">= .25%"
       }
     }
-  },
-  "nextBundleAnalysis": {
-    "budget": null,
-    "budgetPercentIncreaseRed": 20,
-    "minimumChangeThreshold": 0,
-    "showDetails": true
   }
 }
