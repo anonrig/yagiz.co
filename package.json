@@ -6,8 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "biome check . && biome format .",
-    "lint-fix": "biome check . --apply-unsafe",
+    "lint": "biome check .",
+    "lint-fix": "biome check . --apply",
     "cli": "node --no-warnings --env-file=.env ./cli.mjs"
   },
   "dependencies": {
