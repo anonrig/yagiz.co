@@ -8,6 +8,8 @@ import { SENTRY_DSN } from './next.constants'
 
 Sentry.init({
   dsn: SENTRY_DSN,
-  tracesSampleRate: 1,
+  tracesSampleRate: 1.0,
+  profilesSampleRate: 1.0,
+  replaysSessionSampleRate: 1.0,
   debug: false,
 })

@@ -5,9 +5,10 @@
 import * as Sentry from '@sentry/nextjs'
 import { ProfilingIntegration } from '@sentry/profiling-node'
 import { SENTRY_DSN } from './next.constants'
+
 Sentry.init({
   dsn: SENTRY_DSN,
-  tracesSampleRate: 1,
+  tracesSampleRate: 1.0,
   debug: false,
   integrations: [new ProfilingIntegration()],
 })

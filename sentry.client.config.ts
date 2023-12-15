@@ -10,7 +10,7 @@ Sentry.init({
   tracesSampleRate: 1,
   debug: false,
   replaysOnErrorSampleRate: 1.0,
-  replaysSessionSampleRate: 0.1,
+  replaysSessionSampleRate: 1.0,
   integrations: [
     new Sentry.Dedupe(),
     new Sentry.HttpContext(),
@@ -22,11 +22,4 @@ Sentry.init({
     new Sentry.BrowserTracing(),
   ],
   allowUrls: ['https://www.yagiz.co', 'https://yagiz.co'],
-  beforeSend: (event, hint) => {
-    // Attempts to grab the original Exception before any "magic" happens
-    const exception = hint.originalException as Error
-
-    // We only want to capture Errors that have a Stack Trace and that are not Anonymous Errors
-    return exception?.stack && !exception.stack.includes('<anonymous>') ? event : null
-  },
 })
