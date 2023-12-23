@@ -31,9 +31,11 @@ module.exports = withSentryConfig(
   {
     widenClientFileUpload: true,
     transpileClientSDK: false,
-    tunnelRoute: '/elroy',
+    tunnelRoute: '/api/elroy',
     hideSourceMaps: true,
     disableLogger: true,
-    automaticVercelMonitors: true,
+    autoInstrumentAppDirectory: true,
+    autoInstrumentMiddleware: true,
+    autoInstrumentServerFunctions: true,
   },
 )
