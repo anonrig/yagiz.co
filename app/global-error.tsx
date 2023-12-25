@@ -1,6 +1,6 @@
 'use client'
 
-import Sentry from '@sentry/nextjs'
+import * as Sentry from '@sentry/nextjs'
 import clsx from 'clsx'
 import NextError from 'next/error'
 import { Mulish } from 'next/font/google'
