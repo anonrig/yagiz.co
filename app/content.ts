@@ -1,7 +1,7 @@
 import { Blog, Tag, allBlogs, allTags } from 'contentlayer/generated'
 import { compareDesc } from 'date-fns'
 
-export const githubImage = 'https:/github.com/anonrig.png'
+export const githubImage = 'https://github.com/anonrig.png'
 export const websiteDomain = 'https://www.yagiz.co'
 export const twitterUrl = 'https://twitter.com/yagiznizipli'
 export const rssUrl = 'https://feedly.com/i/subscription/feed%2Fhttps%3A%2F%2Fwww.yagiz.co%2Frss%2F'
