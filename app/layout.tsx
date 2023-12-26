@@ -29,6 +29,15 @@ export const metadata: Metadata = {
     locale: 'en-US',
     type: 'website',
     url: websiteDomain,
+    images: [
+      {
+        url: new URL('/opengraph-image.png', websiteDomain).href,
+        width: 1200,
+        height: 600,
+        alt: 'Engineering with Yagiz',
+        type: 'image/png',
+      },
+    ],
   },
   robots: {
     index: true,
@@ -36,9 +45,6 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
     },
   },
   twitter: {
@@ -48,6 +54,15 @@ export const metadata: Metadata = {
     siteId: '1589638196',
     creator: '@yagiznizipli',
     creatorId: '1589638196',
+    images: [
+      {
+        url: new URL('/opengraph-image.png', websiteDomain).href,
+        width: 1200,
+        height: 600,
+        alt: 'Engineering with Yagiz',
+        type: 'image/png',
+      },
+    ],
   },
 }
 
