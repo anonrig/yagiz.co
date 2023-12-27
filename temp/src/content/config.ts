@@ -30,13 +30,18 @@ const tags = defineCollection({
 
 const pages = defineCollection({
   type: "content",
-  schema: z.object({
-    title: z.string(),
-    description: z.string(),
-    feature_image: z.string().optional(),
-    feature_image_caption: z.string().optional(),
-    feature_image_alt: z.string().optional(),
-  }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string(),
+      description: z.string(),
+      image: z
+        .object({
+          src: z.preprocess((v) => `@/assets/${v}`, image()),
+          alt: z.string().optional().default(""),
+          caption: z.string().optional(),
+        })
+        .optional(),
+    }),
 });
 
 export const collections = {

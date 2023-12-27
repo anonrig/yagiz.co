@@ -26,11 +26,11 @@ export function getMetadata({ page }: Props): LayoutProps {
     <Heading text={page.data.title} />
 
     {
-      page.data.feature_image && (
+      page.data.image && (
         <Figure
-          alt={page.data.feature_image_alt ?? page.data.title}
-          src={page.data.feature_image}
-          caption={page.data.feature_image_caption}
+          alt={page.data.image.alt}
+          src={page.data.image.src.src}
+          caption={page.data.image.caption}
         />
       )
     }
