@@ -1,16 +1,17 @@
-import { defineConfig, passthroughImageService } from "astro/config";
+import { defineConfig } from "astro/config";
 import tailwind from "@astrojs/tailwind";
 import react from "@astrojs/react";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
-
-import cloudflare from "@astrojs/cloudflare"
+import cloudflare from "@astrojs/cloudflare";
 
 // https://astro.build/config
 export default defineConfig({
   site: "https://www.yagiz.co",
   output: "hybrid",
-  adapter: cloudflare(),
+  adapter: cloudflare({
+    imageService: "cloudflare",
+  }),
   integrations: [
     tailwind({
       applyBaseStyles: false,
@@ -21,10 +22,6 @@ export default defineConfig({
       lastmod: new Date(),
     }),
   ],
-  // TODO: remove
-  image: {
-    service: passthroughImageService(),
-  },
   vite: {
     optimizeDeps: {
       exclude: ["@resvg/resvg-js"],

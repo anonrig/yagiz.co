@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@8.13.1",
+  "engines": {
+    "node": ">=18.14.1"
+  },
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
@@ -14,11 +18,11 @@
   },
   "dependencies": {
     "@astrojs/cloudflare": "^8.0.0",
-    "@astrojs/mdx": "^2.0.1",
-    "@astrojs/react": "^3.0.7",
+    "@astrojs/mdx": "^2.0.2",
+    "@astrojs/react": "^3.0.8",
     "@astrojs/rss": "^4.0.1",
     "@astrojs/sitemap": "^3.0.3",
-    "@astrojs/tailwind": "^5.0.3",
+    "@astrojs/tailwind": "^5.0.4",
     "@fontsource-variable/mulish": "^5.0.17",
     "@formspree/react": "^2.5.1",
     "@nanostores/react": "^0.7.1",
@@ -27,22 +31,22 @@
     "@resvg/resvg-js": "^2.6.0",
     "@tailwindcss/typography": "^0.5.10",
     "@types/react": "^18.2.45",
-    "@types/react-dom": "^18.2.17",
-    "astro": "^4.0.4",
+    "@types/react-dom": "^18.2.18",
+    "astro": "^4.0.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "date-fns": "^2.30.0",
-    "lucide-react": "^0.294.0",
+    "lucide-react": "^0.302.0",
     "nanostores": "^0.9.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "reading-time": "^1.5.0",
     "satori": "^0.10.11",
-    "sharp": "^0.33.0",
-    "tailwindcss": "^3.3.6"
+    "sharp": "^0.33.1",
+    "tailwindcss": "^3.4.0"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.3.2",
+    "@astrojs/check": "^0.3.4",
     "@biomejs/biome": "^1.4.1",
     "typescript": "^5.3.3"
   }
