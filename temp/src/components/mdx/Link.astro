@@ -1,9 +1,11 @@
 ---
-export type Props = {
-  href: string;
-};
+import type { HTMLAttributes } from "astro/types";
 
-const { href } = Astro.props;
+export interface Props extends Omit<HTMLAttributes<"a">, "href"> {
+  href: string;
+}
+
+const { href, ...rest } = Astro.props;
 
 const isInternalLink = href && (href.startsWith("/") || href.startsWith("#"));
 ---
@@ -11,6 +13,7 @@ const isInternalLink = href && (href.startsWith("/") || href.startsWith("#"));
 <a
   href={href}
   {...isInternalLink ? {} : { target: "_blank", rel: "noopener noreferrer" }}
+  {...rest}
 >
   <slot />
 </a>
