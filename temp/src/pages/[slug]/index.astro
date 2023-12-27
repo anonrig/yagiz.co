@@ -2,7 +2,7 @@
 import type { GetStaticPaths } from "astro";
 import { getPosts } from "@/lib/content";
 import Layout from "@/layouts/Layout.astro";
-import Heading from "@/components/ui/Heading";
+import Heading from "@/components/ui/Heading.astro";
 import Figure from "@/components/ui/Figure.astro";
 import Prose from "@/components/ui/Prose.astro";
 import { components } from "@/components/mdx";
@@ -87,7 +87,7 @@ const format = (date: Date) => {
         </span>
       </div>
 
-      <Heading text={post.data.title} />
+      <Heading>{post.data.title}</Heading>
 
       {
         post.data.image && (

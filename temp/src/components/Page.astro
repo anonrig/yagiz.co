@@ -1,7 +1,7 @@
 ---
 import type { Page } from "@/types/content";
 import Figure from "@/components/ui/Figure.astro";
-import Heading from "@/components/ui/Heading";
+import Heading from "@/components/ui/Heading.astro";
 import Prose from "@/components/ui/Prose.astro";
 import type { Props as LayoutProps } from "@/layouts/Layout.astro";
 import { components } from "@/components/mdx";
@@ -23,7 +23,7 @@ export function getMetadata({ page }: Props): LayoutProps {
 
 <section>
   <header class="mb-[4.5rem] grid grid-cols-canvas text-center">
-    <Heading text={page.data.title} />
+    <Heading>{page.data.title}</Heading>
 
     {
       page.data.image && (
