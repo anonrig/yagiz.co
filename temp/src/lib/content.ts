@@ -1,7 +1,7 @@
 import { getCollection, getEntry } from "astro:content";
 import readingTime from "reading-time";
 
-export const githubImage = "https:/github.com/anonrig.png";
+export const githubImage = "https://github.com/anonrig.png";
 export const twitterUrl = "https://twitter.com/yagiznizipli";
 export const rssUrl =
   "https://feedly.com/i/subscription/feed%2Fhttps%3A%2F%2Fwww.yagiz.co%2Frss%2F";
