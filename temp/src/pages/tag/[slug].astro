@@ -19,22 +19,7 @@ const posts = (await getPosts()).filter(
 );
 ---
 
-<Layout
-  metadata={{
-    title: tag.data.title,
-    description: tag.data.description,
-    openGraph: {
-      title: tag.data.title,
-      description: tag.data.description,
-      type: "website",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: tag.data.title,
-      description: tag.data.description,
-    },
-  }}
->
+<Layout title={tag.data.title} description={tag.data.description}>
   <section>
     <Container size="tight" className="-mt-6 flex flex-col gap-8 text-center">
       <h1 class="text-2xl font-extrabold text-orange-400">#{tag.data.title}</h1>

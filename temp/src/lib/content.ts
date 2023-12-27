@@ -1,6 +1,5 @@
 import { getCollection, getEntry } from "astro:content";
 import readingTime from "reading-time";
-import { compareDesc } from "date-fns";
 
 export const githubImage = "https:/github.com/anonrig.png";
 export const twitterUrl = "https://twitter.com/yagiznizipli";
@@ -39,7 +38,7 @@ export const getPosts = async () => {
           };
         })
     )
-  ).sort((a, b) => compareDesc(a.data.date, b.data.date));
+  ).sort((a, b) => +b.data.date - +a.data.date);
 
   return posts;
 };

@@ -2,7 +2,6 @@
 import type { GetStaticPaths } from "astro";
 import { getPosts } from "@/lib/content";
 import Layout from "@/layouts/Layout.astro";
-import { format } from "date-fns";
 import Heading from "@/components/ui/Heading";
 import Figure from "@/components/ui/Figure";
 import Prose from "@/components/ui/Prose.astro";
@@ -30,33 +29,25 @@ const index = posts.findIndex((p) => p.slug === post.slug);
 const suggestions = [posts.at(index - 2), posts.at(index - 1)].filter(
   Boolean
 ) as Array<Post>;
+
+const format = (date: Date) => {
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const day = date.getDate().toString().padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+};
 ---
 
 <Layout
-  metadata={{
-    title: post.data.title,
-    description: post.data.description,
-    authors: [{ name: "Yagiz Nizipli" }],
-    category: "technology",
-    image: `${Astro.url.origin}/${post.slug}/opengraph-image`,
-    openGraph: {
-      title: post.data.title,
-      description: post.data.description,
-      type: "article",
-      publishedTime: format(new Date(post.data.date), "yyyy-MM-dd"),
-      tags: [post.data.tag.data.title],
-      siteName: "Engineering with Yagiz",
-      locale: "en-US",
-      authors: ["Yagiz Nizipli"],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: post.data.title,
-      description: post.data.description,
-      siteId: "1589638196",
-      creator: "@yagiznizipli",
-      creatorId: "1589638196",
-    },
+  title={post.data.title}
+  description={post.data.description}
+  image={`${Astro.url.origin}/${post.slug}/opengraph-image`}
+  article={{
+    authors: ["Yagiz Nizipli"],
+    publishedTime: format(post.data.date),
+    modifiedTime: format(new Date()),
+    tags: [post.data.tag.data.title],
   }}
 >
   <Fragment slot="head">
@@ -71,9 +62,15 @@ const suggestions = [posts.at(index - 2), posts.at(index - 1)].filter(
         class="col-main mb-4 text-xs font-extrabold uppercase text-slate-400"
       >
         <span>
-          <time datetime={post.data.date.toISOString()}
-            >{format(post.data.date, "MMM dd, yyyy")}</time
-          >
+          <time datetime={post.data.date.toISOString()}>
+            {
+              new Intl.DateTimeFormat("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              }).format(post.data.date)
+            }
+          </time>
         </span>
         <span class="px-2 leading-[1] font-serif">·</span>
         <span>

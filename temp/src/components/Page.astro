@@ -13,16 +13,10 @@ interface Props {
 const { page } = Astro.props;
 const { Content } = await page.render();
 
-export function getMetadata({ page }: Props): LayoutProps["metadata"] {
+export function getMetadata({ page }: Props): LayoutProps {
   return {
     title: page.data.title,
     description: page.data.description,
-    openGraph: {
-      title: page.data.title,
-      description: page.data.description,
-      type: "website",
-      url: Astro.url,
-    },
   };
 }
 ---

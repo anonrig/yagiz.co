@@ -1,10 +1,11 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import Page, {getMetadata} from "@/components/Page.astro";
+import Page, { getMetadata } from "@/components/Page.astro";
 import { getPages } from "@/lib/content";
 
-const page = (await getPages()).find(page => page.slug === "supporters")!
+const page = (await getPages()).find((page) => page.slug === "supporters")!;
 ---
-<Layout metadata={getMetadata({ page })}>
-    <Page {page} />
+
+<Layout {...getMetadata({ page })}>
+  <Page {page} />
 </Layout>

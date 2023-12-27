@@ -1,6 +1,5 @@
 ---
 import type { Post } from "@/types/content";
-import { format } from "date-fns";
 import { ChevronRight } from "lucide-react";
 
 interface Props {
@@ -18,7 +17,12 @@ const { post } = Astro.props;
     datetime={post.data.date.toISOString()}
     class="mr-6 flex min-w-[45px] whitespace-nowrap text-xs font-extrabold uppercase text-orange-400"
   >
-    {format(post.data.date, "MMM dd")}
+    {
+      new Intl.DateTimeFormat("en-US", {
+        month: "short",
+        day: "numeric",
+      }).format(post.data.date)
+    }
   </time>
   <div
     class="overflow-hidden whitespace-nowrap text-ellipsis w-full pr-4 leading-6"

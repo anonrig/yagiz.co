@@ -5,6 +5,6 @@ import { getPages } from "@/lib/content";
 
 const page = (await getPages()).find(page => page.slug === "about")!
 ---
-<Layout metadata={getMetadata({ page })}>
+<Layout {...getMetadata({ page })}>
     <Page {page} />
 </Layout>

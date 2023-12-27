@@ -7,7 +7,7 @@ import ContactForm from "@/components/ContactForm";
 const page = (await getPages()).find((page) => page.slug === "contact")!;
 ---
 
-<Layout metadata={getMetadata({ page })}>
+<Layout {...getMetadata({ page })}>
   <Page {page}>
     <ContactForm className="mt-6" client:visible />
   </Page>
