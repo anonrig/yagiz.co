@@ -96,7 +96,7 @@ export async function createBlog() {
   })
   const creating = spinner()
   creating.start('Creating the document')
-  const documentPath = path.join(folder, `${slug}.mdx`)
+  const documentPath = path.join(folder, `blog/${slug}.mdx`)
   await fs.promises.writeFile(documentPath, template.trim(), 'utf-8')
   creating.stop()
 

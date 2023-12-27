@@ -1,0 +1,106 @@
+---
+title: 'Recap 2023 - The year of hard work and new beginnings'
+description: >-
+  It's been a really long year. I've had a lot of ups and downs, but I'm glad I've made it through. I'm looking forward to the next year, and I hope it's a good one.
+type: Blog
+date: '2023-12-25'
+tag: tags/personal.mdx
+status: published
+feature_image: /content/nodeconf-2023.jpeg
+feature_image_caption: >-
+  Speaking about Ada URL parser at NodeConf.eu 2023
+---
+
+It's been a really long year. I've had a lot of ups and downs, but I'm glad I've made it through. I'm looking forward to the next year, and I hope it's a good one. For the people interested about what I've been up to this year, here's a recap of what I've been up to.
+
+## Personal Life
+
+2023 was a really exciting year for me, and my family:
+
+- I became a father, and had a daughter named Ada.
+- We moved to New Jersey and finally abandoned Manhattan and city lifestyle.
+- We got our green cards, and we're now permanent residents of the United States.
+
+### From Rust to Parenthood: Yagiz Nizipli's Journey
+
+Here's an interview I did with [Nearform][nearform] about my journey through Node.js, URL parsing, and personal growth.
+
+[![From Rust to Parenthood: Yagiz Nizipli's Journey through Node.js, URL Parsing, and Personal Growth](https://i3.ytimg.com/vi/1ex8dZ7i8_M/maxresdefault.jpg)](https://www.youtube.com/watch?v=1ex8dZ7i8_M)
+
+## Work
+
+I've made an exciting career change and started working on developer tooling. This career change made me realize how much I love working on developer tooling, and how much I missed it. I'm really excited about the future, and I'm looking forward to working on developer tooling for the foreseeable future.
+
+I've changed jobs this year. Until November 20, I was working at [Noonlight][noonlight] as a Senior Software Engineer. Currently I'm working at [Sentry][sentry] working on error tracking & performance.
+
+## Open-Source
+
+This is the year I've spent most of my time coding and contributing to Node.js. Every project I've worked on has been open source, and had the goal of improving the Node.js performance.
+
+![2023 Github Contributions](/content/2023-github-contributions.png)
+
+- Created [4108 commits][github-anonrig] on Github.
+- I've created [91 pull requests][nodejs-prs] for Node.js.
+- I've introduced 3 new dependencies to Node.js core:
+  - [Ada URL parser][ada-url-parser], for fast parsing of URLs.
+  - [simdutf][simdutf], for fast UTF-8 validation and transcoding.
+  - [simdjson][simdjson], for fast JSON parsing.
+- Wrote the fastest URL parser in the world [Ada URL parser][ada-url-parser] with [Daniel Lemire][daniel-lemire]
+  - Ada became the URL parser of Node.js and later got adopted by Cloudflare workers.
+  - Published a paper called [Parsing millions of URLs per second][parsing-millions-of-urls-per-second].
+  - Created an IDNA implementation for Ada, which got adopted by [Clickhouse][clickhouse-ada-idna]. [Ada IDNA][ada-idna] currently powers `domainToASCII` and `domainToUnicode` in Node.js, and makes `URL` class ICU-free.
+- I spoke at [NodeConf.eu][nodeconf-eu] with [Daniel Lemire][daniel-lemire] about the Ada URL parser.
+- I became a voting member of the [Node.js Technical Steering Committee][nodejs-tsc] and [OpenJS Foundation][openjsf-cpc].
+- I became the [Node.js Performance Strategic Initiative][performance-strategic-initiative] champion of Node.js and later [resigned][performance-strategic-initiative-leave] from my position.
+- I attended and spoke at DevTools.fm podcast, OpenJS Collaborator summit, and gave a talk for NearForm's Fireside chats.
+- I started rewriting [pnpm][pnpm] in Rust called [pacquet][pacquet] and donated it to the pnpm organization.
+- I joined the [Web-Platform Tests][web-platform-tests] and [pnpm][pnpm-organization] organization.
+- My JavaScript library [fast-querystring][fast-querystring] got adopted by several large organizations and governments such as [Canada][fast-querystring-canada], [Oracle][fast-querystring-oracle], [Cisco][fast-querystring-cisco] and [Inspire Flex][fast-querystring-inspire-flex].
+
+## What's next?
+
+I've spent 2023 working on Node.js, and giving back to the community. I'm planning to continue working on Node.js, and developer tooling in 2024. Here are my new year's resolutions:
+
+### Work
+
+I'll be focusing on improving my Rust skills and improve my expertise in developer tooling and error tracking. Specifically, I'll be working on Sentry's performance and error tracking products. My goal is to improve my knowledge on Rust and C++ performance. I'll try to learn more and apply my findings to Sentry's performance and error tracking products.
+
+### Open-Source
+
+2023 was a year of ups and downs. Especially in the open-source world. I've spent this year creating an initiative and influence over the ecosystem to improve Node.js performance. I've spent a lot of time and energy on this, and I'm glad I've made it through. I'm really proud of what I've accomplished, but I'm also exhausted.
+
+I think it's time for me to take a step back from Node.js performance and focus on other things. I'll continue my work on Node.js Technical Steering Committee, but I'll take less responsibility starting by [finding a new chair for the Node.js performance team][finding-new-chair-for-nodejs-performance] bi-weekly meetings.
+
+On top of that, I'll be working on a high-performance project similar to [Ada URL][ada-url-parser] with [Daniel Lemire][daniel-lemire].
+
+## Thank you
+
+I'd like to thank Matteo Collina, James Snell, Daniel Lemire, Anna Henningsen, and the entire Node.js community for their support and guidance. I'd also like to thank my wife for her support and patience. And most importantly, I'd like to thank my daughter Ada for being the best thing that happened to me in 2023.
+
+[ada-idna]: https://github.com/ada-url/idna
+[ada-url-parser]: https://github.com/ada-url/ada
+[clickhouse-ada-idna]: https://github.com/ClickHouse/ClickHouse/pull/57969
+[daniel-lemire]: https://lemire.me
+[fast-querystring]: https://www.npmjs.com/package/fast-querystring
+[fast-querystring-canada]: https://code.open.canada.ca/en/dependencies.html
+[fast-querystring-cisco]: https://www.cisco.com/c/dam/en_us/about/doing_business/open_source/docs/CiscoAppDynamicsOrionSolutionManagement-510-1686166002.pdf
+[fast-querystring-inspire-flex]: https://university.quadient.com/c/portal/documents/find?name=open-source-licenses-inspire
+[fast-querystring-oracle]: https://docs.oracle.com/en/industries/hospitality/opera-cloud/23.2/ocslg/ch_licensing_information.htm#LicensingInformation-82045BEE
+[finding-new-chair-for-nodejs-performance]: https://github.com/nodejs/performance/issues/143
+[github-anonrig]: https://github.com/anonrig
+[parsing-millions-of-urls-per-second]: https://onlinelibrary.wiley.com/doi/full/10.1002/spe.3296
+[performance-strategic-initiative]: https://github.com/nodejs/node/pull/47424
+[performance-strategic-initiative-leave]: https://github.com/nodejs/node/pull/49641
+[nearform]: https://nearform.com
+[nodeconf-eu]: https://www.youtube.com/watch?v=tQ-6OWRDsZg
+[nodejs-prs]: https://github.com/nodejs/node/pulls?q=is%3Apr+author%3Aanonrig+merged%3A2023-01-01..2024-01-01+is%3Aclosed
+[nodejs-tsc]: https://github.com/nodejs/tsc
+[noonlight]: https://noonlight.com
+[openjsf-cpc]: https://github.com/openjs-foundation/cross-project-council/pull/1207
+[pacquet]: https://github.com/pnpm/pacquet
+[pnpm]: https://pnpm.io
+[pnpm-organization]: https://github.com/pnpm
+[sentry]: https://sentry.io
+[simdutf]: https://github.com/simdutf/simdutf
+[simdjson]: https://github.com/simdjson/simdjson
+[web-platform-tests]: https://github.com/web-platform-tests/wpt/issues/43580

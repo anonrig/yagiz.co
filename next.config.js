@@ -12,6 +12,7 @@ const nextConfig = {
   },
   images: {
     formats: ['image/avif', 'image/webp'],
+    remotePatterns: [{ protocol: 'https', hostname: 'i3.ytimg.com' }],
   },
   experimental: {
     webpackBuildWorker: true,
@@ -31,9 +32,11 @@ module.exports = withSentryConfig(
   {
     widenClientFileUpload: true,
     transpileClientSDK: false,
-    tunnelRoute: '/elroy',
+    tunnelRoute: '/api/elroy',
     hideSourceMaps: true,
     disableLogger: true,
-    automaticVercelMonitors: true,
+    autoInstrumentAppDirectory: true,
+    autoInstrumentMiddleware: true,
+    autoInstrumentServerFunctions: true,
   },
 )

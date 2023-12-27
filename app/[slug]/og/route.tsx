@@ -2,20 +2,14 @@
 
 import { ImageResponse } from 'next/og'
 
-import { githubImage } from '@/app/content'
-import { sortedBlogs } from '@/app/content'
+import { githubImage, sortedBlogs } from '@/app/content'
 
 export const runtime = 'edge'
-export const size = { width: 1200, height: 600 }
-export const contentType = 'image/png'
 
-type Context = {
-  params: { slug: string }
-}
-
-export default function og({ params }: Context) {
-  const blog = sortedBlogs.find((blog) => blog.slug === params.slug)
-  if (!blog) {
+export async function GET(request: Request) {
+  const slug = new URL(request.url).searchParams.get('slug')
+  const blog = sortedBlogs.find((blog) => blog.slug === slug)
+  if (!slug || !blog) {
     return new Response('Not found', { status: 404 })
   }
   return new ImageResponse(
@@ -35,6 +29,9 @@ export default function og({ params }: Context) {
     {
       width: 1200,
       height: 600,
+      headers: {
+        'Content-Type': 'image/png',
+      },
     },
   )
 }
