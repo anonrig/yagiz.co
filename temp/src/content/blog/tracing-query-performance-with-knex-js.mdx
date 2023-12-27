@@ -5,7 +5,8 @@ description: >-
 date: 2022-01-23
 tag: performance
 status: published
-feature_image: /content/knexjs-cover.png
+image:
+  src: knexjs-cover.png
 ---
 
 Over the years, I found myself searching for the same exact problem whenever I was using Knex.js, the query planner for Node.js. Since, the following code snippet is small enough to not be a Node library, I'm intrigued to share this as a blog post.
@@ -36,6 +37,6 @@ pg.on('query', (query) => {
 
 Small snippet using perf_hooks
 
-![Tracing query screenshot](/content/tracing-query-screenshot.png)
+![Tracing query screenshot](@/assets/content/tracing-query-screenshot.png)
 
 With the following code, we'll see the following code on our terminal.

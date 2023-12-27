@@ -29,11 +29,11 @@ export const GET: APIRoute = async ({ site, url }) => {
       enclosure: {
         // TODO: can't set length to 0
         length: 1,
-        type: post.data.feature_image
-          ? `image/${extname(post.data.feature_image).slice(1)}`
+        type: post.data.image
+          ? `image/${extname(post.data.image.src.src).slice(1)}`
           : "image//using-insecure-npm-defaults/opengraph-image",
         url: `${url.origin}${
-          post.data.feature_image ?? `/${post.slug}/opengraph-image`
+          post.data.image?.src.src ?? `/${post.slug}/opengraph-image`
         }`,
       },
     })),

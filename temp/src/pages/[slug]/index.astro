@@ -90,11 +90,11 @@ const format = (date: Date) => {
       <Heading text={post.data.title} />
 
       {
-        post.data.feature_image && (
+        post.data.image && (
           <Figure
             alt={post.data.title}
-            src={post.data.feature_image}
-            caption={post.data.feature_image_caption}
+            src={post.data.image.src.src}
+            caption={post.data.image.alt}
           />
         )
       }

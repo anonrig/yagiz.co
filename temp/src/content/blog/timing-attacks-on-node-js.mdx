@@ -5,8 +5,9 @@ description: >-
 date: 2021-03-24
 tag: security
 status: published
-feature_image: /content/stormtrooper-figure.jpeg
-feature_image_caption: Photo by Liam Tucker / Unsplash
+image:
+  src: stormtrooper-figure.jpeg
+  alt: Photo by Liam Tucker / Unsplash
 ---
 
 I've been working with Node.js for quite a long time. So, believe me when I say there's a library called **eslint-plugin-security** to detect common mistakes and security flaws you make while you're coding. Before discussing timing attacks on node.js, let's start by talking about my Eslint configuration on Socketkit's new privacy & security-oriented tracking API.
@@ -83,7 +84,7 @@ Since, **password** and **password\_again** should be equal in order to make sur
 
 Unfortunately, the following code produces an attack vector called \`Timing attack\`. When searched upon it's clear that \`eslint\` only checks for the name of the variable \`password\` and this is a false positive in terms of security. But for the sake of this article, let's continue on investigating the cause of it and try to improve our code. (Make it hacker proof)
 
-![Hackerman](/content/hackerman.png)
+![Hackerman](@/assets/content/hackerman.png)
 
 Hackerman
 

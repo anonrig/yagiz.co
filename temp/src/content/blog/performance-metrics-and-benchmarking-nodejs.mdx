@@ -5,42 +5,46 @@ description: >-
 date: 2021-05-16
 tag: performance
 status: published
-feature_image: /content/happy-sheep.jpeg
-feature_image_caption: >-
-  Life before thinking about performance impact, memory and cpu
+image:
+  src: happy-sheep.jpeg
+  alt: Life before thinking about performance impact, memory and cpu
 ---
 
-Lately, I've found myself worrying more and more about performance and the amount of time it takes for a function or a task to be taken on Node.js. Particularly, I wanted to benchmark and compare a particular code change to the original one. While researching for ways to implement and compare these functions, I came across Node.js's **perf\_hooks** package which was added in the 8.5.0 release. For API definitions and use cases please refer to the [documentation](https://nodejs.org/api/perf%5Fhooks.html).
+Lately, I've found myself worrying more and more about performance and the amount of time it takes for a function or a task to be taken on Node.js. Particularly, I wanted to benchmark and compare a particular code change to the original one. While researching for ways to implement and compare these functions, I came across Node.js's **perf_hooks** package which was added in the 8.5.0 release. For API definitions and use cases please refer to the [documentation](https://nodejs.org/api/perf%5Fhooks.html).
 
 ## Performance Measurement
 
 Let's first dive into a basic example of calculating the amount of time in milliseconds it takes to execute a specific function:
 
 ```js
-import { performance } from 'perf_hooks'
+import { performance } from "perf_hooks";
 
 async function hardToSwallowPills() {
-  performance.mark('start-benchmarking')
-  await doSomeAsyncTask()
-  performance.mark('end-benchmarking')
-  performance.measure('hardToSwallowPills', 'start-benchmarking', 'end-benchmarking')
+  performance.mark("start-benchmarking");
+  await doSomeAsyncTask();
+  performance.mark("end-benchmarking");
+  performance.measure(
+    "hardToSwallowPills",
+    "start-benchmarking",
+    "end-benchmarking"
+  );
 }
 ```
 
 The important part you need to address in this code is, you need to manually mark a specific point in your codebase before and after the execution of it. After that, you need to measure the difference using **performance.measure** which takes the name/identifier of the measurement as the first parameter.
 
-In order to log these measurements, you'll need the PerformanceObserver implementation from the **perf\_hooks**.
+In order to log these measurements, you'll need the PerformanceObserver implementation from the **perf_hooks**.
 
 ```js
-import { PerformanceObserver } from 'perf_hooks'
+import { PerformanceObserver } from "perf_hooks";
 const performanceObserver = new PerformanceObserver((list) => {
   list.getEntries().forEach((entry) => {
     logger
-      .withTag('performance')
-      .info(`${entry.name} took ${entry.duration.toFixed(2)} ms`)
-  })
-})
-performanceObserver.observe({ entryTypes: ['measure'], buffered: true })
+      .withTag("performance")
+      .info(`${entry.name} took ${entry.duration.toFixed(2)} ms`);
+  });
+});
+performanceObserver.observe({ entryTypes: ["measure"], buffered: true });
 ```
 
 ## Benchmarking
