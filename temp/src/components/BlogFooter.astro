@@ -2,6 +2,8 @@
 import { getPosts } from "@/lib/content";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Container from "@/components/ui/Container";
+import authorImg from "@/assets/author-image.png";
+import { Image } from "astro:assets";
 
 interface Props {
   index: number;
@@ -32,9 +34,9 @@ const previous = index !== posts.length - 1 ? posts.at(index + 1) : undefined;
         Published by:
       </h3>
       <a href="/about">
-        <img
+        <Image
+          src={authorImg}
           alt="A photo of Yagiz Nizipli"
-          src="/author-image.png"
           width={50}
           height={50}
           class="rounded-full"

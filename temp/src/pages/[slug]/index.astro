@@ -3,7 +3,7 @@ import type { GetStaticPaths } from "astro";
 import { getPosts } from "@/lib/content";
 import Layout from "@/layouts/Layout.astro";
 import Heading from "@/components/ui/Heading";
-import Figure from "@/components/ui/Figure";
+import Figure from "@/components/ui/Figure.astro";
 import Prose from "@/components/ui/Prose.astro";
 import { components } from "@/components/mdx";
 import type { Post } from "@/types/content";
@@ -93,7 +93,7 @@ const format = (date: Date) => {
         post.data.image && (
           <Figure
             alt={post.data.title}
-            src={post.data.image.src.src}
+            src={post.data.image.src}
             caption={post.data.image.alt}
           />
         )

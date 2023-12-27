@@ -1,0 +1,43 @@
+---
+import { type VariantProps, cva } from "class-variance-authority";
+import clsx from "clsx";
+import type { ImageMetadata } from "astro";
+import { Image } from "astro:assets";
+
+const figureVariants = cva("mt-6", {
+  variants: {
+    size: {
+      wide: "col-wide",
+      main: "col-main",
+    },
+  },
+  defaultVariants: {
+    size: "wide",
+  },
+});
+
+interface Props extends VariantProps<typeof figureVariants> {
+  class?: string;
+  caption?: string;
+  src: ImageMetadata;
+  alt: string;
+}
+
+const { size, class: className, ...props } = Astro.props;
+---
+
+<figure class={clsx(figureVariants({ size, className }))}>
+  <Image
+    src={props.src}
+    alt={props.alt}
+    loading="eager"
+    class="duration-300 ease-in-out bg-gray-100 aspect-video w-full object-cover object-center"
+  />
+  {
+    props.caption && (
+      <figcaption class="mt-4 text-sm text-neutral-400">
+        {props.caption}
+      </figcaption>
+    )
+  }
+</figure>

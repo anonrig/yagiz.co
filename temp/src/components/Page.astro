@@ -1,6 +1,6 @@
 ---
 import type { Page } from "@/types/content";
-import Figure from "@/components/ui/Figure";
+import Figure from "@/components/ui/Figure.astro";
 import Heading from "@/components/ui/Heading";
 import Prose from "@/components/ui/Prose.astro";
 import type { Props as LayoutProps } from "@/layouts/Layout.astro";
@@ -29,7 +29,7 @@ export function getMetadata({ page }: Props): LayoutProps {
       page.data.image && (
         <Figure
           alt={page.data.image.alt}
-          src={page.data.image.src.src}
+          src={page.data.image.src}
           caption={page.data.image.caption}
         />
       )
