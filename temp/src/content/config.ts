@@ -20,7 +20,6 @@ const blog = defineCollection({
 });
 
 const tags = defineCollection({
-  // TODO: switch to json
   type: "content",
   schema: z.object({
     title: z.string(),
