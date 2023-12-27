@@ -38,6 +38,7 @@ const suggestions = [posts.at(index - 2), posts.at(index - 1)].filter(
     description: post.data.description,
     authors: [{ name: "Yagiz Nizipli" }],
     category: "technology",
+    image: `${Astro.url.origin}/${post.slug}/opengraph-image`,
     openGraph: {
       title: post.data.title,
       description: post.data.description,
