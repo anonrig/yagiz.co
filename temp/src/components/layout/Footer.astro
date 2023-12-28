@@ -17,13 +17,13 @@ const footerItems: Item[] = [
       class="mx-[4px] p-[3px] leading-[0] text-[#999] hover:text-[#CCC] dark:text-neutral-400"
       rel="noopener noreferrer"
       target="_blank"
-      aria-label="Twitter"
     >
       <Twitter
         size={18}
         className="rounded-sm bg-[#999] hover:bg-[#CCC]"
         fill="white"
       />
+      <span class="sr-only">Twitter</span>
     </a>
 
     <a
@@ -31,12 +31,12 @@ const footerItems: Item[] = [
       class="mx-[4px] p-[3px] leading-[0] text-white dark:text-white-reversed"
       rel="noopener noreferrer"
       target="_blank"
-      aria-label="RSS"
     >
       <Rss
         size={18}
         className="rounded-sm bg-[#999] p-0.5 hover:bg-[#CCC] dark:bg-neutral-400 hover:dark:bg-neutral-500"
       />
+      <span class="sr-only">RSS</span>
     </a>
   </div>
   <nav class="flex flex-wrap items-center justify-center">

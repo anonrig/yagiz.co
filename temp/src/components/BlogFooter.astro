@@ -19,8 +19,9 @@ const previous = index !== posts.length - 1 ? posts.at(index + 1) : undefined;
   <div class="flex flex-2 text-black dark:text-neutral-400">
     {
       previous !== undefined && (
-        <a href={`/${previous.slug}`} aria-label="Previous article">
+        <a href={`/${previous.slug}`}>
           <ArrowLeft size={20} />
+          <span class="sr-only">Previous article</span>
         </a>
       )
     }
@@ -36,11 +37,12 @@ const previous = index !== posts.length - 1 ? posts.at(index + 1) : undefined;
       <a href="/about">
         <Image
           src={authorImg}
-          alt="A photo of Yagiz Nizipli"
+          alt=""
           width={50}
           height={50}
           class="rounded-full"
         />
+        <span class="sr-only">About</span>
       </a>
     </div>
   </div>
@@ -48,8 +50,9 @@ const previous = index !== posts.length - 1 ? posts.at(index + 1) : undefined;
   <div class="flex flex-2 justify-end text-black dark:text-neutral-400">
     {
       next !== undefined && (
-        <a href={`/${next.slug}`} aria-label="Next article">
+        <a href={`/${next.slug}`}>
           <ArrowRight size={20} />
+          <span class="sr-only">Next article</span>
         </a>
       )
     }

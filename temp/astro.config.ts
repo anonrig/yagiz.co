@@ -4,10 +4,11 @@ import react from "@astrojs/react";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import cloudflare from "@astrojs/cloudflare";
-import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypeAutolinkHeadings, {
+  type Options as RehypeAutolinkHeadingsOptions,
+} from "rehype-autolink-headings";
 import rehypePrettyCode, {
-  type CharsElement,
-  type LineElement,
+  type Options as RehypePrettyCodeOptions
 } from "rehype-pretty-code";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
@@ -38,7 +39,7 @@ export default defineConfig({
           {
             theme: "one-dark-pro",
             keepBackground: false,
-            onVisitLine(node: LineElement) {
+            onVisitLine(node) {
               // Prevent lines from collapsing in `display: grid` mode, and allow empty
               // lines to be copy/pasted
               if (node.children.length === 0) {
@@ -50,15 +51,15 @@ export default defineConfig({
                 ];
               }
             },
-            onVisitHighlightedLine(node: LineElement) {
+            onVisitHighlightedLine(node) {
               node.properties.className ??= [];
               node.properties.className.push("line--highlighted");
             },
-            onVisitHighlightedChars(node: CharsElement) {
+            onVisitHighlightedChars(node) {
               node.properties.className ??= [];
               node.properties.className.push("word--highlighted");
             },
-          },
+          } satisfies RehypePrettyCodeOptions,
         ],
         [
           rehypeAutolinkHeadings,
@@ -66,7 +67,7 @@ export default defineConfig({
             properties: {
               className: ["anchor"],
             },
-          },
+          } satisfies RehypeAutolinkHeadingsOptions,
         ],
       ],
     }),

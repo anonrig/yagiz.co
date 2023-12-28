@@ -31,7 +31,7 @@ export const GET: APIRoute = async ({ site, url }) => {
         length: 1,
         type: post.data.image
           ? `image/${extname(post.data.image.src.src).slice(1)}`
-          : "image//using-insecure-npm-defaults/opengraph-image",
+          : "image/png",
         url: `${url.origin}${
           post.data.image?.src.src ?? `/${post.slug}/opengraph-image`
         }`,
