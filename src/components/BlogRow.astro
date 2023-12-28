@@ -7,6 +7,11 @@ interface Props {
 }
 
 const { post } = Astro.props;
+
+const formattedDate = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+}).format(post.data.date);
 ---
 
 <a
@@ -17,12 +22,7 @@ const { post } = Astro.props;
     datetime={post.data.date.toISOString()}
     class="mr-6 flex min-w-[45px] whitespace-nowrap text-xs font-extrabold uppercase text-orange-400"
   >
-    {
-      new Intl.DateTimeFormat("en-US", {
-        month: "short",
-        day: "numeric",
-      }).format(post.data.date)
-    }
+    {formattedDate}
   </time>
   <div
     class="overflow-hidden whitespace-nowrap text-ellipsis w-full pr-4 leading-6"
