@@ -9,9 +9,8 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "start": "astro dev",
     "build": "astro check && astro build",
-    "preview": "astro preview",
+    "preview": "npx serve dist/ -l 4321",
     "astro": "astro",
     "lint": "biome check . && biome format .",
     "lint-fix": "biome check . --apply-unsafe",

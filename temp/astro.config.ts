@@ -21,7 +21,7 @@ export default defineConfig({
   site: "https://www.yagiz.co",
   output: "hybrid",
   adapter: cloudflare({
-    imageService: "cloudflare",
+    imageService: "passthrough",
   }),
   integrations: [
     tailwind({
