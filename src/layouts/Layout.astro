@@ -8,6 +8,7 @@ import { Image } from "astro:assets";
 import familyImg from "@/assets/family.png";
 import Footer from "@/components/layout/Footer.astro";
 import { SEO } from "astro-seo";
+import { DEFAULT_DESCRIPTION, DEFAULT_TITLE } from "@/lib/content";
 
 export interface Props {
   title?: string;
@@ -16,9 +17,6 @@ export interface Props {
   article?: Required<Parameters<typeof SEO>[0]>["openGraph"]["article"];
 }
 
-const DEFAULT_TITLE = "Engineering with Yagiz";
-const DEFAULT_DESCRIPTION =
-  "Here's a collection of posts about my thoughts, stories, ideas and experiences as a human, and an engineer working with different technologies.";
 
 const {
   title,
