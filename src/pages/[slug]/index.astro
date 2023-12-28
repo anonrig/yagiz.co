@@ -42,7 +42,7 @@ const format = (date: Date) => {
 <Layout
   title={post.data.title}
   description={post.data.description}
-  image={`${Astro.url.origin}/${post.slug}/opengraph-image`}
+  image={`${Astro.url.origin}/${post.slug}/opengraph-image.png`}
   article={{
     authors: ["Yagiz Nizipli"],
     publishedTime: format(post.data.date),

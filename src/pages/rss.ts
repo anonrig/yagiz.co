@@ -30,7 +30,7 @@ export const GET: APIRoute = async ({ site, url }) => {
         // TODO: can't set length to 0
         length: 1,
         type: post.data.image ? `image/${extname(post.data.image.src.src).slice(1)}` : 'image/png',
-        url: `${url.origin}${post.data.image?.src.src ?? `/${post.slug}/opengraph-image`}`,
+        url: `${url.origin}${post.data.image?.src.src ?? `/${post.slug}/opengraph-image.png`}`,
       },
     })),
   })
