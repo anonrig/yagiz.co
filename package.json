@@ -13,7 +13,7 @@
     "preview": "npx serve dist/ -l 4321",
     "astro": "astro",
     "lint": "biome check . && biome format .",
-    "lint-fix": "biome check . --apply-unsafe",
+    "lint-fix": "biome check . --apply",
     "cli": "node --no-warnings ./cli.mjs"
   },
   "dependencies": {
