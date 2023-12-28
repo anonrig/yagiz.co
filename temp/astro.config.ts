@@ -11,6 +11,10 @@ import rehypePrettyCode, {
 } from "rehype-pretty-code";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
+import sentry from "@sentry/astro";
+import { SENTRY_DSN } from "./constants";
+
+import spotlightjs from "@spotlightjs/astro";
 
 // https://astro.build/config
 export default defineConfig({
@@ -38,7 +42,12 @@ export default defineConfig({
               // Prevent lines from collapsing in `display: grid` mode, and allow empty
               // lines to be copy/pasted
               if (node.children.length === 0) {
-                node.children = [{ type: "text", value: " " }];
+                node.children = [
+                  {
+                    type: "text",
+                    value: " ",
+                  },
+                ];
               }
             },
             onVisitHighlightedLine(node: LineElement) {
@@ -64,6 +73,20 @@ export default defineConfig({
     sitemap({
       lastmod: new Date(),
     }),
+    sentry({
+      dsn: SENTRY_DSN,
+      autoInstrumentation: {
+        requestHandler: true,
+      },
+      sourceMapsUploadOptions: {
+        org: "yagiz-nb",
+        project: "yagiz-co",
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+      },
+      clientInitPath: "sentry/client.ts",
+      serverInitPath: "sentry/server.ts",
+    }),
+    spotlightjs(),
   ],
   vite: {
     optimizeDeps: {
