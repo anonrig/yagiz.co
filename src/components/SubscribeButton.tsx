@@ -29,10 +29,10 @@ const SubscribeButton = forwardRef<HTMLButtonElement, SubscribeButtonProps>(
         className={clsx(subscribeButtonVariants({ variant, className }))}
         onClick={() => $isSubscribeVisible.set(true)}
       >
-        {label ?? 'Subscribe'}
+        {label ?? "Subscribe"}
         <span className="sr-only">to the newsletter</span>
       </button>
-    )
+    );
   },
 )
 
