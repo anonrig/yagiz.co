@@ -36,7 +36,7 @@ const pages = defineCollection({
       image: z
         .object({
           src: z.preprocess((v) => `@/assets/${v}`, image()),
-          alt: z.string().optional().default(''),
+          alt: z.string(),
           caption: z.string().optional(),
         })
         .optional(),
