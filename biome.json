@@ -12,6 +12,9 @@
     "enabled": true,
     "rules": {
       "recommended": true,
+      "security": {
+        "all": true
+      },
       "correctness": {
         "noUnusedLabels": "error",
         "noUnusedVariables": "error"
