@@ -40,15 +40,15 @@ I saw an opportunity on the 48th page on Github issues on Node repository. There
 
 So, here is my elevator pitch I've did to a bunch of students and teachers at Fordham University.
 
-![WHATWG URL Parser](@/assets/content/whatwg-url-parser-slide-1.png)
+![WHATWG URL Parser](/content/whatwg-url-parser-slide-1.png)
 
-![Wanted: Reimplement WHATWG URL Parser in WASM](@/assets/content/whatwg-url-parser-wanted-issue.png)
+![Wanted: Reimplement WHATWG URL Parser in WASM](/content/whatwg-url-parser-wanted-issue.png)
 
-![WHATWG URL Parser Problem: C++ Bridge](@/assets/content/whatwg-url-parser-problem.png)
+![WHATWG URL Parser Problem: C++ Bridge](/content/whatwg-url-parser-problem.png)
 
-![WHATWG URL Parser Solution](@/assets/content/whatwg-url-parser-solution.png)
+![WHATWG URL Parser Solution](/content/whatwg-url-parser-solution.png)
 
-![Similar Studies](@/assets/content/whatwg-url-parser-similar-studies.png)
+![Similar Studies](/content/whatwg-url-parser-similar-studies.png)
 
 ## Beginnings
 
@@ -82,7 +82,7 @@ search_params_set.add('URLSearchParams.set', () => {
 
 The goal of the benchmark was to create a baseline before I did the serious stuff and see how it impacted through the releases I've did, and the progress I've made.
 
-![Benchmark results](@/assets/content/whatwg-url-benchmark.png)
+![Benchmark results](/content/whatwg-url-benchmark.png)
 
 Shockingly, the benchmarks were really bad. My Rust **URL implementation**, which didn't really do anything expect iterating through the input 1 time, was 27% slower than the actual implementation. Which was really shocking for me is that my **URLSearchParams** implementation was 86% adnd 95% slower for `set` and `append` functions, which basically just manipulated a vector inside Rust.
 
@@ -136,7 +136,7 @@ class URL {
 
 ### Benchmark results
 
-![Benchmark results](@/assets/content/whatwg-url-benchmark-results.png)
+![Benchmark results](/content/whatwg-url-benchmark-results.png)
 
 Upon implementing it and asking guidance from Matteo (due to his experience in working with Buffers), I've made the implementation faster. (18% compared to 8% performance degregation).
 

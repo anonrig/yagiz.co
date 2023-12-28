@@ -25,7 +25,7 @@ Before thinking about any algorithms, I wanted to give some information about wh
 3. Board should have some sort of understanding of what a difficulty is, or should have a basis of generating within a difficulty. (For the sake of simplicity, I won't be covering difficulty in this post)
 4. Each board cell should be unique in their corresponding row, column and their square.
 
-![With and without Sudoku solutions](@/assets/content/sudoku-with-solutions.png)
+![With and without Sudoku solutions](/content/sudoku-with-solutions.png)
 
 An example Sudoku puzzle with a solution
 
@@ -66,7 +66,7 @@ The following algorithm is an example of Breadth first search algorithm where ea
 5. Filter available positions according to my previous positions within the same x. _(This preserves the validity of the Sudoku within the same x)_
 6. Select a random position from the filtered list. If a position exist, update the board and continue to step 2\. If no positions are available for insertion, add the last value in previous positions list within the same x to the forbidden positions list, and re-iterate y-1 with the updated forbidden list.
 
-![Sudoku solution steps](@/assets/content/sudoku-solution-steps.png)
+![Sudoku solution steps](/content/sudoku-solution-steps.png)
 
 The visual representation of inserting numbers on 2x2 board
 
