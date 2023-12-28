@@ -12,7 +12,7 @@
     "build": "astro check && astro build",
     "preview": "npx serve dist/ -l 4321",
     "astro": "astro",
-    "lint": "biome check . && biome format .",
+    "lint": "biome check .",
     "lint-fix": "biome check . --apply",
     "cli": "node --no-warnings ./cli.mjs"
   },
