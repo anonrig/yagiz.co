@@ -73,10 +73,13 @@ export default defineConfig({
     sitemap({
       lastmod: new Date(),
     }),
+    // Sentry server-side is disabled temporarily
+    // due to https://github.com/getsentry/sentry-javascript/issues/9777
     sentry({
       dsn: SENTRY_DSN,
       autoInstrumentation: {
-        requestHandler: true,
+        // requestHandler: true,
+        requestHandler: false,
       },
       sourceMapsUploadOptions: {
         org: "yagiz-nb",
@@ -84,7 +87,7 @@ export default defineConfig({
         authToken: process.env.SENTRY_AUTH_TOKEN,
       },
       clientInitPath: "sentry/client.ts",
-      serverInitPath: "sentry/server.ts",
+      // serverInitPath: "sentry/server.ts",
     }),
     spotlightjs(),
   ],
