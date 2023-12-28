@@ -9,6 +9,6 @@ const page = (await getPages()).find((page) => page.slug === "contact")!;
 
 <Layout {...getMetadata({ page })}>
   <Page {page}>
-    <ContactForm className="mt-6" client:visible />
+    <ContactForm className="mt-6" client:load />
   </Page>
 </Layout>
