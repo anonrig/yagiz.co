@@ -25,6 +25,7 @@ export default defineConfig({
     }),
     react(),
     mdx({
+      syntaxHighlight: false,
       remarkPlugins: [remarkGfm],
       rehypePlugins: [
         rehypeSlug,
