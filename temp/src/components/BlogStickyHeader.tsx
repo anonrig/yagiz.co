@@ -1,10 +1,14 @@
 import SubscribeButton from "@/components/SubscribeButton";
 import type { Post } from "@/types/content";
 import { animate, scroll } from "motion";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function BlogStickyHeader({ post }: { post: Post }) {
+  const [hydrated,setHydrated] = useState(false)
+
   useEffect(() => {
+    setHydrated(true)
+
     // Start showing and moving the sticky header until 100px offset.
     scroll(animate("#sticky-header", { x: 0, y: 50, opacity: [0, 1] }), {
       offset: ["start start", "100px"],
@@ -19,7 +23,8 @@ export default function BlogStickyHeader({ post }: { post: Post }) {
   return (
     <header
       id="sticky-header"
-      className="inset-x-0 items-center backdrop-blur-sm bg-[hsla(0,0%,100%,.8)] dark:bg-white-reversed/50 flex h-[50px] justify-between px-8 fixed z-[90] top-[-50px]"
+      data-hydrated={hydrated}
+      className="inset-x-0 items-center backdrop-blur-sm bg-[hsla(0,0%,100%,.8)] dark:bg-white-reversed/50 flex h-[50px] justify-between px-8 fixed z-[90] top-[-50px] opacity-0 data-[hydrated=true]:opacity-100"
     >
       <div className="flex flex-row justify-between w-full items-center">
         <div className="overflow-hidden text-ellipsis whitespace-nowrap text-slate-800 dark:text-white leading-[1.3] mr-4 text-sm font-bold">

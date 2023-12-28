@@ -72,12 +72,10 @@ const format = (date: Date) => {
             }
           </time>
         </span>
-        <span class="px-2 leading-[1] font-serif">·</span>
-        <span>
+        <span class="before:px-2 before:font-serif before:leading-[1] before:content-['·']">
           {post.data.minute_to_read}
         </span>
-        <span class="px-2 leading-[1] font-serif">·</span>
-        <span>
+        <span class="before:px-2 before:font-serif before:leading-[1] before:content-['·']">
           <a
             href={`/tag/${post.data.tag.slug}`}
             class="text-orange-400 hover:text-orange-300"
