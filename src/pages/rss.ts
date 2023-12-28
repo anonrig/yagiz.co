@@ -1,13 +1,13 @@
-import { getPosts } from "@/lib/content";
-import type { APIRoute } from "astro";
-import rss from "@astrojs/rss";
-import { extname } from "node:path";
+import { extname } from 'node:path'
+import { getPosts } from '@/lib/content'
+import rss from '@astrojs/rss'
+import type { APIRoute } from 'astro'
 
 export const GET: APIRoute = async ({ site, url }) => {
-  const posts = await getPosts();
+  const posts = await getPosts()
 
   return rss({
-    title: "Engineering with Yagiz",
+    title: 'Engineering with Yagiz',
     description:
       "Here's a collection of posts about my thoughts, stories, ideas and experiences as a human, and an engineer working with different technologies.",
     site: site as URL,
@@ -29,13 +29,9 @@ export const GET: APIRoute = async ({ site, url }) => {
       enclosure: {
         // TODO: can't set length to 0
         length: 1,
-        type: post.data.image
-          ? `image/${extname(post.data.image.src.src).slice(1)}`
-          : "image/png",
-        url: `${url.origin}${
-          post.data.image?.src.src ?? `/${post.slug}/opengraph-image`
-        }`,
+        type: post.data.image ? `image/${extname(post.data.image.src.src).slice(1)}` : 'image/png',
+        url: `${url.origin}${post.data.image?.src.src ?? `/${post.slug}/opengraph-image`}`,
       },
     })),
-  });
-};
+  })
+}

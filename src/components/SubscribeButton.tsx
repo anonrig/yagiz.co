@@ -1,23 +1,23 @@
-import { type VariantProps, cva } from "class-variance-authority";
-import clsx from "clsx";
-import { type ButtonHTMLAttributes, forwardRef } from "react";
-import { $isSubscribeVisible } from "@/lib/stores";
+import { $isSubscribeVisible } from '@/lib/stores'
+import { type VariantProps, cva } from 'class-variance-authority'
+import clsx from 'clsx'
+import { type ButtonHTMLAttributes, forwardRef } from 'react'
 
-const subscribeButtonVariants = cva("text-orange-400", {
+const subscribeButtonVariants = cva('text-orange-400', {
   variants: {
     variant: {
-      bold: "font-bold",
+      bold: 'font-bold',
     },
   },
   defaultVariants: {
-    variant: "bold",
+    variant: 'bold',
   },
-});
+})
 
 export interface SubscribeButtonProps
   extends ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof subscribeButtonVariants> {
-  label?: string;
+  label?: string
 }
 
 const SubscribeButton = forwardRef<HTMLButtonElement, SubscribeButtonProps>(
@@ -30,12 +30,12 @@ const SubscribeButton = forwardRef<HTMLButtonElement, SubscribeButtonProps>(
         aria-label="Subscribe to the newsletter"
         onClick={() => $isSubscribeVisible.set(true)}
       >
-        {label ?? "Subscribe"}
+        {label ?? 'Subscribe'}
       </button>
-    );
-  }
-);
+    )
+  },
+)
 
-SubscribeButton.displayName = "SubscribeButton";
+SubscribeButton.displayName = 'SubscribeButton'
 
-export default SubscribeButton;
+export default SubscribeButton

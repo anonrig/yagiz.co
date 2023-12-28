@@ -1,54 +1,51 @@
-import * as Dialog from "@radix-ui/react-dialog";
-import * as Form from "@radix-ui/react-form";
-import { XIcon } from "lucide-react";
-import { type FormEvent, useState } from "react";
-import { useStore } from "@nanostores/react";
-import { $isSubscribeVisible } from "@/lib/stores";
+import { $isSubscribeVisible } from '@/lib/stores'
+import { useStore } from '@nanostores/react'
+import * as Dialog from '@radix-ui/react-dialog'
+import * as Form from '@radix-ui/react-form'
+import { XIcon } from 'lucide-react'
+import { type FormEvent, useState } from 'react'
 
 export default function SubscribeModal({ image }: { image?: JSX.Element }) {
-  const visible = useStore($isSubscribeVisible);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
+  const visible = useStore($isSubscribeVisible)
+  const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState('')
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+    event.preventDefault()
 
     // biome-ignore lint/suspicious/noExplicitAny: Unnecessary
-    const { email, name } = event.target as any;
-    setLoading(true);
-    setMessage("");
+    const { email, name } = event.target as any
+    setLoading(true)
+    setMessage('')
     try {
-      const response = await fetch("/api/newsletter", {
-        method: "post",
+      const response = await fetch('/api/newsletter', {
+        method: 'post',
         headers: {
-          "content-type": "application/json",
+          'content-type': 'application/json',
         },
         body: JSON.stringify({
           email: email.value,
           name: name.value,
         }),
-      });
-      const json = await response.json();
+      })
+      const json = await response.json()
 
       if (json.status === 200) {
-        setMessage("");
-        $isSubscribeVisible.set(false);
+        setMessage('')
+        $isSubscribeVisible.set(false)
       } else {
-        setMessage(json.message);
+        setMessage(json.message)
       }
     } catch (error) {
       if (error instanceof Error) {
-        setMessage(error.message);
+        setMessage(error.message)
       }
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
-    <Dialog.Root
-      open={visible}
-      onOpenChange={(o) => $isSubscribeVisible.set(o)}
-    >
+    <Dialog.Root open={visible} onOpenChange={(o) => $isSubscribeVisible.set(o)}>
       <Dialog.Portal>
         <Dialog.Overlay className="z-[30] fixed inset-0 backdrop-blur-sm bg-black/20" />
         <Dialog.Content className="z-[30] fixed md:top-[50%] md:left-[50%] max-h-[85vh] w-full md:w-[90vw] md:max-w-[450px] md:translate-x-[-50%] md:translate-y-[-50%] rounded-md bg-white dark:bg-black p-4 focus:outline-none overflow-y-scroll">
@@ -126,5 +123,5 @@ export default function SubscribeModal({ image }: { image?: JSX.Element }) {
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
-  );
+  )
 }

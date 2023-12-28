@@ -1,3 +1,3 @@
-import { atom } from "nanostores"
+import { atom } from 'nanostores'
 
-export const $isSubscribeVisible = atom(false);
+export const $isSubscribeVisible = atom(false)

@@ -1,12 +1,12 @@
-import type { Item } from "@/types/layout";
-import { useState } from "react";
-import { MenuIcon, XIcon } from "lucide-react";
-import { clsx } from "clsx";
-import Container from "@/components/ui/Container";
-import SubscribeButton from "@/components/SubscribeButton";
+import SubscribeButton from '@/components/SubscribeButton'
+import Container from '@/components/ui/Container'
+import type { Item } from '@/types/layout'
+import { clsx } from 'clsx'
+import { MenuIcon, XIcon } from 'lucide-react'
+import { useState } from 'react'
 
 export function MobileNavigationToggle({ items }: { items: Item[] }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
 
   return (
     <>
@@ -21,8 +21,8 @@ export function MobileNavigationToggle({ items }: { items: Item[] }) {
 
       <div
         className={clsx(
-          "bg-white dark:bg-white-reversed h-mobile-overlay left-0 pt-12 fixed top-navigation-bar w-full z-navigation-bar z-[20] overflow-y-auto",
-          { hidden: !open }
+          'bg-white dark:bg-white-reversed h-mobile-overlay left-0 pt-12 fixed top-navigation-bar w-full z-navigation-bar z-[20] overflow-y-auto',
+          { hidden: !open },
         )}
       >
         <Container>
@@ -44,5 +44,5 @@ export function MobileNavigationToggle({ items }: { items: Item[] }) {
         </Container>
       </div>
     </>
-  );
+  )
 }

@@ -1,5 +1,5 @@
-import * as Sentry from "@sentry/astro";
-import { SENTRY_DSN } from "../constants";
+import * as Sentry from '@sentry/astro'
+import { SENTRY_DSN } from '../constants'
 
 Sentry.init({
   dsn: SENTRY_DSN,
@@ -17,5 +17,5 @@ Sentry.init({
     }),
     new Sentry.BrowserTracing(),
   ],
-  allowUrls: ["https://www.yagiz.co", "https://yagiz.co"],
-});
+  allowUrls: ['https://www.yagiz.co', 'https://yagiz.co'],
+})

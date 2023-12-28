@@ -1,28 +1,26 @@
-import { defineConfig } from "astro/config";
-import tailwind from "@astrojs/tailwind";
-import react from "@astrojs/react";
-import mdx from "@astrojs/mdx";
-import sitemap from "@astrojs/sitemap";
-import cloudflare from "@astrojs/cloudflare";
+import cloudflare from '@astrojs/cloudflare'
+import mdx from '@astrojs/mdx'
+import react from '@astrojs/react'
+import sitemap from '@astrojs/sitemap'
+import tailwind from '@astrojs/tailwind'
+import sentry from '@sentry/astro'
+import { defineConfig } from 'astro/config'
 import rehypeAutolinkHeadings, {
   type Options as RehypeAutolinkHeadingsOptions,
-} from "rehype-autolink-headings";
-import rehypePrettyCode, {
-  type Options as RehypePrettyCodeOptions
-} from "rehype-pretty-code";
-import rehypeSlug from "rehype-slug";
-import remarkGfm from "remark-gfm";
-import sentry from "@sentry/astro";
-import { SENTRY_DSN } from "./constants";
+} from 'rehype-autolink-headings'
+import rehypePrettyCode, { type Options as RehypePrettyCodeOptions } from 'rehype-pretty-code'
+import rehypeSlug from 'rehype-slug'
+import remarkGfm from 'remark-gfm'
+import { SENTRY_DSN } from './constants'
 
-import spotlightjs from "@spotlightjs/astro";
+import spotlightjs from '@spotlightjs/astro'
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://www.yagiz.co",
-  output: "hybrid",
+  site: 'https://www.yagiz.co',
+  output: 'hybrid',
   adapter: cloudflare({
-    imageService: "passthrough",
+    imageService: 'passthrough',
   }),
   integrations: [
     tailwind({
@@ -37,7 +35,7 @@ export default defineConfig({
         [
           rehypePrettyCode,
           {
-            theme: "one-dark-pro",
+            theme: 'one-dark-pro',
             keepBackground: false,
             onVisitLine(node) {
               // Prevent lines from collapsing in `display: grid` mode, and allow empty
@@ -45,19 +43,19 @@ export default defineConfig({
               if (node.children.length === 0) {
                 node.children = [
                   {
-                    type: "text",
-                    value: " ",
+                    type: 'text',
+                    value: ' ',
                   },
-                ];
+                ]
               }
             },
             onVisitHighlightedLine(node) {
-              node.properties.className ??= [];
-              node.properties.className.push("line--highlighted");
+              node.properties.className ??= []
+              node.properties.className.push('line--highlighted')
             },
             onVisitHighlightedChars(node) {
-              node.properties.className ??= [];
-              node.properties.className.push("word--highlighted");
+              node.properties.className ??= []
+              node.properties.className.push('word--highlighted')
             },
           } satisfies RehypePrettyCodeOptions,
         ],
@@ -65,7 +63,7 @@ export default defineConfig({
           rehypeAutolinkHeadings,
           {
             properties: {
-              className: ["anchor"],
+              className: ['anchor'],
             },
           } satisfies RehypeAutolinkHeadingsOptions,
         ],
@@ -83,18 +81,18 @@ export default defineConfig({
         requestHandler: false,
       },
       sourceMapsUploadOptions: {
-        org: "yagiz-nb",
-        project: "yagiz-co",
+        org: 'yagiz-nb',
+        project: 'yagiz-co',
         authToken: process.env.SENTRY_AUTH_TOKEN,
       },
-      clientInitPath: "sentry/client.ts",
+      clientInitPath: 'sentry/client.ts',
       // serverInitPath: "sentry/server.ts",
     }),
     spotlightjs(),
   ],
   vite: {
     optimizeDeps: {
-      exclude: ["@resvg/resvg-js"],
+      exclude: ['@resvg/resvg-js'],
     },
   },
-});
+})
