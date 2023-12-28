@@ -12,7 +12,6 @@ import rehypePrettyCode, { type Options as RehypePrettyCodeOptions } from 'rehyp
 import rehypeSlug from 'rehype-slug'
 import remarkGfm from 'remark-gfm'
 import { SENTRY_DSN } from './constants'
-
 import spotlightjs from '@spotlightjs/astro'
 
 // https://astro.build/config
@@ -20,7 +19,7 @@ export default defineConfig({
   site: 'https://www.yagiz.co',
   output: 'hybrid',
   adapter: cloudflare({
-    imageService: 'passthrough',
+    imageService: process.env.ASTRO_PREVIEW === 'true' ? 'passthrough' : 'cloudflare',
   }),
   integrations: [
     tailwind({
