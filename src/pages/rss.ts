@@ -1,5 +1,5 @@
 import { extname } from 'node:path'
-import { getPosts } from '@/lib/content'
+import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, getPosts } from '@/lib/content'
 import rss from '@astrojs/rss'
 import type { APIRoute } from 'astro'
 
@@ -7,14 +7,12 @@ export const GET: APIRoute = async ({ site, url }) => {
   const posts = await getPosts()
 
   return rss({
-    title: 'Engineering with Yagiz',
-    description:
-      "Here's a collection of posts about my thoughts, stories, ideas and experiences as a human, and an engineer working with different technologies.",
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
     site: site as URL,
     customData: `
 <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
 <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
-<generator>Astro</generator>
 <language>en-us</language>
 <copyright>Yagiz Nizipli - yagiz.co</copyright>
 `,

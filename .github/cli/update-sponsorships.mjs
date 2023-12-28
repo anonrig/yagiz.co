@@ -1,8 +1,9 @@
+// Go to https://github.com/sponsors/anonrig/dashboard/your_sponsors
+// Click to Export button and save it to .github/sponsorships.json
+
 import fs from 'node:fs'
 import { cancel, confirm, isCancel, spinner } from '@clack/prompts'
 import open from 'open'
-// Go to https://github.com/sponsors/anonrig/dashboard/your_sponsors
-// Click to Export button and save it to .github/sponsorships.json
 
 function get_tier(transaction, sponsor) {
   if (transaction == null && sponsor.is_yearly) {

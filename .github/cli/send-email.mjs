@@ -5,24 +5,18 @@ import Mailjet from 'node-mailjet'
 
 import { cancel, confirm, group, select, spinner } from '@clack/prompts'
 import Handlebars from 'handlebars'
-import { read } from 'to-vfile'
+import { readSync } from 'to-vfile'
 import { matter } from 'vfile-matter'
 
-const allBlogs = await (async () => {
-  const dir = path.resolve('./src/content/blog')
-  const filenames = fs.readdirSync(dir)
-  return Promise.all(
-    filenames.map(async (f) => {
-      const slug = path.basename(f, path.extname(f))
-      const file = await read(path.join(dir, f))
-      matter(file)
-
-      return { slug, data: file.data.matter }
-    }),
-  )
-})()
-
-const publishedBlogs = allBlogs
+const blogPath = path.resolve('./src/content/blog')
+const publishedBlogs = fs
+  .readdirSync(blogPath)
+  .map((file) => {
+    const slug = path.basename(file, path.extname(file))
+    const contents = readSync(path.join(blogPath, file))
+    matter(contents)
+    return { slug, data: contents.data.matter }
+  })
   .filter((b) => b.data.status === 'published')
   .sort((a, b) => +new Date(b.data.date) - +new Date(a.data.date))
 
@@ -49,7 +43,7 @@ export async function sendEmail() {
     },
   )
 
-  const blog = allBlogs.find((b) => b.slug === slug)
+  const blog = publishedBlogs.find((b) => b.slug === slug)
   const { errors, html } = mjml2html(template, {
     validationLevel: 'strict',
     preprocessors: [

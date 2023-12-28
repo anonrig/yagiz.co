@@ -22,6 +22,7 @@ export default defineConfig({
   adapter: cloudflare({
     imageService: 'passthrough',
   }),
+  trailingSlash: 'never',
   integrations: [
     tailwind({
       applyBaseStyles: false,
@@ -77,7 +78,6 @@ export default defineConfig({
     sentry({
       dsn: SENTRY_DSN,
       autoInstrumentation: {
-        // requestHandler: true,
         requestHandler: false,
       },
       sourceMapsUploadOptions: {
