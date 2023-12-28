@@ -2,9 +2,10 @@ import type { APIRoute } from 'astro'
 
 const headers = {
   'content-type': 'application/json',
-  authorization: `Basic ${btoa(
+  authorization: `Basic ${Buffer.from(
     `${process.env.MAILJET_API_KEY}:${process.env.MAILJET_SECRET_KEY}`,
-  )}`,
+    'base64',
+  ).toString()}`,
 }
 
 const response = ({ status, message }: { status: number; message: string }) =>
