@@ -19,6 +19,7 @@ const posts = (await getPosts()).sort((a, b) => +b.data.date - +a.data.date);
           src={familyImg}
           width={150}
           height={150}
+          loading="eager"
           class="rounded-full"
         />
       </div>
