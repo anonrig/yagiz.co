@@ -18,20 +18,32 @@ export const GET: APIRoute = async ({ site, url }) => {
 <language>en-us</language>
 <copyright>Yagiz Nizipli - yagiz.co</copyright>
 `,
-    items: posts.map((post) => ({
-      title: post.data.title,
-      customData: `
+    items: await Promise.all(
+      posts.map(async (post) => {
+        const imageUrl = `${url.origin}${
+          post.data.image?.src.src ?? `/${post.slug}/opengraph-image.png`
+        }`
+        const imageLength = await fetch(imageUrl).then((res) =>
+          parseInt(res.headers.get('Content-Length') ?? '1'),
+        )
+
+        return {
+          title: post.data.title,
+          customData: `
 <guid>${`/${post.slug}`}</guid>
 `,
-      link: `/${post.slug}`,
-      description: post.data.description,
-      pubDate: post.data.date,
-      enclosure: {
-        // TODO: can't set length to 0
-        length: 1,
-        type: post.data.image ? `image/${extname(post.data.image.src.src).slice(1)}` : 'image/png',
-        url: `${url.origin}${post.data.image?.src.src ?? `/${post.slug}/opengraph-image.png`}`,
-      },
-    })),
+          link: `/${post.slug}`,
+          description: post.data.description,
+          pubDate: post.data.date,
+          enclosure: {
+            length: imageLength,
+            type: post.data.image
+              ? `image/${extname(post.data.image.src.src).slice(1)}`
+              : 'image/png',
+            url: imageUrl,
+          },
+        }
+      }),
+    ),
   })
 }

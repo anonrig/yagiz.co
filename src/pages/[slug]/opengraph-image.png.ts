@@ -42,11 +42,12 @@ export const GET: APIRoute<Props> = async ({ props: { post } }) => {
     },
   })
 
-  const image = resvg.render()
+  const image = resvg.render().asPng()
 
-  return new Response(image.asPng(), {
+  return new Response(image, {
     headers: {
-      'content-type': 'image/png',
+      'Content-Type': 'image/png',
+      'Content-Length': image.length.toString(),
       'Cache-Control': 'public, max-age=31536000, immutable',
     },
   })
