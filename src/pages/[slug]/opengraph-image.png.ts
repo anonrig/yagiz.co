@@ -11,7 +11,7 @@ type Props = InferGetStaticPropsType<typeof getStaticPaths>
 const WIDTH = 1200
 const HEIGHT = 600
 
-const getFontData = async () => readFile(resolve('./public/fonts/mulish.ttf'))
+const fontData = readFile(resolve('./public/fonts/mulish.ttf'))
 
 export const getStaticPaths = (async () => {
   const posts = await getPosts()
@@ -27,7 +27,7 @@ export const GET: APIRoute<Props> = async ({ props: { post } }) => {
     fonts: [
       {
         name: 'Mulish Variable',
-        data: await getFontData(),
+        data: await fontData,
         style: 'normal',
       },
     ],

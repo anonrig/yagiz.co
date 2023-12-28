@@ -16,11 +16,9 @@ const format = (date) => {
 }
 
 const folder = path.resolve('./src/content')
-const allTags = (() => {
-  const dir = path.join(folder, 'tags')
-  const filenames = fs.readdirSync(dir)
-  return filenames.map((f) => path.basename(f, path.extname(f)))
-})()
+const allTags = fs
+  .readdirSync(path.join(folder, 'tags'))
+  .map((f) => path.basename(f, path.extname(f)))
 
 /**
  *
