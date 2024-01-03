@@ -90,7 +90,7 @@ export default defineConfig({
   ],
   vite: {
     ssr: {
-      noExternal: ['@sentry/astro', '@sentry/node'],
+      noExternal: ['@sentry/astro'],
     },
     optimizeDeps: {
       exclude: ['@resvg/resvg-js'],
