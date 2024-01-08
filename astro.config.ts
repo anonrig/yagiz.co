@@ -89,9 +89,6 @@ export default defineConfig({
     spotlightjs(),
   ],
   vite: {
-    ssr: {
-      noExternal: ['@sentry/astro'],
-    },
     optimizeDeps: {
       exclude: ['@resvg/resvg-js'],
     },
