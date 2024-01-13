@@ -31,5 +31,6 @@ module.exports = withSentryConfig(
   {
     tunnelRoute: '/api/elroy',
     disableLogger: true,
+    hideSourceMaps: true,
   },
 )
