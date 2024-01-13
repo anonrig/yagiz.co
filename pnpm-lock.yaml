@@ -15,7 +15,7 @@ dependencies:
     specifier: ^0.0.3
     version: 0.0.3(@types/react-dom@18.2.18)(@types/react@18.2.47)(react-dom@18.2.0)(react@18.2.0)
   '@sentry/nextjs':
-    specifier: ^7.93.0
+    specifier: ^7.91.0
     version: 7.93.0(next@14.0.4)(react@18.2.0)
   class-variance-authority:
     specifier: ^0.7.0

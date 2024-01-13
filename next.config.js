@@ -29,13 +29,7 @@ module.exports = withSentryConfig(
     project: 'yagiz-co',
   },
   {
-    widenClientFileUpload: true,
-    transpileClientSDK: false,
     tunnelRoute: '/api/elroy',
-    hideSourceMaps: true,
     disableLogger: true,
-    autoInstrumentAppDirectory: true,
-    autoInstrumentMiddleware: true,
-    autoInstrumentServerFunctions: true,
   },
 )
