@@ -17,9 +17,6 @@ dependencies:
   '@sentry/nextjs':
     specifier: ^7.93.0
     version: 7.93.0(next@14.0.4)(react@18.2.0)
-  '@sentry/profiling-node':
-    specifier: ^1.3.5
-    version: 1.3.5(@sentry/node@7.93.0)
   class-variance-authority:
     specifier: ^0.7.0
     version: 0.7.0
@@ -1786,19 +1783,6 @@ packages:
       https-proxy-agent: 5.0.1
     transitivePeerDependencies:
       - supports-color
-    dev: false
-
-  /@sentry/profiling-node@1.3.5(@sentry/node@7.93.0):
-    resolution: {integrity: sha512-n2bfEbtLW3WuIMQGyxKJKzBNZOb1JYfMeJQ2WQn/42F++69m+u7T0S3EDGRN0Y//fbt5+r0any+4r3kChRXZkQ==}
-    engines: {node: '>=8.0.0'}
-    hasBin: true
-    requiresBuild: true
-    peerDependencies:
-      '@sentry/node': ^7.44.1
-    dependencies:
-      '@sentry/node': 7.93.0
-      detect-libc: 2.0.2
-      node-abi: 3.52.0
     dev: false
 
   /@sentry/react@7.93.0(react@18.2.0):
@@ -4800,13 +4784,6 @@ packages:
     dependencies:
       lower-case: 2.0.2
       tslib: 2.5.0
-    dev: false
-
-  /node-abi@3.52.0:
-    resolution: {integrity: sha512-JJ98b02z16ILv7859irtXn4oUaFWADtvkzy2c0IAatNVX2Mc9Yoh8z6hZInn3QwvMEYhHuQloYi+TTQy67SIdQ==}
-    engines: {node: '>=10'}
-    dependencies:
-      semver: 7.5.4
     dev: false
 
   /node-domexception@1.0.0:

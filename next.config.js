@@ -15,7 +15,6 @@ const nextConfig = {
     remotePatterns: [{ protocol: 'https', hostname: 'i3.ytimg.com' }],
   },
   experimental: {
-    webpackBuildWorker: true,
     optimizePackageImports: ['lucide-react', 'date-fns'],
     serverComponentsExternalPackages: ['@sentry/profiling-node'],
   },
