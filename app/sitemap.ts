@@ -8,12 +8,12 @@ export const dynamic = 'force-static'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const blogs = sortedBlogs.map((blog) => ({
-    url: blog.url,
+    url: `${websiteDomain}/${blog.slug}`,
     lastModified: format(new Date(blog.date), 'yyyy-MM-dd'),
   }))
 
   const tags = sortedTags.map((tag) => ({
-    url: tag.url,
+    url: `${websiteDomain}/tag/${tag.slug}`,
     lastModified: format(new Date(), 'yyyy-MM-dd'),
   }))
 
