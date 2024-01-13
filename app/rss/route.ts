@@ -23,15 +23,16 @@ export async function GET() {
   })
 
   for (const blog of sortedBlogs) {
+    const url = `${websiteDomain}/${blog.slug}`
     feed.addItem({
       title: blog.title,
-      id: blog.url,
-      link: blog.url,
+      id: url,
+      link: url,
       description: blog.description,
       date: new Date(blog.date),
       image: blog.feature_image
         ? `${websiteDomain}${blog.feature_image}`
-        : `${websiteDomain}${blog.url}/opengraph-image`,
+        : `${websiteDomain}/${blog.slug}/opengraph-image`,
     })
   }
 

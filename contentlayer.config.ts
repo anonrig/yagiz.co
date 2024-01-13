@@ -38,13 +38,6 @@ export const Page = defineDocumentType(() => ({
       type: 'string',
       resolve: (doc) => path.basename(doc._raw.flattenedPath),
     },
-    url: {
-      type: 'string',
-      resolve: (doc) => {
-        const slug = path.basename(doc._raw.flattenedPath)
-        return `/${slug}`
-      },
-    },
   },
 }))
 
@@ -60,13 +53,6 @@ export const Tag = defineDocumentType(() => ({
     slug: {
       type: 'string',
       resolve: (doc) => path.basename(doc._raw.flattenedPath),
-    },
-    url: {
-      type: 'string',
-      resolve: (doc) => {
-        const slug = path.basename(doc._raw.flattenedPath)
-        return `/tag/${slug}`
-      },
     },
   },
 }))
@@ -112,13 +98,6 @@ export const Blog = defineDocumentType(() => ({
     slug: {
       type: 'string',
       resolve: (doc) => path.basename(doc._raw.flattenedPath),
-    },
-    url: {
-      type: 'string',
-      resolve: (doc) => {
-        const slug = path.basename(doc._raw.flattenedPath)
-        return `/${slug}`
-      },
     },
     structuredData: {
       type: 'json',
