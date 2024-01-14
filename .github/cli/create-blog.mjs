@@ -65,7 +65,7 @@ export async function createBlog() {
             }
 
             // only allow letters, numbers and hypens
-            const re = /^[a-z0-9]+(?:-[a-z0-9]+)*$/g;
+            const re = /^[a-z0-9]+(?:-[a-z0-9]+)*$/g
             if (re.exec(value) === null) {
               return 'Slug should be all lowercase and contain only letters, numbers, and hyphens'
             }
