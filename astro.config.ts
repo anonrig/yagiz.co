@@ -22,6 +22,7 @@ export default defineConfig({
   adapter: cloudflare({
     imageService: 'passthrough',
   }),
+  trailingSlash: 'never',
   integrations: [
     tailwind({
       applyBaseStyles: false,
@@ -72,13 +73,10 @@ export default defineConfig({
     sitemap({
       lastmod: new Date(),
     }),
-    // Sentry server-side is disabled temporarily
-    // due to https://github.com/getsentry/sentry-javascript/issues/9777
     sentry({
       dsn: SENTRY_DSN,
       autoInstrumentation: {
-        // requestHandler: true,
-        requestHandler: false,
+        requestHandler: true,
       },
       sourceMapsUploadOptions: {
         org: 'yagiz-nb',
@@ -86,11 +84,14 @@ export default defineConfig({
         authToken: process.env.SENTRY_AUTH_TOKEN,
       },
       clientInitPath: 'sentry/client.ts',
-      // serverInitPath: "sentry/server.ts",
+      serverInitPath: 'sentry/server.ts',
     }),
     spotlightjs(),
   ],
   vite: {
+    ssr: {
+      noExternal: ['@sentry/astro'],
+    },
     optimizeDeps: {
       exclude: ['@resvg/resvg-js'],
     },

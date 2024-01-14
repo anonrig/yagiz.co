@@ -3,11 +3,11 @@ import path from 'node:path'
 import { cancel, group, outro, select, spinner, text } from '@clack/prompts'
 
 /**
- *
+ * Converts a date into `YYYY-MM-DD` format.
  * @param {Date} date
- * @returns
+ * @return {string}
  */
-const format = (date) => {
+function format(date) {
   const year = date.getFullYear()
   const month = (date.getMonth() + 1).toString().padStart(2, '0')
   const day = date.getDate().toString().padStart(2, '0')
@@ -15,15 +15,15 @@ const format = (date) => {
   return `${year}-${month}-${day}`
 }
 
-const folder = path.resolve('./src/content')
+const contentFolder = path.resolve('./src/content')
 const allTags = fs
-  .readdirSync(path.join(folder, 'tags'))
+  .readdirSync(path.join(contentFolder, 'tags'))
   .map((f) => path.basename(f, path.extname(f)))
 
 /**
- *
+ * Returns a template for the blog post.
  * @param {{ title: string; description: string; tag: string; status: string; }} param0
- * @returns
+ * @return {string}
  */
 const getTemplateFor = ({ title, description, tag, status }) =>
   `
@@ -36,7 +36,7 @@ date: '${format(new Date())}'
 tag: ${tag}
 status: ${status}
 ---
-`.trim()
+`.trimStart()
 
 export async function createBlog() {
   const { title, slug, description, tag, status } = await group(
@@ -60,8 +60,7 @@ export async function createBlog() {
               return 'Value is required'
             }
 
-            const file = path.join(folder, `blog/${value}.mdx`)
-            if (fs.existsSync(file)) {
+            if (fs.existsSync(path.join(contentFolder, `blog/${value}.mdx`))) {
               return 'Slug is already used'
             }
 
@@ -113,8 +112,8 @@ export async function createBlog() {
   })
   const creating = spinner()
   creating.start('Creating the document')
-  const documentPath = path.join(folder, `blog/${slug}.mdx`)
-  await fs.promises.writeFile(documentPath, template.trim(), 'utf-8')
+  const documentPath = path.join(contentFolder, `blog/${slug}.mdx`)
+  fs.writeFileSync(documentPath, template.trim(), 'utf-8')
   creating.stop()
 
   outro(`Blog post is created at ${documentPath}`)
