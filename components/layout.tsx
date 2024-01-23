@@ -3,7 +3,6 @@ import { Rss, Twitter } from 'lucide-react'
 import Link from 'next/link'
 
 import { rssUrl, twitterUrl } from '@/app/content'
-import SubscribeButton from '@/components/subscribe'
 
 import { MobileNavigationContextProvider, MobileNavigationToggle } from './mobile-navigation-toggle'
 
@@ -51,9 +50,7 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="hidden items-center justify-end md:flex md:flex-[2]">
-          <SubscribeButton />
-        </div>
+        <div className="hidden items-center justify-end md:flex md:flex-[2]" />
 
         <div className="pointer h-30 w-30 md:hidden items-center flex text-black dark:text-neutral-300">
           <MobileNavigationToggle items={headerItems} />

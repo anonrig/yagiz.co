@@ -4,8 +4,6 @@ import type { Blog } from 'contentlayer/generated'
 import { animate, scroll } from 'motion'
 import { useEffect } from 'react'
 
-import SubscribeButton from '@/components/subscribe'
-
 export default function BlogStickyHeader({ blog }: { blog: Blog }) {
   useEffect(() => {
     // Start showing and moving the sticky header until 100px offset.
@@ -25,11 +23,9 @@ export default function BlogStickyHeader({ blog }: { blog: Blog }) {
       className="top-0 inset-x-0 items-center backdrop-blur-sm bg-[hsla(0,0%,100%,.8)] dark:bg-white-reversed/50 flex h-[50px] justify-between px-8 fixed z-[90] top-[-50px]"
     >
       <div className="flex flex-row justify-between w-full items-center">
-        <div className="overflow-hidden text-ellipsis whitespace-nowrap text-slate-800 dark:text-white leading-[1.3] mr-4 overflow-hidden overflow-ellipsis whitespace-nowrap text-sm font-bold">
+        <div className="overflow-hidden text-slate-800 dark:text-white leading-[1.3] mr-4 overflow-ellipsis whitespace-nowrap text-sm font-bold">
           {blog.title}
         </div>
-
-        <SubscribeButton className="text-sm whitespace-nowrap" />
       </div>
 
       <div className="bg-[#e6e6e6] dark:bg-slate-600 bottom-[-2px] h-[2px] left-0 absolute w-full">

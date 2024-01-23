@@ -13,12 +13,11 @@ export async function GET() {
     id: websiteDomain,
     link: websiteDomain,
     language: 'en-us',
-    favicon: `${websiteDomain}/favicon.ico`,
-    generator: 'Next.js',
+    favicon: new URL('/favicon.co', websiteDomain).href,
     copyright: 'Yagiz Nizipli - yagiz.co',
     author: {
       name: 'Yagiz Nizipli',
-      link: `${websiteDomain}/contact`,
+      link: new URL('/contact', websiteDomain).href,
     },
   })
 

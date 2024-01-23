@@ -5,6 +5,11 @@ import BlogRow from '@/components/blog-row'
 import SubscribeButton from '@/components/subscribe'
 import Container from '@/components/ui/container'
 import FamilyPhoto from '@/public/family.png'
+import dynamic from 'next/dynamic'
+
+const Providers = dynamic(() => import('@/app/providers'), {
+  loading: () => <div className="h-9 w-12" />,
+})
 
 export default function Home() {
   return (
@@ -25,10 +30,12 @@ export default function Home() {
             human, and an engineer working with different technologies.
           </div>
 
-          <SubscribeButton
-            label="Subscribe Now"
-            className="mt-6 h-9 items-center justify-center rounded-md border-[1px] border-solid border-slate-200 bg-white px-[15px] text-[11px] font-extrabold uppercase tracking-wider text-orange-400 outline-none hover:border-slate-300 dark:border-neutral-600 dark:bg-white-reversed dark:hover:border-neutral-500"
-          />
+          <Providers>
+            <SubscribeButton
+              label="Subscribe Now"
+              className="mt-6 h-9 items-center justify-center rounded-md border-[1px] border-solid border-slate-200 bg-white px-[15px] text-[11px] font-extrabold uppercase tracking-wider text-orange-400 outline-none hover:border-slate-300 dark:border-neutral-600 dark:bg-white-reversed dark:hover:border-neutral-500"
+            />
+          </Providers>
         </div>
       </Container>
 
