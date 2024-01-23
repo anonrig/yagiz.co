@@ -14,35 +14,35 @@
     "@formspree/react": "^2.5.1",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-form": "^0.0.3",
-    "@sentry/nextjs": "^7.91.0",
+    "@sentry/nextjs": "^7.94.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "contentlayer": "^0.3.4",
-    "date-fns": "^3.2.0",
+    "date-fns": "^3.3.1",
     "feed": "^4.2.2",
-    "lucide-react": "0.300.0",
+    "lucide-react": "0.314.0",
     "markdown-wasm": "^1.2.0",
-    "motion": "^10.16.4",
-    "next": "14.0.4",
+    "motion": "^10.17.0",
+    "next": "14.1.0",
     "next-contentlayer": "^0.3.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "reading-time": "^1.5.0",
     "rehype-autolink-headings": "^7.1.0",
-    "rehype-pretty-code": "^0.12.3",
+    "rehype-pretty-code": "^0.12.6",
     "rehype-slug": "^6.0.0",
     "remark-gfm": "^3.0.1",
-    "sharp": "0.33.1"
+    "sharp": "0.33.2"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.5.1",
+    "@biomejs/biome": "^1.5.3",
     "@clack/prompts": "^0.7.0",
     "@tailwindcss/typography": "^0.5.10",
     "@types/mjml": "^4.7.4",
-    "@types/node": "20.11.0",
-    "@types/react": "18.2.47",
+    "@types/node": "20.11.5",
+    "@types/react": "18.2.48",
     "@types/react-dom": "18.2.18",
-    "autoprefixer": "^10.4.16",
+    "autoprefixer": "^10.4.17",
     "handlebars": "^4.7.8",
     "mjml": "^4.14.1",
     "node-mailjet": "^6.0.5",
@@ -61,5 +61,5 @@
       }
     }
   },
-  "packageManager": "pnpm@8.14.1+sha256.2df78e65d433d7693b9d3fbdaf431b2d96bb4f96a2ffecd51a50efe16e50a6a8"
+  "packageManager": "pnpm@8.14.2+sha256.a2dd287205a53bb4322937530d4a17f86269f63fe00a62a03e9e458d3ad027ff"
 }

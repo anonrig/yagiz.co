@@ -27,10 +27,19 @@ module.exports = withSentryConfig(
     silent: true,
     org: 'yagiz-nb',
     project: 'yagiz-co',
+    cleanArtifacts: true,
   },
   {
     tunnelRoute: '/api/elroy',
     disableLogger: true,
+    // Prevent your built files from containing a sourceMappingURL comment
     hideSourceMaps: true,
+
+    // Sourcemap generation and upload is done through GitHub workflow.
+    disableClientWebpackPlugin: true,
+    disableServerWebpackPlugin: true,
+
+    // Legacy browser support
+    transpileClientSDK: false,
   },
 )

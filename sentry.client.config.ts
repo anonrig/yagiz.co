@@ -12,14 +12,24 @@ Sentry.init({
   replaysOnErrorSampleRate: 1.0,
   replaysSessionSampleRate: 1.0,
   integrations: [
-    new Sentry.Dedupe(),
-    new Sentry.HttpContext(),
-    new Sentry.Breadcrumbs(),
-    new Sentry.LinkedErrors(),
+    // With performance monitoring, Sentry tracks your software performance,
+    // measuring metrics like throughput and latency, and displays the impact
+    // of errors across multiple systems.
+    new Sentry.BrowserTracing(),
+    // Enables session replay.
     new Sentry.Replay({
       maskAllText: false,
     }),
-    new Sentry.BrowserTracing(),
+    new Sentry.BrowserProfilingIntegration(),
+    new Sentry.Feedback({
+      colorScheme: 'system',
+      autoInject: true,
+      buttonLabel: 'Share Feedback',
+      formTitle: 'Share Feedback',
+      messagePlaceholder: 'What feedback do you have?',
+      submitButtonLabel: 'Submit Feedback',
+    }),
   ],
   allowUrls: ['https://www.yagiz.co', 'https://yagiz.co'],
+  profilesSampleRate: 1.0,
 })
