@@ -9,40 +9,35 @@ export const DEFAULT_DESCRIPTION =
   "Here's a collection of posts about my thoughts, stories, ideas and experiences as a human, and an engineer working with different technologies."
 
 export const getPosts = async () => {
-  const posts = (
-    await Promise.all(
-      (
-        await getCollection('blog')
-      )
-        .filter((post) => post.data.status === 'published')
-        .map(async (post) => {
-          return {
-            ...post,
-            data: {
-              ...post.data,
-              tag: await getEntry(post.data.tag),
-              url: `/${post.slug}`,
-              structuredData: ({ origin }: { origin: string }) => ({
-                '@context': 'https://schema.org',
-                '@type': 'BlogPosting',
-                headline: post.data.title,
-                datePublished: post.data.date,
-                dateModified: post.data.date,
-                description: post.data.description,
-                url: `${origin}/${post.slug}`,
-                author: {
-                  '@type': 'Person',
-                  name: 'Yagiz Nizipli',
-                },
-              }),
-              minute_to_read: readingTime(post.body).text,
-            },
-          }
-        }),
-    )
-  ).sort((a, b) => +b.data.date - +a.data.date)
-
-  return posts
+  const rawPosts = await getCollection('blog', (post) => post.data.status === 'published')
+  const posts = await Promise.all(
+    rawPosts
+      .map(async (post) => {
+        return {
+          ...post,
+          data: {
+            ...post.data,
+            tag: await getEntry(post.data.tag),
+            url: `/${post.slug}`,
+            structuredData: ({ origin }: { origin: string }) => ({
+              '@context': 'https://schema.org',
+              '@type': 'BlogPosting',
+              headline: post.data.title,
+              datePublished: post.data.date,
+              dateModified: post.data.date,
+              description: post.data.description,
+              url: `${origin}/${post.slug}`,
+              author: {
+                '@type': 'Person',
+                name: 'Yagiz Nizipli',
+              },
+            }),
+            minute_to_read: readingTime(post.body).text,
+          },
+        }
+      }),
+  )
+  return posts.sort((a, b) => +b.data.date - +a.data.date)
 }
 
 export const getTags = async () => {
