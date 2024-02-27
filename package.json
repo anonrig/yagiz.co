@@ -61,5 +61,5 @@
       }
     }
   },
-  "packageManager": "pnpm@8.14.2+sha256.a2dd287205a53bb4322937530d4a17f86269f63fe00a62a03e9e458d3ad027ff"
+  "packageManager": "pnpm@8.15.4+sha256.cea6d0bdf2de3a0549582da3983c70c92ffc577ff4410cbf190817ddc35137c2"
 }
