@@ -6,7 +6,6 @@ export interface Props extends Omit<HTMLAttributes<"a">, "href"> {
 }
 
 const { href, ...rest } = Astro.props;
-
 const isInternalLink = href && (href.startsWith("/") || href.startsWith("#"));
 ---
 

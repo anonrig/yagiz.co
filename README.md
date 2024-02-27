@@ -9,7 +9,7 @@ To run the blog on your local machine, you need to have Node.js and npm installe
 1. Clone this repository: `git clone https://github.com/anonrig/yagiz.co.git`
 2. Install the dependencies: `pnpm install`
 3. Start the development server: `pnpm run dev`
-4. Open your browser and go to http://localhost:4321 to see the blog.
+4. Open your browser and go to http://localhost:3000 to see the blog.
 
 ### Contributing
 

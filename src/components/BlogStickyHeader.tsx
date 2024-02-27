@@ -1,4 +1,3 @@
-import SubscribeButton from '@/components/SubscribeButton'
 import type { Post } from '@/types/content'
 import { animate, scroll } from 'motion'
 import { useEffect, useState } from 'react'
@@ -30,8 +29,6 @@ export default function BlogStickyHeader({ post }: { post: Post }) {
         <div className="overflow-hidden text-ellipsis whitespace-nowrap text-slate-800 dark:text-white leading-[1.3] mr-4 text-sm font-bold">
           {post.data.title}
         </div>
-
-        <SubscribeButton className="text-sm whitespace-nowrap" />
       </div>
 
       <div className="bg-[#e6e6e6] dark:bg-slate-600 bottom-[-2px] h-[2px] left-0 absolute w-full">

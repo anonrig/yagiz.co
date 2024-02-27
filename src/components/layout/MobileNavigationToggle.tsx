@@ -1,4 +1,3 @@
-import SubscribeButton from '@/components/SubscribeButton'
 import Container from '@/components/ui/Container'
 import type { Item } from '@/types/layout'
 import { clsx } from 'clsx'
@@ -38,8 +37,6 @@ export function MobileNavigationToggle({ items }: { items: Item[] }) {
                 {item.title}
               </a>
             ))}
-
-            <SubscribeButton className="text-right text-lg" />
           </nav>
         </Container>
       </div>

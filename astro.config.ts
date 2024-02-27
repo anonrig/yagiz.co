@@ -3,8 +3,6 @@ import mdx from '@astrojs/mdx'
 import react from '@astrojs/react'
 import sitemap from '@astrojs/sitemap'
 import tailwind from '@astrojs/tailwind'
-import sentry from '@sentry/astro'
-import spotlightjs from '@spotlightjs/astro'
 import { defineConfig } from 'astro/config'
 import rehypeAutolinkHeadings, {
   type Options as RehypeAutolinkHeadingsOptions,
@@ -12,7 +10,6 @@ import rehypeAutolinkHeadings, {
 import rehypePrettyCode, { type Options as RehypePrettyCodeOptions } from 'rehype-pretty-code'
 import rehypeSlug from 'rehype-slug'
 import remarkGfm from 'remark-gfm'
-import { SENTRY_DSN } from './constants'
 
 // https://astro.build/config
 export default defineConfig({
@@ -72,25 +69,8 @@ export default defineConfig({
     sitemap({
       lastmod: new Date(),
     }),
-    sentry({
-      dsn: SENTRY_DSN,
-      autoInstrumentation: {
-        requestHandler: true,
-      },
-      sourceMapsUploadOptions: {
-        org: 'yagiz-nb',
-        project: 'yagiz-co',
-        authToken: process.env.SENTRY_AUTH_TOKEN,
-      },
-      clientInitPath: 'sentry/client.ts',
-      serverInitPath: 'sentry/server.ts',
-    }),
-    spotlightjs(),
   ],
   vite: {
-    ssr: {
-      noExternal: ['@sentry/astro'],
-    },
     optimizeDeps: {
       exclude: ['@resvg/resvg-js'],
     },

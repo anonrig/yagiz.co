@@ -1,7 +1,6 @@
 ---
 import { MobileNavigationToggle } from "@/components/layout/MobileNavigationToggle";
 import type { Item } from "@/types/layout";
-import SubscribeButton from "@/components/SubscribeButton";
 
 const headerItems: Item[] = [
   { title: "Home", href: "/" },
@@ -38,9 +37,7 @@ const headerItems: Item[] = [
     }
   </nav>
 
-  <div class="hidden items-center justify-end md:flex md:flex-[2]">
-    <SubscribeButton client:load />
-  </div>
+  <div class="hidden items-center justify-end md:flex md:flex-[2]" />
 
   <div
     class="pointer h-30 w-30 md:hidden items-center flex text-black dark:text-neutral-300"
