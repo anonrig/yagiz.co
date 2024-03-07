@@ -17,17 +17,13 @@ Lately, I've found myself worrying more and more about performance and the amoun
 Let's first dive into a basic example of calculating the amount of time in milliseconds it takes to execute a specific function:
 
 ```js
-import { performance } from "perf_hooks";
+import { performance } from 'perf_hooks'
 
 async function hardToSwallowPills() {
-  performance.mark("start-benchmarking");
-  await doSomeAsyncTask();
-  performance.mark("end-benchmarking");
-  performance.measure(
-    "hardToSwallowPills",
-    "start-benchmarking",
-    "end-benchmarking"
-  );
+  performance.mark('start-benchmarking')
+  await doSomeAsyncTask()
+  performance.mark('end-benchmarking')
+  performance.measure('hardToSwallowPills', 'start-benchmarking', 'end-benchmarking')
 }
 ```
 
@@ -36,15 +32,15 @@ The important part you need to address in this code is, you need to manually mar
 In order to log these measurements, you'll need the PerformanceObserver implementation from the **perf_hooks**.
 
 ```js
-import { PerformanceObserver } from "perf_hooks";
+import { PerformanceObserver } from 'perf_hooks'
 const performanceObserver = new PerformanceObserver((list) => {
   list.getEntries().forEach((entry) => {
     logger
-      .withTag("performance")
-      .info(`${entry.name} took ${entry.duration.toFixed(2)} ms`);
-  });
-});
-performanceObserver.observe({ entryTypes: ["measure"], buffered: true });
+      .withTag('performance')
+      .info(`${entry.name} took ${entry.duration.toFixed(2)} ms`)
+  })
+})
+performanceObserver.observe({ entryTypes: ['measure'], buffered: true })
 ```
 
 ## Benchmarking
