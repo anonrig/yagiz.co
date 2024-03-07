@@ -1,10 +1,10 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import Page, { getMetadata } from "@/components/Page.astro";
-import { getPages } from "@/lib/content";
 import ContactForm from "@/components/ContactForm";
+import { getEntry } from "astro:content";
 
-const page = (await getPages()).find((page) => page.slug === "contact")!;
+const page = await getEntry('pages', 'contact')
 ---
 
 <Layout {...getMetadata({ page })}>

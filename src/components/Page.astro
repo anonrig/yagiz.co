@@ -1,13 +1,13 @@
 ---
-import type { Page } from "@/types/content";
 import Figure from "@/components/ui/Figure.astro";
 import Heading from "@/components/ui/Heading.astro";
 import Prose from "@/components/ui/Prose.astro";
 import type { Props as LayoutProps } from "@/layouts/Layout.astro";
 import { components } from "@/components/mdx";
+import type { CollectionEntry } from "astro:content";
 
 interface Props {
-  page: Page;
+  page: CollectionEntry<'pages'>;
 }
 
 const { page } = Astro.props;

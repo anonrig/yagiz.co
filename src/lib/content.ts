@@ -11,37 +11,38 @@ export const DEFAULT_DESCRIPTION =
 export const getPosts = async () => {
   const rawPosts = await getCollection('blog', (post) => post.data.status === 'published')
   const posts = await Promise.all(
-    rawPosts
-      .map(async (post) => {
-        return {
-          ...post,
-          data: {
-            ...post.data,
-            tag: await getEntry(post.data.tag),
-            url: `/${post.slug}`,
-            structuredData: ({ origin }: { origin: string }) => ({
-              '@context': 'https://schema.org',
-              '@type': 'BlogPosting',
-              headline: post.data.title,
-              datePublished: post.data.date,
-              dateModified: post.data.date,
-              description: post.data.description,
-              url: `${origin}/${post.slug}`,
-              author: {
-                '@type': 'Person',
-                name: 'Yagiz Nizipli',
-              },
-            }),
-            minute_to_read: readingTime(post.body).text,
-          },
-        }
-      }),
+    rawPosts.map(async (post) => {
+      return {
+        ...post,
+        data: {
+          ...post.data,
+          tag: await getEntry(post.data.tag),
+          url: `/${post.slug}`,
+          structuredData: ({ origin }: { origin: string }) => ({
+            '@context': 'https://schema.org',
+            '@type': 'BlogPosting',
+            headline: post.data.title,
+            datePublished: post.data.date,
+            dateModified: post.data.date,
+            description: post.data.description,
+            url: `${origin}/${post.slug}`,
+            author: {
+              '@type': 'Person',
+              name: 'Yagiz Nizipli',
+            },
+          }),
+          minute_to_read: readingTime(post.body).text,
+        },
+      }
+    }),
   )
   return posts.sort((a, b) => +b.data.date - +a.data.date)
 }
 
-export const getTags = async () => {
-  const tags = (await getCollection('tags'))
+export async function getTags() {
+  const tags = await getCollection('tags')
+
+  return tags
     .map((tag) => {
       return {
         ...tag,
@@ -52,20 +53,4 @@ export const getTags = async () => {
       }
     })
     .sort((a, b) => a.data.title.localeCompare(b.data.title))
-
-  return tags
-}
-
-export const getPages = async () => {
-  const pages = await getCollection('pages')
-
-  return pages.map((page) => {
-    return {
-      ...page,
-      data: {
-        ...page.data,
-        url: `/tag/${page.slug}`,
-      },
-    }
-  })
 }

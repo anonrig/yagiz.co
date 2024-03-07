@@ -4,12 +4,17 @@ import { getPosts, getTags } from "@/lib/content";
 import Container from "@/components/ui/Container";
 import BlogRow from "@/components/BlogRow.astro";
 import Layout from "@/layouts/Layout.astro";
+import type { CollectionEntry } from "astro:content";
 
-export const getStaticPaths = (async () => {
+interface Props {
+  tag: CollectionEntry<'tags'>
+}
+
+export async function getStaticPaths(): Promise<ReturnType<GetStaticPaths>> {
   const tags = await getTags();
 
   return tags.map((tag) => ({ params: { slug: tag.slug }, props: { tag } }));
-}) satisfies GetStaticPaths;
+}
 
 const { tag } = Astro.props;
 
