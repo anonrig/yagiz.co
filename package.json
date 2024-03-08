@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "astro dev --port 3000",
     "build": "astro check && astro build",
-    "preview": "pnpx serve dist/ -l 3000",
+    "preview": "wrangler pages dev ./dist --port 3000",
     "astro": "astro",
     "lint": "biome check .",
     "lint-fix": "biome check . --apply",
@@ -55,7 +55,8 @@
     "remark-gfm": "^4.0.0",
     "satori": "^0.10.13",
     "sharp": "^0.33.2",
-    "tailwindcss": "^3.4.1"
+    "tailwindcss": "^3.4.1",
+    "wrangler": "^3.32.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.5.6",
