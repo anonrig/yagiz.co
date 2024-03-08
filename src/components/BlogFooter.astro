@@ -2,7 +2,7 @@
 import { Image } from 'astro:assets'
 import { getCollection } from 'astro:content'
 import authorImg from '@/assets/author-image.png'
-import Container from '@/components/ui/Container'
+import Container from '@/components/ui/Container.astro'
 import { compareDesc } from 'date-fns'
 import { ArrowLeft, ArrowRight } from 'lucide-astro'
 
@@ -17,7 +17,7 @@ const next = index !== 0 ? posts.at(index - 1) : undefined
 const previous = index !== posts.length - 1 ? posts.at(index + 1) : undefined
 ---
 
-<Container size="tight" className="mt-16 flex items-center" as="footer">
+<Container size="tight" class="mt-16 flex items-center" as="footer">
   <div class="flex flex-2 text-black dark:text-neutral-400">
     {
       previous !== undefined && (

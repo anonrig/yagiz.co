@@ -4,7 +4,7 @@ import { getCollection } from 'astro:content'
 import familyImg from '@/assets/family.png'
 import BlogRow from '@/components/BlogRow.astro'
 import SubscribeButton from '@/components/SubscribeButton'
-import Container from '@/components/ui/Container'
+import Container from '@/components/ui/Container.astro'
 import Layout from '@/layouts/Layout.astro'
 import { compareDesc } from 'date-fns'
 
@@ -13,7 +13,7 @@ posts.sort((a, b) => compareDesc(a.data.date, b.data.date))
 ---
 
 <Layout>
-  <Container className="-mt-8">
+  <Container class="-mt-8">
     <div class="mx-auto mb-4 flex max-w-lg flex-col items-center text-center">
       <div class="relative mb-8">
         <Image
@@ -43,7 +43,7 @@ posts.sort((a, b) => compareDesc(a.data.date, b.data.date))
   <div class="flex grow pt-8">
     <Container
       size="tight"
-      className="divide-y divide-slate-200 dark:divide-neutral-700"
+      class="divide-y divide-slate-200 dark:divide-neutral-700"
     >
       {posts.map((post) => <BlogRow {post} />)}
     </Container>

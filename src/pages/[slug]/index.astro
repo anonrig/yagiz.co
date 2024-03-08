@@ -6,13 +6,13 @@ import BlogFooter from '@/components/BlogFooter.astro'
 import BlogRow from '@/components/BlogRow.astro'
 import BlogStickyHeader from '@/components/BlogStickyHeader.astro'
 import { components } from '@/components/mdx'
-import Container from '@/components/ui/Container'
+import Container from '@/components/ui/Container.astro'
 import Figure from '@/components/ui/Figure.astro'
 import Heading from '@/components/ui/Heading.astro'
 import Prose from '@/components/ui/Prose.astro'
 import Layout from '@/layouts/Layout.astro'
 import type { GetStaticPaths } from 'astro'
-import { compareDesc } from 'date-fns'
+import { compareDesc, format } from 'date-fns'
 import readingTime from 'reading-time'
 
 interface Props {
@@ -40,14 +40,8 @@ const index = posts.findIndex((p) => p.slug === post.slug)
 const suggestions = [posts.at(index - 2), posts.at(index - 1)].filter(
   Boolean,
 ) as CollectionEntry<'blog'>[]
-
-const format = (date: Date) => {
-  const year = date.getFullYear()
-  const month = (date.getMonth() + 1).toString().padStart(2, '0')
-  const day = date.getDate().toString().padStart(2, '0')
-
-  return `${year}-${month}-${day}`
-}
+const publishedTime = format(post.data.date, 'yyyy-mm-dd')
+const modifiedTime = format(new Date(), 'yyyy-mm-dd')
 ---
 
 <Layout
@@ -56,8 +50,8 @@ const format = (date: Date) => {
   image={`${Astro.url.origin}/${post.slug}/opengraph-image.png`}
   article={{
     authors: ["Yagiz Nizipli"],
-    publishedTime: format(post.data.date),
-    modifiedTime: format(new Date()),
+    publishedTime,
+    modifiedTime,
     tags: [tag.data.title],
   }}
 >

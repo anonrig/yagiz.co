@@ -2,7 +2,7 @@
 import type { CollectionEntry } from 'astro:content'
 import { getCollection } from 'astro:content'
 import BlogRow from '@/components/BlogRow.astro'
-import Container from '@/components/ui/Container'
+import Container from '@/components/ui/Container.astro'
 import Layout from '@/layouts/Layout.astro'
 import type { GetStaticPaths } from 'astro'
 import { compareDesc } from 'date-fns'
@@ -27,7 +27,7 @@ posts.sort((a, b) => compareDesc(a.data.date, b.data.date))
 
 <Layout title={tag.data.title} description={tag.data.description}>
   <section>
-    <Container size="tight" className="-mt-6 flex flex-col gap-8 text-center">
+    <Container size="tight" class="-mt-6 flex flex-col gap-8 text-center">
       <h1 class="text-2xl font-extrabold text-orange-400">#{tag.data.title}</h1>
 
       <div class="leading-6 dark:text-white">{tag.data.description}</div>
@@ -50,7 +50,7 @@ posts.sort((a, b) => compareDesc(a.data.date, b.data.date))
     <div class="flex grow py-14">
       <Container
         size="tight"
-        className="divide-y divide-slate-200 dark:divide-neutral-700"
+        class="divide-y divide-slate-200 dark:divide-neutral-700"
       >
         {posts.map((post) => <BlogRow {post} />)}
       </Container>
