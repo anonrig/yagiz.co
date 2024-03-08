@@ -1,10 +1,14 @@
 ---
-import { Image } from 'astro:assets'
-import familyImg from '@/assets/family.png'
 import SubscribeModal from '@/components/SubscribeModal'
 import Footer from '@/components/layout/Footer.astro'
 import Header from '@/components/layout/Header.astro'
-import { DEFAULT_DESCRIPTION, DEFAULT_TITLE } from '@/lib/content'
+import {
+  authorFullName,
+  twitterId,
+  twitterUsername,
+  websiteDescription,
+  websiteTitle,
+} from '@/lib/content'
 import '@/styles/globals.css'
 import '@fontsource-variable/mulish'
 import mulishFile from '@fontsource-variable/mulish/files/mulish-latin-wght-normal.woff2?url'
@@ -20,7 +24,7 @@ export interface Props {
 
 const {
   title,
-  description = DEFAULT_DESCRIPTION,
+  description = websiteDescription,
   image = `${Astro.url.origin}/opengraph-image.png`,
   article,
 } = Astro.props
@@ -31,13 +35,13 @@ const {
     <SEO
       charset="utf-8"
       {title}
-      titleTemplate={`%s - ${DEFAULT_TITLE}`}
-      titleDefault={DEFAULT_TITLE}
+      titleTemplate={`%s - ${websiteTitle}`}
+      titleDefault={websiteTitle}
       {description}
       canonical={Astro.url.href}
       openGraph={{
         basic: {
-          title: title ?? DEFAULT_TITLE,
+          title: title ?? websiteTitle,
           image,
           type: "website",
           url: Astro.url.href,
@@ -45,21 +49,21 @@ const {
         optional: {
           description,
           locale: "en_US",
-          siteName: DEFAULT_TITLE,
+          siteName: websiteTitle,
         },
         image: {
           type: "image/png",
           width: 1200,
           height: 600,
-          alt: "Engineering with Yagiz",
+          alt: websiteTitle,
         },
         article,
       }}
       twitter={{
-        creator: "@yagiznizipli",
+        creator: `${twitterUsername}`,
         title,
         image,
-        imageAlt: "Engineering with Yagiz",
+        imageAlt: websiteTitle,
         description,
         card: "summary_large_image",
       }}
@@ -74,15 +78,15 @@ const {
     />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <meta name="category" content="technology" />
-    <meta name="creator" content="Yagiz Nizipli" />
-    <meta name="publisher" content="Yagiz Nizipli" />
+    <meta name="creator" content={authorFullName} />
+    <meta name="publisher" content={authorFullName} />
     <meta name="robots" content="index, follow" />
     <meta
       name="googlebot"
       content="index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1"
     />
-    <meta name="twitter:site:id" content="1589638196" />
-    <meta name="twitter:creator:id" content="1589638196" />
+    <meta name="twitter:site:id" content={twitterId} />
+    <meta name="twitter:creator:id" content={twitterId} />
     <meta name="twitter:image:type" content="image/png" />
     <meta name="twitter:image:width" content="1920" />
     <meta name="twitter:image:height" content="1080" />
@@ -100,16 +104,7 @@ const {
     <main class="grow py-14">
       <slot />
     </main>
-    <SubscribeModal client:load>
-      <Image
-        slot="image"
-        src={familyImg}
-        width={60}
-        height={60}
-        class="rounded-full"
-        alt="Yagiz Nizipli"
-      />
-    </SubscribeModal>
+    <SubscribeModal client:load />
     <Footer />
   </body>
 </html>

@@ -5,7 +5,7 @@ import * as Form from '@radix-ui/react-form'
 import { XIcon } from 'lucide-react'
 import { type FormEvent, useState } from 'react'
 
-export default function SubscribeModal({ image }: { image?: JSX.Element }) {
+export default function SubscribeModal() {
   const visible = useStore($isSubscribeVisible)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
@@ -50,7 +50,6 @@ export default function SubscribeModal({ image }: { image?: JSX.Element }) {
         <Dialog.Overlay className="z-[30] fixed inset-0 backdrop-blur-sm bg-black/20" />
         <Dialog.Content className="z-[30] fixed md:top-[50%] md:left-[50%] max-h-[85vh] w-full md:w-[90vw] md:max-w-[450px] md:translate-x-[-50%] md:translate-y-[-50%] rounded-md bg-white dark:bg-black p-4 focus:outline-none overflow-y-scroll">
           <div className="mt-[16px] mb-[32px] flex flex-col items-center">
-            {image}
             <Dialog.Title className="my-4 text-black dark:text-white tracking-4 text-3xl font-extrabold tracking-tight">
               Yagiz Nizipli
             </Dialog.Title>

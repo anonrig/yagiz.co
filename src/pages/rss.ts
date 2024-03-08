@@ -1,5 +1,5 @@
 import { getCollection } from 'astro:content'
-import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, websiteUrl } from '@/lib/content'
+import { websiteDescription, websiteTitle, websiteUrl } from '@/lib/content'
 import rss, { type RSSFeedItem } from '@astrojs/rss'
 import type { APIRoute } from 'astro'
 import { compareDesc } from 'date-fns'
@@ -9,8 +9,8 @@ export async function GET(): Promise<ReturnType<APIRoute>> {
   posts.sort((a, b) => compareDesc(a.data.date, b.data.date))
 
   return rss({
-    title: DEFAULT_TITLE,
-    description: DEFAULT_DESCRIPTION,
+    title: websiteTitle,
+    description: websiteDescription,
     site: new URL(websiteUrl),
     customData: `
 <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
