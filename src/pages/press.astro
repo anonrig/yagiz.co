@@ -1,10 +1,10 @@
 ---
 import { getEntry } from 'astro:content'
-import Page, { getMetadata } from '@/components/Page.astro'
+import Page from '@/components/Page.astro'
 import Layout from '@/layouts/Layout.astro'
 
 const page = await getEntry('pages', 'press')
 ---
-<Layout {...getMetadata({ page })}>
-    <Page {page} />
+<Layout title={page.data.title} description={page.data.description}>
+  <Page {page} />
 </Layout>

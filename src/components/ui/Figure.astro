@@ -17,8 +17,8 @@ const figureVariants = cva('mt-6', {
 })
 
 interface Props extends VariantProps<typeof figureVariants> {
-  class?: string
-  caption?: string
+  class?: string | undefined
+  caption?: string | undefined
   src: ImageMetadata
   alt: string
 }

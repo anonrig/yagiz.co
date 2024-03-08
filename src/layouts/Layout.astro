@@ -15,7 +15,7 @@ import mulishFile from '@fontsource-variable/mulish/files/mulish-latin-wght-norm
 import type { SEO as SeoProps } from 'astro-seo'
 import { SEO } from 'astro-seo'
 
-export interface Props {
+interface Props {
   title?: string
   description?: string
   image?: string
@@ -61,7 +61,7 @@ const {
       }}
       twitter={{
         creator: `@${twitterUsername}`,
-        title,
+        title: title ?? websiteTitle,
         image,
         imageAlt: websiteTitle,
         description,

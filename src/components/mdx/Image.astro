@@ -14,9 +14,9 @@ const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/**/*')
 
 const isAsset = src.startsWith('/')
 const key = `/src/assets${src}`
-const valid = key in images
-if (isAsset && !valid) {
-  console.warn(`A MDX file contains an invalid link to an image: ${src}`)
+const loadImage = images[key]
+if (loadImage === undefined) {
+  throw new Error('src should not be empty')
 }
 ---
 
@@ -32,7 +32,7 @@ if (isAsset && !valid) {
     />
   ) : (
     <AstroImage
-      src={images[key]()}
+      src={loadImage()}
       {alt}
       class:list={[
         "rounded-lg object-contain w-full !h-[unset] !relative bg-white dark:bg-white-reversed col-wide",
