@@ -9,9 +9,6 @@ export interface Item {
 const footerItems: Item[] = [
   { title: 'Press', href: '/press' },
   { title: 'Contact', href: '/contact' },
-]
-
-const socialItems: Item[] = [
   { title: 'Twitter', href: twitterUrl },
   { title: 'RSS', href: rssUrl },
 ]
@@ -19,7 +16,7 @@ const socialItems: Item[] = [
 <footer class="flex flex-col items-center pb-20 pt-12 mx-auto w-full max-w-6xl gap-y-4">
   <nav class="flex flex-wrap items-center justify-center">
     {
-      [...footerItems, ...socialItems].map((item, index) => (
+      footerItems.map((item, index) => (
         <a
           href={item.href}
           class:list={[
