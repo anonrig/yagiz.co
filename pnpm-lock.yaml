@@ -71,6 +71,9 @@ dependencies:
   handlebars:
     specifier: ^4.7.8
     version: 4.7.8
+  lucide-astro:
+    specifier: ^0.352.0
+    version: 0.352.0(astro@4.4.15)
   lucide-react:
     specifier: ^0.352.0
     version: 0.352.0(react@18.2.0)
@@ -4100,6 +4103,14 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       yallist: 4.0.0
+
+  /lucide-astro@0.352.0(astro@4.4.15):
+    resolution: {integrity: sha512-R4ejOsa24GMplrJ7Xn+IRviRMG/aD11Z8MCUQAPETVvLEcPisylFcrBreCG3ROTknC+TV2oi7wyH+fO6W6OvKg==}
+    peerDependencies:
+      astro: '>=2.7.1'
+    dependencies:
+      astro: 4.4.15(typescript@5.4.2)
+    dev: false
 
   /lucide-react@0.352.0(react@18.2.0):
     resolution: {integrity: sha512-GKzcxx6H6PT9onMPN9zxyD4KNqgHDoVaY+ad14vhTzBdXFm3FQZhH5XeP8sHJRhLk9imHHta/8DZe55kd/KerQ==}
