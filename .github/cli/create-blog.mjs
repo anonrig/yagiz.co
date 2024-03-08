@@ -1,19 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { cancel, group, outro, select, spinner, text } from '@clack/prompts'
-
-/**
- * Converts a date into `YYYY-MM-DD` format.
- * @param {Date} date
- * @return {string}
- */
-function format(date) {
-  const year = date.getFullYear()
-  const month = (date.getMonth() + 1).toString().padStart(2, '0')
-  const day = date.getDate().toString().padStart(2, '0')
-
-  return `${year}-${month}-${day}`
-}
+import { format } from 'date-fns'
 
 const contentFolder = path.resolve('./src/content')
 const allTags = fs
@@ -32,7 +20,7 @@ title: '${title}'
 description: >-
   ${description}
 type: Blog
-date: '${format(new Date())}'
+date: '${format(new Date(), 'yyyy-mm-dd')}'
 tag: ${tag}
 status: ${status}
 ---

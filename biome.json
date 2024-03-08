@@ -13,12 +13,21 @@
     "enabled": true,
     "rules": {
       "recommended": true,
+      "a11y": {
+        "all": true
+      },
       "security": {
         "all": true
       },
       "correctness": {
-        "noUnusedLabels": "error",
-        "noUnusedVariables": "error"
+        "all": true
+      },
+      "style": {
+        "useImportType": "error",
+        "useExportType": "error"
+      },
+      "performance": {
+        "all": true
       }
     }
   },
@@ -37,13 +46,24 @@
     },
     "globals": ["Astro"]
   },
+  "json": {
+    "formatter": {
+      "enabled": true
+    },
+    "parser": {
+      "allowComments": true,
+      "allowTrailingCommas": true
+    }
+  },
   "overrides": [
     {
       "include": ["**/*.astro"],
       "linter": {
         "rules": {
           "correctness": {
-            "noUnusedVariables": "off"
+            "noUnusedVariables": "off",
+            "noUnusedImports": "off",
+            "noUnusedLabels": "off"
           }
         }
       }
