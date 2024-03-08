@@ -4,7 +4,7 @@ import { getEntry } from 'astro:content'
 import { getCollection } from 'astro:content'
 import BlogFooter from '@/components/BlogFooter.astro'
 import BlogRow from '@/components/BlogRow.astro'
-import BlogStickyHeader from '@/components/BlogStickyHeader'
+import BlogStickyHeader from '@/components/BlogStickyHeader.astro'
 import { components } from '@/components/mdx'
 import Container from '@/components/ui/Container'
 import Figure from '@/components/ui/Figure.astro'
@@ -108,7 +108,7 @@ const format = (date: Date) => {
         )
       }
     </header>
-    <BlogStickyHeader {post} client:load />
+    <BlogStickyHeader {post} />
     <Prose>
       <Content {components} />
     </Prose>
