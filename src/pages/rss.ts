@@ -4,7 +4,7 @@ import rss, { type RSSFeedItem } from '@astrojs/rss'
 import type { APIRoute } from 'astro'
 import { compareDesc } from 'date-fns'
 
-export const GET: APIRoute = async () => {
+export async function GET(): Promise<ReturnType<APIRoute>> {
   const posts = await getCollection('blog', (post) => post.data.status === 'published')
   posts.sort((a, b) => compareDesc(a.data.date, b.data.date))
 
