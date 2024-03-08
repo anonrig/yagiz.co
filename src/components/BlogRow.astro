@@ -1,21 +1,22 @@
 ---
-import type { Post } from "@/types/content";
-import { ChevronRight } from "lucide-react";
+import type { CollectionEntry } from 'astro:content'
+import { ChevronRight } from 'lucide-react'
+import readingTime from 'reading-time'
 
 interface Props {
-  post: Post;
+  post: CollectionEntry<'blog'>
 }
 
-const { post } = Astro.props;
-
-const formattedDate = new Intl.DateTimeFormat("en-US", {
-  month: "short",
-  day: "numeric",
-}).format(post.data.date);
+const { post } = Astro.props
+const minute_to_read = readingTime(post.body).text
+const formattedDate = new Intl.DateTimeFormat('en-US', {
+  month: 'short',
+  day: 'numeric',
+}).format(post.data.date)
 ---
 
 <a
-  href={post.data.url}
+  href={`/${post.slug}`}
   class="group relative flex items-center overflow-hidden py-3"
 >
   <time
@@ -37,7 +38,7 @@ const formattedDate = new Intl.DateTimeFormat("en-US", {
     class="flex items-center transition-margin delay-0 duration-200 ease-in-out group-hover:mr-2"
   >
     <div class="whitespace-nowrap text-sm text-neutral-500">
-      {post.data.minute_to_read}
+      {minute_to_read}
     </div>
   </div>
   <ChevronRight

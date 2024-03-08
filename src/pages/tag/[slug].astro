@@ -1,27 +1,28 @@
 ---
-import type { GetStaticPaths } from "astro";
-import { getPosts, getTags } from "@/lib/content";
-import Container from "@/components/ui/Container";
-import BlogRow from "@/components/BlogRow.astro";
-import Layout from "@/layouts/Layout.astro";
-import type { CollectionEntry } from "astro:content";
+import type { CollectionEntry } from 'astro:content'
+import { getCollection } from 'astro:content'
+import BlogRow from '@/components/BlogRow.astro'
+import Container from '@/components/ui/Container'
+import Layout from '@/layouts/Layout.astro'
+import type { GetStaticPaths } from 'astro'
+import { compareDesc } from 'date-fns'
 
 interface Props {
   tag: CollectionEntry<'tags'>
 }
 
 export async function getStaticPaths(): Promise<ReturnType<GetStaticPaths>> {
-  const tags = await getTags();
+  const tags = await getCollection('tags')
 
-  return tags.map((tag) => ({ params: { slug: tag.slug }, props: { tag } }));
+  return tags.map((tag) => ({ params: { slug: tag.slug }, props: { tag } }))
 }
 
-const { tag } = Astro.props;
+const { tag } = Astro.props
 
-const otherTags = (await getTags()).filter((t) => t.slug !== tag.slug);
-const posts = (await getPosts()).filter(
-  (post) => post.data.tag.slug === tag.slug
-);
+const otherTags = await getCollection('tags', (entry) => entry.slug !== tag.slug)
+otherTags.sort((a, b) => a.slug.localeCompare(b.slug))
+const posts = await getCollection('blog', ({ data }) => data.status === 'published')
+posts.sort((a, b) => compareDesc(new Date(a.data.date), new Date(b.data.date)))
 ---
 
 <Layout title={tag.data.title} description={tag.data.description}>

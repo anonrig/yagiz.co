@@ -1,7 +1,7 @@
 ---
-import Layout from "@/layouts/Layout.astro";
-import Page, { getMetadata } from "@/components/Page.astro";
-import { getEntry  } from "astro:content";
+import { getEntry } from 'astro:content'
+import Page, { getMetadata } from '@/components/Page.astro'
+import Layout from '@/layouts/Layout.astro'
 
 const page = await getEntry('pages', 'supporters')
 ---

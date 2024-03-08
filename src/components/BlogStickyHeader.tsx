@@ -1,8 +1,8 @@
-import type { Post } from '@/types/content'
+import type { CollectionEntry } from 'astro:content'
 import { animate, scroll } from 'motion'
 import { useEffect, useState } from 'react'
 
-export default function BlogStickyHeader({ post }: { post: Post }) {
+export default function BlogStickyHeader({ post }: { post: CollectionEntry<'blog'> }) {
   const [hydrated, setHydrated] = useState(false)
 
   useEffect(() => {

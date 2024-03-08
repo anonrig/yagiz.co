@@ -1,13 +1,15 @@
 ---
-import SubscribeButton from "@/components/SubscribeButton";
-import Container from "@/components/ui/Container";
-import Layout from "@/layouts/Layout.astro";
-import familyImg from "@/assets/family.png";
-import { Image } from "astro:assets";
-import { getPosts } from "@/lib/content";
-import BlogRow from "@/components/BlogRow.astro";
+import { Image } from 'astro:assets'
+import { getCollection } from 'astro:content'
+import familyImg from '@/assets/family.png'
+import BlogRow from '@/components/BlogRow.astro'
+import SubscribeButton from '@/components/SubscribeButton'
+import Container from '@/components/ui/Container'
+import Layout from '@/layouts/Layout.astro'
+import { compareDesc } from 'date-fns'
 
-const posts = await getPosts();
+const posts = await getCollection('blog', ({ data }) => data.status === 'published')
+posts.sort((a, b) => compareDesc(a.data.date, b.data.date))
 ---
 
 <Layout>

@@ -1,42 +1,53 @@
 ---
-import type { GetStaticPaths } from "astro";
-import { getPosts } from "@/lib/content";
-import Layout from "@/layouts/Layout.astro";
-import Heading from "@/components/ui/Heading.astro";
-import Figure from "@/components/ui/Figure.astro";
-import Prose from "@/components/ui/Prose.astro";
-import { components } from "@/components/mdx";
-import type { Post } from "@/types/content";
-import Container from "@/components/ui/Container";
-import BlogRow from "@/components/BlogRow.astro";
-import BlogStickyHeader from "@/components/BlogStickyHeader";
-import BlogFooter from "@/components/BlogFooter.astro";
+import type { CollectionEntry } from 'astro:content'
+import { getEntry } from 'astro:content'
+import { getCollection } from 'astro:content'
+import BlogFooter from '@/components/BlogFooter.astro'
+import BlogRow from '@/components/BlogRow.astro'
+import BlogStickyHeader from '@/components/BlogStickyHeader'
+import { components } from '@/components/mdx'
+import Container from '@/components/ui/Container'
+import Figure from '@/components/ui/Figure.astro'
+import Heading from '@/components/ui/Heading.astro'
+import Prose from '@/components/ui/Prose.astro'
+import Layout from '@/layouts/Layout.astro'
+import type { GetStaticPaths } from 'astro'
+import { compareDesc } from 'date-fns'
+import readingTime from 'reading-time'
 
-export const getStaticPaths = (async () => {
-  const posts = await getPosts();
+interface Props {
+  post: CollectionEntry<'blog'>
+}
+
+export async function getStaticPaths(): Promise<ReturnType<GetStaticPaths>> {
+  const posts = await getCollection('blog', ({ data }) => data.status === 'published')
+  posts.sort((a, b) => compareDesc(a.data.date, b.data.date))
 
   return posts.map((post) => ({
     params: { slug: post.slug },
     props: { post },
-  }));
-}) satisfies GetStaticPaths;
+  }))
+}
 
-const { post } = Astro.props;
-const { Content } = await post.render();
+const { post } = Astro.props
+const { Content } = await post.render()
+const tag = await getEntry(post.data.tag.collection, post.data.tag.slug)
+const minute_to_read = readingTime(post.body).text
 
-const posts = await getPosts();
-const index = posts.findIndex((p) => p.slug === post.slug);
+const posts = await getCollection('blog', ({ data }) => data.status === 'published')
+posts.sort((a, b) => compareDesc(a.data.date, b.data.date))
+const index = posts.findIndex((p) => p.slug === post.slug)
 const suggestions = [posts.at(index - 2), posts.at(index - 1)].filter(
-  Boolean
-) as Array<Post>;
+  Boolean,
+) as CollectionEntry<'blog'>[]
 
 const format = (date: Date) => {
-  const year = date.getFullYear();
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  const day = date.getDate().toString().padStart(2, "0");
+  const year = date.getFullYear()
+  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+  const day = date.getDate().toString().padStart(2, '0')
 
-  return `${year}-${month}-${day}`;
-};
+  return `${year}-${month}-${day}`
+}
 ---
 
 <Layout
@@ -47,7 +58,7 @@ const format = (date: Date) => {
     authors: ["Yagiz Nizipli"],
     publishedTime: format(post.data.date),
     modifiedTime: format(new Date()),
-    tags: [post.data.tag.data.title],
+    tags: [tag.data.title],
   }}
 >
   <Fragment slot="head">
@@ -73,14 +84,14 @@ const format = (date: Date) => {
           </time>
         </span>
         <span class="before:px-2 before:font-serif before:leading-[1] before:content-['·']">
-          {post.data.minute_to_read}
+          {minute_to_read}
         </span>
         <span class="before:px-2 before:font-serif before:leading-[1] before:content-['·']">
           <a
             href={`/tag/${post.data.tag.slug}`}
             class="text-orange-400 hover:text-orange-300"
           >
-            {post.data.tag.data.title}
+            {tag.data.title}
           </a>
         </span>
       </div>

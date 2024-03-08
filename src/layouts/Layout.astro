@@ -1,29 +1,29 @@
 ---
-import SubscribeModal from "@/components/SubscribeModal";
-import Header from "@/components/layout/Header.astro";
-import "@/styles/globals.css";
-import "@fontsource-variable/mulish";
-import mulishFile from "@fontsource-variable/mulish/files/mulish-latin-wght-normal.woff2?url";
-import { Image } from "astro:assets";
-import familyImg from "@/assets/family.png";
-import Footer from "@/components/layout/Footer.astro";
-import { SEO } from "astro-seo";
-import { DEFAULT_DESCRIPTION, DEFAULT_TITLE } from "@/lib/content";
+import { Image } from 'astro:assets'
+import familyImg from '@/assets/family.png'
+import SubscribeModal from '@/components/SubscribeModal'
+import Footer from '@/components/layout/Footer.astro'
+import Header from '@/components/layout/Header.astro'
+import { DEFAULT_DESCRIPTION, DEFAULT_TITLE } from '@/lib/content'
+import '@/styles/globals.css'
+import '@fontsource-variable/mulish'
+import mulishFile from '@fontsource-variable/mulish/files/mulish-latin-wght-normal.woff2?url'
+import type { SEO as SeoProps } from 'astro-seo'
+import { SEO } from 'astro-seo'
 
 export interface Props {
-  title?: string;
-  description?: string;
-  image?: string;
-  article?: Required<Parameters<typeof SEO>[0]>["openGraph"]["article"];
+  title?: string
+  description?: string
+  image?: string
+  article?: Required<Parameters<typeof SeoProps>[0]>['openGraph']['article']
 }
-
 
 const {
   title,
   description = DEFAULT_DESCRIPTION,
   image = `${Astro.url.origin}/opengraph-image.png`,
   article,
-} = Astro.props;
+} = Astro.props
 ---
 
 <html lang="en" class="bg-white text-black dark:bg-white-reversed">

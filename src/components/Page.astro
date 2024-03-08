@@ -1,23 +1,23 @@
 ---
-import Figure from "@/components/ui/Figure.astro";
-import Heading from "@/components/ui/Heading.astro";
-import Prose from "@/components/ui/Prose.astro";
-import type { Props as LayoutProps } from "@/layouts/Layout.astro";
-import { components } from "@/components/mdx";
-import type { CollectionEntry } from "astro:content";
+import type { CollectionEntry } from 'astro:content'
+import { components } from '@/components/mdx'
+import Figure from '@/components/ui/Figure.astro'
+import Heading from '@/components/ui/Heading.astro'
+import Prose from '@/components/ui/Prose.astro'
+import type { Props as LayoutProps } from '@/layouts/Layout.astro'
 
 interface Props {
-  page: CollectionEntry<'pages'>;
+  page: CollectionEntry<'pages'>
 }
 
-const { page } = Astro.props;
-const { Content } = await page.render();
+const { page } = Astro.props
+const { Content } = await page.render()
 
 export function getMetadata({ page }: Props): LayoutProps {
   return {
     title: page.data.title,
     description: page.data.description,
-  };
+  }
 }
 ---
 

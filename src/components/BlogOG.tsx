@@ -1,5 +1,5 @@
+import type { CollectionEntry } from 'astro:content'
 import { githubImage } from '@/lib/content'
-import type { Post } from '@/types/content'
 
 declare module 'react' {
   interface HTMLAttributes<T> extends AriaAttributes, DOMAttributes<T> {
@@ -7,7 +7,7 @@ declare module 'react' {
   }
 }
 
-export function BlogOG({ post }: { post: Post }) {
+export function BlogOG({ post }: { post: CollectionEntry<'blog'> }) {
   return (
     <div tw="h-full w-full flex flex-col items-start px-[70px] py-[90px] bg-slate-50 justify-between text-black">
       <div tw="text-[70px]" style={{ whiteSpace: 'pre-wrap' }}>

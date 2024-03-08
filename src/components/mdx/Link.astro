@@ -1,12 +1,12 @@
 ---
-import type { HTMLAttributes } from "astro/types";
+import type { HTMLAttributes } from 'astro/types'
 
-export interface Props extends Omit<HTMLAttributes<"a">, "href"> {
-  href: string;
+export interface Props extends Omit<HTMLAttributes<'a'>, 'href'> {
+  href: string
 }
 
-const { href, ...rest } = Astro.props;
-const isInternalLink = href && (href.startsWith("/") || href.startsWith("#"));
+const { href, ...rest } = Astro.props
+const isInternalLink = href && (href.startsWith('/') || href.startsWith('#'))
 ---
 
 <a

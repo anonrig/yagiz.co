@@ -1,22 +1,22 @@
 ---
-import type { ImageMetadata } from "astro";
-import { Image as AstroImage } from "astro:assets";
+import { Image as AstroImage } from 'astro:assets'
+import type { ImageMetadata } from 'astro'
 
 interface Props {
-  src: string;
-  alt: string;
-  class?: string;
+  src: string
+  alt: string
+  class?: string
 }
 
-const { src, class: className, alt } = Astro.props;
+const { src, class: className, alt } = Astro.props
 
-const images = import.meta.glob<{ default: ImageMetadata }>("/src/assets/**/*");
+const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/**/*')
 
-const isAsset = src.startsWith("/");
-const key = `/src/assets${src}`;
-const valid = key in images;
+const isAsset = src.startsWith('/')
+const key = `/src/assets${src}`
+const valid = key in images
 if (isAsset && !valid) {
-  console.warn(`A MDX file contains an invalid link to an image: ${src}`);
+  console.warn(`A MDX file contains an invalid link to an image: ${src}`)
 }
 ---
 

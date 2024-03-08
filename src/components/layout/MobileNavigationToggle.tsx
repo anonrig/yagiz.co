@@ -1,8 +1,8 @@
 import Container from '@/components/ui/Container'
-import type { Item } from '@/types/layout'
 import { clsx } from 'clsx'
 import { MenuIcon, XIcon } from 'lucide-react'
 import { useState } from 'react'
+import type { Item } from './Footer.astro'
 
 export function MobileNavigationToggle({ items }: { items: Item[] }) {
   const [open, setOpen] = useState(false)
@@ -27,7 +27,6 @@ export function MobileNavigationToggle({ items }: { items: Item[] }) {
         <Container>
           <nav className="flex flex-col gap-6">
             {items.map((item) => (
-              // biome-ignore lint/a11y/useValidAnchor: <explanation>
               <a
                 href={item.href}
                 key={item.href}

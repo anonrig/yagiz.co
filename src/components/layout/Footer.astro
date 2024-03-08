@@ -1,12 +1,16 @@
 ---
-import type { Item } from "@/types/layout";
-import { twitterUrl, rssUrl } from "@/lib/content";
+import { rssUrl, twitterUrl } from '@/lib/content'
+
+export interface Item {
+  title: string
+  href: string
+}
 
 const footerItems: Item[] = [
-  { title: "Press", href: "/press" },
-  { title: "Supporters", href: "/supporters" },
-  { title: "Contact", href: "/contact" },
-];
+  { title: 'Press', href: '/press' },
+  { title: 'Supporters', href: '/supporters' },
+  { title: 'Contact', href: '/contact' },
+]
 
 const socialItems: Item[] = [
   { title: 'Twitter', href: twitterUrl },

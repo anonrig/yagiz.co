@@ -1,18 +1,20 @@
 ---
-import { getPosts } from "@/lib/content";
-import { ArrowLeft, ArrowRight } from "lucide-react";
-import Container from "@/components/ui/Container";
-import authorImg from "@/assets/author-image.png";
-import { Image } from "astro:assets";
+import { Image } from 'astro:assets'
+import { getCollection } from 'astro:content'
+import authorImg from '@/assets/author-image.png'
+import Container from '@/components/ui/Container'
+import { compareDesc } from 'date-fns'
+import { ArrowLeft, ArrowRight } from 'lucide-react'
 
 interface Props {
-  index: number;
+  index: number
 }
 
-const { index } = Astro.props;
-const posts = await getPosts();
-const next = index !== 0 ? posts.at(index - 1) : undefined;
-const previous = index !== posts.length - 1 ? posts.at(index + 1) : undefined;
+const { index } = Astro.props
+const posts = await getCollection('blog', ({ data }) => data.status === 'published')
+posts.sort((a, b) => compareDesc(a.data.date, b.data.date))
+const next = index !== 0 ? posts.at(index - 1) : undefined
+const previous = index !== posts.length - 1 ? posts.at(index + 1) : undefined
 ---
 
 <Container size="tight" className="mt-16 flex items-center" as="footer">

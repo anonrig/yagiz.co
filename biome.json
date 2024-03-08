@@ -34,6 +34,19 @@
       "quoteProperties": "asNeeded",
       "trailingComma": "all",
       "semicolons": "asNeeded"
+    },
+    "globals": ["Astro"]
+  },
+  "overrides": [
+    {
+      "include": ["**/*.astro"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnusedVariables": "off"
+          }
+        }
+      }
     }
-  }
+  ]
 }
