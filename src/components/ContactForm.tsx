@@ -2,14 +2,13 @@ import { useForm } from '@formspree/react'
 import * as Form from '@radix-ui/react-form'
 import clsx from 'clsx'
 
-type Props = { className?: string }
-export default function ContactForm(props: Props) {
+export default function ContactForm() {
   const [state, handleSubmit] = useForm('mpzolveb')
 
   return (
     <Form.Root
       onSubmit={handleSubmit}
-      className={clsx('grid grid-cols-canvas [&>*]:col-main gap-y-4', props.className)}
+      className={'grid grid-cols-canvas [&>*]:col-main gap-y-4 mt-6'}
     >
       {state.succeeded && !state.submitting && (
         <div className="bg-[#f6f6f6] dark:bg-[#2f333c] text-neutral-800 px-4 sm:px-6 py-2 rounded-md text-sm flex flex-col sm:flex-row sm:gap-x-2">

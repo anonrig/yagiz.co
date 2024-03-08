@@ -9,6 +9,6 @@ const page = await getEntry('pages', 'contact')
 
 <Layout {...getMetadata({ page })}>
   <Page {page}>
-    <ContactForm className="mt-6" client:load />
+    <ContactForm client:load />
   </Page>
 </Layout>
