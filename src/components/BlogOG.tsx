@@ -1,6 +1,5 @@
 import type { CollectionEntry } from 'astro:content'
 import { githubImage } from '@/lib/content'
-import type { AriaAttributes, DOMAttributes } from 'react'
 
 declare module 'react' {
   interface HTMLAttributes<T> extends AriaAttributes, DOMAttributes<T> {

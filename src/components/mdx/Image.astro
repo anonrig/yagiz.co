@@ -15,7 +15,7 @@ const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/**/*')
 const isAsset = src.startsWith('/')
 const key = `/src/assets${src}`
 const loadImage = images[key]
-if (loadImage === undefined) {
+if (isAsset && loadImage === undefined) {
   throw new Error('src should not be empty')
 }
 ---
