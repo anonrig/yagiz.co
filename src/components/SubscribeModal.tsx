@@ -1,12 +1,9 @@
-import { $isSubscribeVisible } from "@/lib/stores";
-import { useStore } from "@nanostores/react";
-import * as Dialog from "@radix-ui/react-dialog";
 import * as Form from "@radix-ui/react-form";
 import { XIcon } from "lucide-react";
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useState, useRef } from "react";
 
 export default function SubscribeModal() {
-  const visible = useStore($isSubscribeVisible);
+  const modalRef = useRef<HTMLDialogElement>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -31,7 +28,6 @@ export default function SubscribeModal() {
 
       if (json.status === 200) {
         setMessage("");
-        $isSubscribeVisible.set(false);
       } else {
         setMessage(json.message);
       }
@@ -44,10 +40,9 @@ export default function SubscribeModal() {
     }
   };
 
-  const modalRef = document.querySelector("#subscribe-modal");
-
   return (
     <dialog
+      ref={modalRef}
       id="subscribe-modal"
       className="backdrop:bg-black/20 backdrop:backdrop-blur-sm"
     >
@@ -120,9 +115,9 @@ export default function SubscribeModal() {
           className="absolute cursor-pointer top-4 right-4 inline-flex appearance-none items-center justify-center rounded-full focus:shadow-[0_0_0_2px] focus:outline-none"
           arial-label="Close"
           onClick={() => {
-            if (modalRef && "close" in modalRef) {
-              modalRef.close();
-            }
+            if (!modalRef.current) return;
+
+            modalRef.current.close();
           }}
         >
           <XIcon size={24} className="text-neutral-300 m-2" />
