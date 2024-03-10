@@ -1,33 +1,38 @@
-import { $isSubscribeVisible } from '@/lib/stores'
-import { type VariantProps, cva } from 'class-variance-authority'
-import type { ButtonHTMLAttributes } from 'react'
+import { $isSubscribeVisible } from "@/lib/stores";
+import { type VariantProps, cva } from "class-variance-authority";
+import type { ButtonHTMLAttributes } from "react";
 
-const subscribeButtonVariants = cva('text-orange-400', {
+const subscribeButtonVariants = cva("text-orange-400", {
   variants: {
     variant: {
-      bold: 'font-bold',
+      bold: "font-bold",
     },
   },
   defaultVariants: {
-    variant: 'bold',
+    variant: "bold",
   },
-})
+});
 
 interface Props
   extends ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof subscribeButtonVariants> {
-  label?: string
+  label?: string;
 }
 
 export default function SubscribeButton({ className, variant, label }: Props) {
+  const modal = document.querySelector("#subscribe-modal");
   return (
     <button
       type="button"
       className={subscribeButtonVariants({ variant, className })}
-      onClick={() => $isSubscribeVisible.set(true)}
+      onClick={() => {
+        if (modal && "showModal" in modal) {
+          modal?.showModal();
+        }
+      }}
     >
-      {label ?? 'Subscribe'}
+      {label ?? "Subscribe"}
       <span className="sr-only">to the newsletter</span>
     </button>
-  )
+  );
 }
