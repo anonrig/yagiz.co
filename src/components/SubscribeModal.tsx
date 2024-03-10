@@ -1,44 +1,44 @@
-import * as Form from "@radix-ui/react-form";
-import { XIcon } from "lucide-react";
-import { type FormEvent, useState, useRef } from "react";
+import * as Form from '@radix-ui/react-form'
+import { XIcon } from 'lucide-react'
+import { type FormEvent, useState, useRef } from 'react'
 
 export default function SubscribeModal() {
-  const modalRef = useRef<HTMLDialogElement>(null);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
+  const modalRef = useRef<HTMLDialogElement>(null)
+  const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState('')
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+    event.preventDefault()
 
     // biome-ignore lint/suspicious/noExplicitAny: Unnecessary
-    const { email, name } = event.target as any;
-    setLoading(true);
-    setMessage("");
+    const { email, name } = event.target as any
+    setLoading(true)
+    setMessage('')
     try {
-      const response = await fetch("/api/newsletter", {
-        method: "post",
+      const response = await fetch('/api/newsletter', {
+        method: 'post',
         headers: {
-          "content-type": "application/json",
+          'content-type': 'application/json',
         },
         body: JSON.stringify({
           email: email.value,
           name: name.value,
         }),
-      });
-      const json = await response.json();
+      })
+      const json = await response.json()
 
       if (json.status === 200) {
-        setMessage("");
+        setMessage('')
       } else {
-        setMessage(json.message);
+        setMessage(json.message)
       }
     } catch (error) {
       if (error instanceof Error) {
-        setMessage(error.message);
+        setMessage(error.message)
       }
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <dialog
@@ -115,14 +115,14 @@ export default function SubscribeModal() {
           className="absolute cursor-pointer top-4 right-4 inline-flex appearance-none items-center justify-center rounded-full focus:shadow-[0_0_0_2px] focus:outline-none"
           arial-label="Close"
           onClick={() => {
-            if (!modalRef.current) return;
+            if (!modalRef.current) return
 
-            modalRef.current.close();
+            modalRef.current.close()
           }}
         >
           <XIcon size={24} className="text-neutral-300 m-2" />
         </div>
       </div>
     </dialog>
-  );
+  )
 }
