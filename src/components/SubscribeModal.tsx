@@ -44,7 +44,7 @@ export default function SubscribeModal() {
     <dialog
       ref={modalRef}
       id="subscribe-modal"
-      className="backdrop:bg-black/20 backdrop:backdrop-blur-sm"
+      className="backdrop:bg-black/20 backdrop:backdrop-blur-sm rounded-md"
     >
       <div className="max-h-[85vh] w-[90vw] max-w-[450px] rounded-md bg-white dark:bg-black p-4 focus:outline-none overflow-y-scroll">
         <div className="mt-[16px] mb-[32px] flex flex-col items-center">
