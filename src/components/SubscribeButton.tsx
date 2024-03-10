@@ -1,21 +1,21 @@
-import { type VariantProps, cva } from "class-variance-authority";
-import type { ButtonHTMLAttributes } from "react";
+import { type VariantProps, cva } from 'class-variance-authority'
+import type { ButtonHTMLAttributes } from 'react'
 
-const subscribeButtonVariants = cva("text-orange-400", {
+const subscribeButtonVariants = cva('text-orange-400', {
   variants: {
     variant: {
-      bold: "font-bold",
+      bold: 'font-bold',
     },
   },
   defaultVariants: {
-    variant: "bold",
+    variant: 'bold',
   },
-});
+})
 
 interface Props
   extends ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof subscribeButtonVariants> {
-  label?: string;
+  label?: string
 }
 
 export default function SubscribeButton({ className, variant, label }: Props) {
@@ -25,14 +25,14 @@ export default function SubscribeButton({ className, variant, label }: Props) {
       className={subscribeButtonVariants({ variant, className })}
       onClick={() => {
         const modal: HTMLDialogElement | null =
-          document.querySelector("#subscribe-modal");
-        if (!modal) return;
+          document.querySelector('#subscribe-modal')
+        if (!modal) return
 
-        modal.showModal();
+        modal.showModal()
       }}
     >
-      {label ?? "Subscribe"}
+      {label ?? 'Subscribe'}
       <span className="sr-only">to the newsletter</span>
     </button>
-  );
+  )
 }
