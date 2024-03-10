@@ -1,4 +1,3 @@
-import { $isSubscribeVisible } from "@/lib/stores";
 import { type VariantProps, cva } from "class-variance-authority";
 import type { ButtonHTMLAttributes } from "react";
 
@@ -20,15 +19,16 @@ interface Props
 }
 
 export default function SubscribeButton({ className, variant, label }: Props) {
-  const modal = document.querySelector("#subscribe-modal");
   return (
     <button
       type="button"
       className={subscribeButtonVariants({ variant, className })}
       onClick={() => {
-        if (modal && "showModal" in modal) {
-          modal?.showModal();
-        }
+        const modal: HTMLDialogElement | null =
+          document.querySelector("#subscribe-modal");
+        if (!modal) return;
+
+        modal.showModal();
       }}
     >
       {label ?? "Subscribe"}
