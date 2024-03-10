@@ -1,6 +1,6 @@
 import * as Form from '@radix-ui/react-form'
 import { XIcon } from 'lucide-react'
-import { type FormEvent, useState, useRef } from 'react'
+import { type FormEvent, useRef, useState } from 'react'
 
 export default function SubscribeModal() {
   const modalRef = useRef<HTMLDialogElement>(null)
@@ -111,17 +111,14 @@ export default function SubscribeModal() {
           {message.length > 0 && <div className="text-center">{message}</div>}
         </Form.Root>
 
-        <div
+        <button
           className="absolute cursor-pointer top-4 right-4 inline-flex appearance-none items-center justify-center rounded-full focus:shadow-[0_0_0_2px] focus:outline-none"
           arial-label="Close"
-          onClick={() => {
-            if (!modalRef.current) return
-
-            modalRef.current.close()
-          }}
+          type="button"
+          onClick={() => modalRef.current?.close()}
         >
           <XIcon size={24} className="text-neutral-300 m-2" />
-        </div>
+        </button>
       </div>
     </dialog>
   )

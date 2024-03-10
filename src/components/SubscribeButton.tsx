@@ -24,11 +24,8 @@ export default function SubscribeButton({ className, variant, label }: Props) {
       type="button"
       className={subscribeButtonVariants({ variant, className })}
       onClick={() => {
-        const modal: HTMLDialogElement | null =
-          document.querySelector('#subscribe-modal')
-        if (!modal) return
-
-        modal.showModal()
+        const modal: HTMLDialogElement | null = document.querySelector('#subscribe-modal')
+        modal?.showModal()
       }}
     >
       {label ?? 'Subscribe'}
