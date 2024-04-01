@@ -17,7 +17,7 @@
     "cli": "node --no-warnings ./cli.mjs"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^9.1.0",
+    "@astrojs/cloudflare": "^10.0.1",
     "@astrojs/mdx": "^2.2.0",
     "@astrojs/react": "^3.1.0",
     "@astrojs/rss": "^4.0.5",
