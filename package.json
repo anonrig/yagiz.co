@@ -38,7 +38,7 @@
     "date-fns": "^3.4.0",
     "handlebars": "^4.7.8",
     "lucide-astro": "^0.356.0",
-    "lucide-react": "^0.356.0",
+    "lucide-react": "^0.363.0",
     "mjml": "^4.15.3",
     "motion": "^10.17.0",
     "node-mailjet": "^6.0.5",
