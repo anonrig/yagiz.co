@@ -13,7 +13,7 @@ import Prose from '@/components/ui/Prose.astro'
 import Layout from '@/layouts/Layout.astro'
 import type { GetStaticPaths } from 'astro'
 import { compareDesc, format } from 'date-fns'
-import readingTime from 'reading-time'
+import readingTime from 'reading-time/lib/reading-time.js'
 
 interface Props {
   post: CollectionEntry<'blog'>

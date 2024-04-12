@@ -27,7 +27,6 @@
     "@fontsource-variable/mulish": "^5.0.18",
     "@formspree/react": "^2.5.1",
     "@radix-ui/react-form": "^0.0.3",
-    "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/typography": "^0.5.12",
     "@types/react": "^18.2.77",
     "@types/react-dom": "^18.2.25",

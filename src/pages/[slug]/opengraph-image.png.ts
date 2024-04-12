@@ -3,10 +3,10 @@ import path from 'node:path'
 import { getCollection } from 'astro:content'
 import type { CollectionEntry } from 'astro:content'
 import { BlogOG } from '@/components/BlogOG'
-import { Resvg } from '@resvg/resvg-js'
 import type { APIRoute, GetStaticPaths } from 'astro'
 import { compareDesc } from 'date-fns'
 import satori from 'satori'
+import sharp from 'sharp'
 
 interface Props {
   post: CollectionEntry<'blog'>
@@ -40,19 +40,14 @@ export const GET: APIRoute<Props> = async ({ props: { post } }) => {
     width: WIDTH,
   })
 
-  const resvg = new Resvg(svg, {
-    fitTo: {
-      mode: 'width',
-      value: WIDTH,
-    },
-  })
+  const image = sharp(Buffer.from(svg), {
+    failOn: 'error',
+  }).png()
+  const buffer = await image.toBuffer()
 
-  const image = resvg.render().asPng()
-
-  return new Response(image, {
+  return new Response(buffer, {
     headers: {
       'Content-Type': 'image/png',
-      'Content-Length': image.length.toString(),
       'Cache-Control': 'public, max-age=31536000, immutable',
     },
   })

@@ -24,10 +24,21 @@
       },
       "style": {
         "useImportType": "error",
-        "useExportType": "error"
+        "useExportType": "error",
+        "useNodejsImportProtocol": "error"
       },
       "performance": {
         "all": true
+      },
+      "nursery": {
+        "noRestrictedImports": {
+          "level": "error",
+          "options": {
+            "paths": {
+              "reading-time": "Please use 'reading-time/lib/reading-time.js' due to SSR related issues."
+            }
+          }
+        }
       }
     }
   },
