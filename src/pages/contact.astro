@@ -1,6 +1,6 @@
 ---
 import { getEntry } from 'astro:content'
-import ContactForm from '@/components/ContactForm'
+import ContactForm from '@/components/ContactForm.astro'
 import Page from '@/components/Page.astro'
 import Layout from '@/layouts/Layout.astro'
 
@@ -9,6 +9,6 @@ const page = await getEntry('pages', 'contact')
 
 <Layout title={page.data.title} description={page.data.description}>
   <Page {page}>
-    <ContactForm client:load />
+    <ContactForm />
   </Page>
 </Layout>
