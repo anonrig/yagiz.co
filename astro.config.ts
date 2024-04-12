@@ -74,5 +74,8 @@ export default defineConfig({
     optimizeDeps: {
       exclude: ['@resvg/resvg-js'],
     },
+    ssr: {
+      external: ['node:fs/promises', 'node:path'],
+    }
   },
 })
