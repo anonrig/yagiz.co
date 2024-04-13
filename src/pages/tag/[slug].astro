@@ -21,7 +21,10 @@ const { tag } = Astro.props
 
 const otherTags = await getCollection('tags', (entry) => entry.slug !== tag.slug)
 otherTags.sort((a, b) => a.slug.localeCompare(b.slug))
-const posts = await getCollection('blog', ({ data }) => data.status === 'published')
+const posts = await getCollection(
+  'blog',
+  ({ data }) => data.status === 'published' && data.tag.slug === tag.slug,
+)
 posts.sort((a, b) => compareDesc(a.data.date, b.data.date))
 ---
 
