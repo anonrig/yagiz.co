@@ -14,7 +14,8 @@
     "astro": "astro",
     "lint": "biome check .",
     "lint-fix": "biome check . --apply",
-    "cli": "node --no-warnings ./cli.mjs"
+    "cli": "node --no-warnings ./cli.mjs",
+    "check": "linkspector check"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^10.1.0",
@@ -52,6 +53,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.5.10",
     "@biomejs/biome": "^1.6.4",
+    "@umbrelladocs/linkspector": "^0.2.7",
     "to-vfile": "^8.0.0",
     "typescript": "^5.4.5",
     "vfile-matter": "^5.0.0"
