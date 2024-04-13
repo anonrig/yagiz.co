@@ -1,0 +1,12 @@
+baseUrl: https://www.yagiz.co
+files:
+  - src/content/pages/about.mdx
+  - src/content/pages/press.mdx
+fileExtensions:
+  - md
+  - mdx
+useGitIgnore: true
+aliveStatusCodes:
+  - 200
+  - 201
+  - 204
