@@ -1,5 +1,4 @@
 ---
-import SubscribeModal from '@/components/SubscribeModal'
 import Footer from '@/components/layout/Footer.astro'
 import Header from '@/components/layout/Header.astro'
 import {
@@ -105,7 +104,6 @@ const {
     <main class="grow py-14">
       <slot />
     </main>
-    <SubscribeModal client:load />
     <Footer />
   </body>
 </html>

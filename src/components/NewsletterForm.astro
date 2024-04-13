@@ -1,7 +1,25 @@
 <form class="grid grid-cols-canvas [&>*]:col-main gap-y-4 mt-6">
   <div id='success-message' class="bg-[#f6f6f6] dark:bg-[#2f333c] text-neutral-300 px-4 sm:px-6 py-2 rounded-md text-sm flex flex-col sm:flex-row sm:gap-x-2 hidden">
-    <div class="font-extrabold">Message sent succesfully.</div>
-    I'll respond to your message as soon as possible.
+    <div class="font-extrabold">Subscribed successfully.</div>
+    Thank you for signing up. You will receive an email shortly.
+  </div>
+
+  <div class="flex flex-col gap-y-2">
+    <label for='name' class="block text-black dark:text-white font-bold">
+      Name:
+    </label>
+    <input
+      id='name'
+      name='name'
+      autocapitalize='off'
+      autocorrect='off'
+      autocomplete='name'
+      required
+      type="text"
+      minlength={6}
+      placeholder="What is your name?"
+      class="font-normal focus:border-slate-300 bg-white dark:bg-white-reversed border-[1px] border-slate-200 dark:border-neutral-600 border-solid leading-[1.15] rounded-md text-slate-800 dark:text-white h-[44px] outline-none px-4 dark:focus:border-neutral-500"
+    />
   </div>
 
   <div class="flex flex-col gap-y-2">
@@ -22,37 +40,12 @@
     />
   </div>
 
-  <div  class="flex flex-col gap-y-2">
-    <label for="subject" class="block text-black dark:text-white font-bold">Subject:</label>
-    <input
-      id='subject'
-      name='subject'
-      required
-      minlength={5}
-      type="text"
-      placeholder="What is your message about?"
-      class="font-normal focus:border-slate-300 bg-white dark:bg-white-reversed border-[1px] border-slate-200 dark:border-neutral-600 border-solid leading-[1.15] rounded-md text-slate-800 dark:text-white h-[44px] outline-none px-4 dark:focus:border-neutral-500"
-    />
-  </div>
-
-  <div class="flex flex-col gap-y-2">
-    <label for="message" class="block text-black dark:text-white font-bold">Message:</label>
-    <textarea
-      id='message'
-      name='message'
-      class="w-full p-4 resize-y min-h-[150px] font-normal focus:border-slate-300 bg-white dark:bg-white-reversed border-[1px] border-slate-200 dark:border-neutral-600 border-solid leading-[1.15] rounded-md text-slate-800 dark:text-white h-44 outline-none dark:focus:border-neutral-500"
-      rows={6}
-      required
-      minlength={20}
-    />
-  </div>
-
   <div>
     <button
       id='submit'
       class="disabled:opacity-60 disabled:cursor-not-allowed uppercase mt-2 items-center bg-white dark:bg-white-reversed border-[1px] border-slate-200 dark:border-neutral-600 hover:border-slate-300 dark:hover:border-neutral-500 border-solid rounded-md text-orange-400 text-[11px] font-extrabold h-[36px] justify-center tracking-[0.5px] outline-none px-[15px]"
     >
-      Submit
+      Sign up
     </button>
   </div>
 </form>
@@ -60,9 +53,8 @@
 <script>
   const form: HTMLFormElement = document.querySelector('form')!
   const submit: HTMLButtonElement = document.querySelector('#submit')!
-  const subject: HTMLInputElement = document.querySelector('#subject')!
+  const name: HTMLInputElement = document.querySelector('name')!
   const email: HTMLInputElement = document.querySelector('#email')!
-  const message: HTMLInputElement = document.querySelector('#message')!
   const successMessage: HTMLDivElement = document.querySelector('#success-message')!
 
   form.addEventListener('submit', async (event) => {
@@ -71,20 +63,21 @@
     try {
       submit.disabled = true
 
-      await fetch('https://formspree.io/f/mpzolveb', {
-        method: 'POST',
+      await fetch('/api/newsletter', {
+        method: 'post',
         headers: {
-          Accept: 'application/json',
-          'Content-Type': 'multipart/form-data',
+          'content-type': 'application/json',
         },
-        body: JSON.stringify({ email: email.value, subject: subject.value, message: message.value }),
+        body: JSON.stringify({
+          email: email.value,
+          name: name.value,
+        }),
       })
 
       // Clear state
       successMessage.classList.remove('hidden')
       email.value = ''
-      subject.value = ''
-      message.value = ''
+      name.value = ''
     } catch (error) {
       // TODO(@anonrig): Show error message somewhere.
       if (error instanceof Error) {
