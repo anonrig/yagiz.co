@@ -33,7 +33,7 @@
     "class-variance-authority": "^0.7.0",
     "date-fns": "^3.6.0",
     "handlebars": "^4.7.8",
-    "lucide-astro": "^0.372.0",
+    "lucide-astro": "^0.376.0",
     "mjml": "^4.15.3",
     "motion": "^10.17.0",
     "node-mailjet": "^6.0.5",
