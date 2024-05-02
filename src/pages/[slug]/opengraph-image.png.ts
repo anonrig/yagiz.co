@@ -16,6 +16,7 @@ const WIDTH = 1200
 const HEIGHT = 600
 
 const fontData = fs.readFile(path.resolve('./public/fonts/mulish.ttf'))
+const boldFontData = fs.readFile(path.resolve('./public/fonts/mulish-bold.ttf'))
 
 export async function getStaticPaths(): Promise<ReturnType<GetStaticPaths>> {
   const posts = await getCollection('blog', ({ data }) => data.status === 'published')
@@ -33,6 +34,11 @@ export const GET: APIRoute<Props> = async ({ props: { post } }) => {
       {
         name: 'Mulish Variable',
         data: await fontData,
+        style: 'normal',
+      },
+      {
+        name: 'mulish-bold',
+        data: await boldFontData,
         style: 'normal',
       },
     ],
