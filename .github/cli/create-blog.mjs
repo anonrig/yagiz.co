@@ -20,7 +20,7 @@ title: '${title}'
 description: >-
   ${description}
 type: Blog
-date: '${format(new Date(), 'yyyy-mm-dd')}'
+date: '${format(new Date(), 'yyyy-MM-dd')}'
 tag: ${tag}
 status: ${status}
 ---

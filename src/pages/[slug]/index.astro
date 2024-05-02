@@ -40,8 +40,8 @@ const index = posts.findIndex((p) => p.slug === post.slug)
 const suggestions = [posts.at(index - 2), posts.at(index - 1)].filter(
   Boolean,
 ) as CollectionEntry<'blog'>[]
-const publishedTime = format(post.data.date, 'yyyy-mm-dd')
-const modifiedTime = format(new Date(), 'yyyy-mm-dd')
+const publishedTime = format(post.data.date, 'yyyy-MM-dd')
+const modifiedTime = format(new Date(), 'yyyy-MM-dd')
 ---
 
 <Layout
