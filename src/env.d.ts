@@ -6,6 +6,5 @@ declare module 'reading-time/lib/reading-time.js' {
   function readingTime(input: string): {
     text: string
   }
-  // biome-ignore lint/correctness/noUndeclaredVariables: False positive
   export = readingTime
 }
