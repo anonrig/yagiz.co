@@ -36,5 +36,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
       - name: Install dependencies
         run: pnpm install
+      - name: Install Chrome
+        run: pnpx puppeteer browsers install chrome
       - name: Run checker
         run: pnpm check
