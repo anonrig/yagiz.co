@@ -18,6 +18,7 @@ jobs:
         with:
           node-version-file: package.json
           check-latest: true
+          node-version: 22
       - uses: pnpm/action-setup@v4
         name: Install pnpm
         with:
@@ -39,4 +40,4 @@ jobs:
       - name: Install Chrome
         run: pnpx puppeteer browsers install chrome
       - name: Run checker
-        run: pnpm check
+        run: node --run check
