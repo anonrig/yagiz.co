@@ -20,7 +20,8 @@
         "all": true
       },
       "correctness": {
-        "all": true
+        "all": true,
+        "noNodejsModules": "off"
       },
       "style": {
         "useImportType": "error",
@@ -52,7 +53,7 @@
     "formatter": {
       "quoteStyle": "single",
       "quoteProperties": "asNeeded",
-      "trailingComma": "all",
+      "trailingCommas": "all",
       "semicolons": "asNeeded"
     },
     "globals": ["Astro", "AriaAttributes", "DOMAttributes"]
