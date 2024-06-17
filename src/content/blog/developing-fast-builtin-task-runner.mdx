@@ -1,0 +1,123 @@
+---
+title: 'Developing fast & built-in task runner in Node.js core'
+description: >-
+  With this blog post, I'm going to explain and analyze the steps I've taken to land a super-fast, built-in task runner in Node.js core. For those who are not familiar with the term "task runner", it's a command-line tool to run a task specified in a `package.json` file in node.js projects.
+type: Blog
+date: '2024-06-17'
+tag: coding
+status: published
+---
+
+With this blog post, I'm going to explain and analyze the steps I've taken to land a super-fast, built-in task runner in Node.js core. For those who are not familiar with the term "task runner", it's a command-line tool to run a task specified in a `package.json` file in node.js projects.
+
+```json title="Example package.json"
+{
+  "scripts": {
+    "start": "node index.js"
+  }
+}
+```
+
+## From a user perspective
+
+Whenever, a person executes `npm run start` on this project, it makes a series of executions that makes the operation slow. Here are the steps taken to spawn a process and executes your command:
+
+- User types `npm run start` in the terminal.
+- `npm` tries to find the closest package.json file
+  - It starts from current directory and traverses up to the root of your operating-system, while making `stat` calls in every folder to search for `package.json` file. This means if your current path is `/home/username/projects/my-project`, it will look for `package.json` in the following directories:
+    - `/home/username/projects/my-project`
+    - `/home/username/projects`
+    - `/home/username`
+    - `/home`
+    - `/`
+- Every parent directory of your current directory gets added to the `PATH` environment variable with a suffix of `node_modules/.bin`.
+  - This is done to make sure that you can have a command like `biome check .` in your `package.json` even though Biome binary is available at `node_modules/.bin` folder.
+- It reads the `package.json` and looks into `scripts[key]` field to find the command to execute.
+- It spawns a process and executes in the shell.
+  - This is the slowest part of the operation because it involves spawning a new process and executing the command in the shell.
+
+Some package managers like `npm` adds several `npm` specific environment variables into the newly spawned process, such as `npm_lifecycle_event`, `npm_config_user_agent` and `npm_package_json`.
+
+## The problem with `npm` task runner
+
+Before diving into the technical implementation, let's analyze the problems with the current task runner in `npm`:
+
+- `npm` does not dynamically load it's subcommands like `run`, `install`, `test`, etc. This means that every time you run `npm`, it has to load all the subcommands, even though you are only interested in running a script.
+  - For those who are unfamiliar with `node` internals, whenever you `require()` a module in a project, it makes a filesystem call to the operating system to read the file and parse it. This gets cached on common.js applications (but not on ESM), but regardless separating and having multipel files results in slower startup times.
+  - This will likely be optimized in the future, but for the time being it's a problem that effects the execution time.
+- `npm` runs in the context of Node.js, which means it has to load the Node.js runtime and execute the command in the shell.
+  - By default, in order to execute a shell command, you have to initialize a Node.js process, that initializes V8 engine, parses the `npm` JS code, and then executes the command in the shell. This is a slow process. (Even writing this sentence is slow, imagine how slow it is to execute a shell command on a Node.js library that is not optimized for this purpose.)
+
+## Solution
+
+The solution to the problem is to create a new command in Node.js that is optimized for running tasks in a project. This command should be able to run a task specified in a `package.json` file, without having to load the entire Node.js runtime.
+
+The original implementation was written in JavaScript to make sure that the Node.js project, contributors and technical steering committee members are open to the idea of having a built-in task runner in Node.js core. After the initial pull-request landed, I've re-written the implementation in C++ to make sure that the performance is optimal.
+
+There is still some things that needed to be done to reduce the overhead to less than 10ms, but the current implementation is already faster than all alternatives. If you're interested in contributing and optimizing this implementation even more, please let me know. I'm more than happy to help you get started.
+
+## Benchmarks
+
+### JavaScript solution inside Node.js project
+
+This implementation is available at [this pull-request](cli-implement-node-run-script-in-package-json).
+
+```
+❯ hyperfine './out/Release/node run test' 'npm run test' -i
+Benchmark 1: ./out/Release/node run test
+  Time (mean ± σ):      29.3 ms ±   1.1 ms    [User: 23.2 ms, System: 3.1 ms]
+  Range (min … max):    27.6 ms …  33.2 ms    97 runs
+
+  Warning: Ignoring non-zero exit code.
+
+Benchmark 2: npm run test
+  Time (mean ± σ):     185.7 ms ±   9.2 ms    [User: 136.7 ms, System: 30.3 ms]
+  Range (min … max):   174.7 ms … 212.9 ms    15 runs
+
+  Warning: Ignoring non-zero exit code.
+
+Summary
+  ./out/Release/node run test ran
+    6.34 ± 0.40 times faster than npm run test
+```
+
+### C++ re-write of the task runner
+
+Almost 10ms faster than the JavaScript solution, which doesn't require V8 to load and execute the original JavaScript implementation.
+
+```
+❯ hyperfine '../node/main-branch --run test' '../node/cpp-rewrite --run test' 'npm run test' -i
+Benchmark 1: ../node/main-branch --run test
+  Time (mean ± σ):      28.9 ms ±   0.9 ms    [User: 24.2 ms, System: 3.4 ms]
+  Range (min … max):    27.5 ms …  31.7 ms    96 runs
+
+  Warning: Ignoring non-zero exit code.
+
+Benchmark 2: ../node/cpp-rewrite --run test
+  Time (mean ± σ):      18.3 ms ±   0.6 ms    [User: 16.0 ms, System: 1.5 ms]
+  Range (min … max):    17.5 ms …  20.8 ms    139 runs
+
+  Warning: Ignoring non-zero exit code.
+```
+
+## Timeline
+
+For those interested in the technical implementation, here's a list of series of pull-requests that lead to make `node --run` task runner from scratch to a stable release candidate. In overall, the whole implementation process took almost 3 months (March 22 to June 12).
+
+1. [cli: implement `node --run <script-in-package-json>`](cli-implement-node-run-script-in-package-json)
+2. [src: rewrite task runner in c++](src-rewrite-task-runner-in-cpp)
+3. [src: fix positional args in task runner](src-fix-positional-args-in-task-runner)
+4. [test: add env variable test for --run](test-add-env-variable-test-for-run)
+5. [cli: add `NODE_RUN_SCRIPT_NAME` env to `node --run`](cli-add-node-run-script-name-env-variable-to-node-run)
+6. [cli: add `NODE_RUN_PACKAGE_JSON_PATH` env](cli-add-node-run-package-json-path-env)
+7. [src: traverse parent folders while running `--run`](src-traverse-parent-folders-while-running-run)
+8. [doc: move `node --run` stability to release candidate](doc-move-node-run-stability-to-release-candidate)
+
+[cli-implement-node-run-script-in-package-json]: https://github.com/nodejs/node/pull/52190
+[src-rewrite-task-runner-in-cpp]: https://github.com/nodejs/node/pull/52609
+[src-fix-positional-args-in-task-runner]: https://github.com/nodejs/node/pull/52810
+[test-add-env-variable-test-for-run]: https://github.com/nodejs/node/pull/52811
+[cli-add-node-run-script-name-env-variable-to-node-run]: https://github.com/nodejs/node/pull/53032
+[cli-add-node-run-package-json-path-env]: https://github.com/nodejs/node/pull/53058
+[src-traverse-parent-folders-while-running-run]: https://github.com/nodejs/node/pull/53154
+[doc-move-node-run-stability-to-release-candidate]: https://github.com/nodejs/node/pull/53433
