@@ -60,7 +60,7 @@ There is still some things that needed to be done to reduce the overhead to less
 
 ### JavaScript solution inside Node.js project
 
-This implementation is available at [this pull-request](cli-implement-node-run-script-in-package-json).
+This implementation is available at [this pull-request][cli-implement-node-run-script-in-package-json].
 
 ```
 ❯ hyperfine './out/Release/node run test' 'npm run test' -i
@@ -104,14 +104,14 @@ Benchmark 2: ../node/cpp-rewrite --run test
 
 For those interested in the technical implementation, here's a list of series of pull-requests that lead to make `node --run` task runner from scratch to a stable release candidate. In overall, the whole implementation process took almost 3 months (March 22 to June 12).
 
-1. [cli: implement `node --run <script-in-package-json>`](cli-implement-node-run-script-in-package-json)
-2. [src: rewrite task runner in c++](src-rewrite-task-runner-in-cpp)
-3. [src: fix positional args in task runner](src-fix-positional-args-in-task-runner)
-4. [test: add env variable test for --run](test-add-env-variable-test-for-run)
-5. [cli: add `NODE_RUN_SCRIPT_NAME` env to `node --run`](cli-add-node-run-script-name-env-variable-to-node-run)
-6. [cli: add `NODE_RUN_PACKAGE_JSON_PATH` env](cli-add-node-run-package-json-path-env)
-7. [src: traverse parent folders while running `--run`](src-traverse-parent-folders-while-running-run)
-8. [doc: move `node --run` stability to release candidate](doc-move-node-run-stability-to-release-candidate)
+1. [cli: implement `node --run <script-in-package-json>`][cli-implement-node-run-script-in-package-json]
+2. [src: rewrite task runner in c++][src-rewrite-task-runner-in-cpp]
+3. [src: fix positional args in task runner][src-fix-positional-args-in-task-runner]
+4. [test: add env variable test for --run][test-add-env-variable-test-for-run]
+5. [cli: add `NODE_RUN_SCRIPT_NAME` env to `node --run`][cli-add-node-run-script-name-env-variable-to-node-run]
+6. [cli: add `NODE_RUN_PACKAGE_JSON_PATH` env][cli-add-node-run-package-json-path-env]
+7. [src: traverse parent folders while running `--run`][src-traverse-parent-folders-while-running-run]
+8. [doc: move `node --run` stability to release candidate][doc-move-node-run-stability-to-release-candidate]
 
 [cli-implement-node-run-script-in-package-json]: https://github.com/nodejs/node/pull/52190
 [src-rewrite-task-runner-in-cpp]: https://github.com/nodejs/node/pull/52609
