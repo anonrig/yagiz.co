@@ -1,4 +1,3 @@
-import { websiteUrl } from '@/lib/content'
 import cloudflare from '@astrojs/cloudflare'
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
@@ -10,6 +9,7 @@ import rehypeAutolinkHeadings, {
 import rehypePrettyCode, { type Options as RehypePrettyCodeOptions } from 'rehype-pretty-code'
 import rehypeSlug from 'rehype-slug'
 import remarkGfm from 'remark-gfm'
+import { websiteUrl } from './src/lib/content'
 
 // https://astro.build/config
 export default defineConfig({
