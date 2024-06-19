@@ -19,6 +19,9 @@ export default defineConfig({
     imageService: 'compile',
   }),
   trailingSlash: 'never',
+  security: {
+    checkOrigin: true,
+  },
   integrations: [
     tailwind({
       applyBaseStyles: false,
