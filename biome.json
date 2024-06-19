@@ -67,6 +67,17 @@
       "allowTrailingCommas": true
     }
   },
+  "css": {
+    "formatter": {
+      "enabled": true,
+      "indentWidth": 2,
+      "indentStyle": "space",
+      "lineWidth": 100
+    },
+    "parser": {
+      "allowWrongLineComments": false
+    }
+  },
   "overrides": [
     {
       "include": ["**/*.astro"],

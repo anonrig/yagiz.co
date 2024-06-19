@@ -1,3 +1,4 @@
+import { websiteUrl } from '@/lib/content'
 import cloudflare from '@astrojs/cloudflare'
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
@@ -12,7 +13,7 @@ import remarkGfm from 'remark-gfm'
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://www.yagiz.co',
+  site: websiteUrl,
   output: 'hybrid',
   adapter: cloudflare({
     imageService: 'compile',
