@@ -40,4 +40,4 @@ jobs:
       - name: Install Chrome
         run: pnpx puppeteer browsers install chrome
       - name: Run checker
-        run: node --run check
+        run: pnpm check
