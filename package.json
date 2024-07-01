@@ -48,7 +48,7 @@
     "satori": "^0.10.13",
     "sharp": "^0.33.4",
     "tailwindcss": "^3.4.4",
-    "wrangler": "^3.61.0"
+    "wrangler": "^3.62.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.7.0",
