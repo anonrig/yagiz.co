@@ -54,8 +54,8 @@ importers:
         specifier: ^4.7.8
         version: 4.7.8
       lucide-astro:
-        specifier: ^0.399.0
-        version: 0.399.0(astro@4.11.5(@types/node@20.12.13)(typescript@5.5.4))
+        specifier: ^0.418.0
+        version: 0.418.0(astro@4.11.5(@types/node@20.12.13)(typescript@5.5.4))
       mjml:
         specifier: ^4.15.3
         version: 4.15.3
@@ -2456,8 +2456,8 @@ packages:
     resolution: {integrity: sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==}
     engines: {node: '>=12'}
 
-  lucide-astro@0.399.0:
-    resolution: {integrity: sha512-MEl8cJXCC9A/QysuLrJbXB1JkYxqZgycNZtLXeomBeFeuKkC4wrpLeufGC12/ZFleVisgauhy1G3wbD2mmrIzA==}
+  lucide-astro@0.418.0:
+    resolution: {integrity: sha512-ZOHTcRpHlHaxK/Vn061RNtDXNrP28pL0XPIa2I0Uc7/1zRQu7eHm5ByW0YSPyNLgGTck+lTOrhk9rtNu7JAm7g==}
     peerDependencies:
       astro: '>=2.7.1'
 
@@ -6337,7 +6337,7 @@ snapshots:
 
   lru-cache@7.18.3: {}
 
-  lucide-astro@0.399.0(astro@4.11.5(@types/node@20.12.13)(typescript@5.5.4)):
+  lucide-astro@0.418.0(astro@4.11.5(@types/node@20.12.13)(typescript@5.5.4)):
     dependencies:
       astro: 4.11.5(@types/node@20.12.13)(typescript@5.5.4)
 
