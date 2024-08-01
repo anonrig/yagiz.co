@@ -22,7 +22,7 @@ importers:
         version: 3.1.6
       '@astrojs/tailwind':
         specifier: ^5.1.0
-        version: 5.1.0(astro@4.11.5(@types/node@20.12.13)(typescript@5.5.3))(tailwindcss@3.4.4)
+        version: 5.1.0(astro@4.11.5(@types/node@20.12.13)(typescript@5.5.3))(tailwindcss@3.4.7)
       '@clack/prompts':
         specifier: ^0.7.0
         version: 0.7.0
@@ -31,7 +31,7 @@ importers:
         version: 5.0.19
       '@tailwindcss/typography':
         specifier: ^0.5.13
-        version: 0.5.13(tailwindcss@3.4.4)
+        version: 0.5.13(tailwindcss@3.4.7)
       '@types/react':
         specifier: ^18.3.3
         version: 18.3.3
@@ -96,8 +96,8 @@ importers:
         specifier: ^0.33.4
         version: 0.33.4
       tailwindcss:
-        specifier: ^3.4.4
-        version: 3.4.4
+        specifier: ^3.4.7
+        version: 3.4.7
       wrangler:
         specifier: ^3.63.1
         version: 3.63.1(@cloudflare/workers-types@4.20240529.0)
@@ -3481,8 +3481,8 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
 
-  tailwindcss@3.4.4:
-    resolution: {integrity: sha512-ZoyXOdJjISB7/BcLTR6SEsLgKtDStYyYZVLsUtWChO4Ps20CBad7lfJKVDiejocV4ME1hLmyY0WJE3hSDcmQ2A==}
+  tailwindcss@3.4.7:
+    resolution: {integrity: sha512-rxWZbe87YJb4OcSopb7up2Ba4U82BoiSGUdoDr3Ydrg9ckxFS/YWsvhN323GMcddgU65QRy7JndC7ahhInhvlQ==}
     engines: {node: '>=14.0.0'}
     hasBin: true
 
@@ -3553,9 +3553,6 @@ packages:
 
   typesafe-path@0.2.2:
     resolution: {integrity: sha512-OJabfkAg1WLZSqJAJ0Z6Sdt3utnbzr/jh+NAHoyWHJe8CMSy79Gm085094M9nvTPy22KzTVn5Zq5mbapCI/hPA==}
-
-  typescript-auto-import-cache@0.3.2:
-    resolution: {integrity: sha512-+laqe5SFL1vN62FPOOJSUDTZxtgsoOXjneYOXIpx5rQ4UMiN89NAtJLpqLqyebv9fgQ/IMeeTX+mQyRnwvJzvg==}
 
   typescript-auto-import-cache@0.3.3:
     resolution: {integrity: sha512-ojEC7+Ci1ij9eE6hp8Jl9VUNnsEKzztktP5gtYNRMrTmfXVwA1PITYYAkpxCvvupdSYa/Re51B6KMcv1CTZEUA==}
@@ -3800,9 +3797,6 @@ packages:
     peerDependenciesMeta:
       '@volar/language-service':
         optional: true
-
-  vscode-css-languageservice@6.2.14:
-    resolution: {integrity: sha512-5UPQ9Y1sUTnuMyaMBpO7LrBkqjhEJb5eAwdUlDp+Uez8lry+Tspnk3+3p2qWS4LlNsr4p3v9WkZxUf1ltgFpgw==}
 
   vscode-css-languageservice@6.3.0:
     resolution: {integrity: sha512-nU92imtkgzpCL0xikrIb8WvedV553F2BENzgz23wFuok/HLN5BeQmroMy26pUwFxV2eV8oNRmYCUv8iO7kSMhw==}
@@ -4133,13 +4127,13 @@ snapshots:
       stream-replace-string: 2.0.0
       zod: 3.23.8
 
-  '@astrojs/tailwind@5.1.0(astro@4.11.5(@types/node@20.12.13)(typescript@5.5.3))(tailwindcss@3.4.4)':
+  '@astrojs/tailwind@5.1.0(astro@4.11.5(@types/node@20.12.13)(typescript@5.5.3))(tailwindcss@3.4.7)':
     dependencies:
       astro: 4.11.5(@types/node@20.12.13)(typescript@5.5.3)
       autoprefixer: 10.4.19(postcss@8.4.38)
       postcss: 8.4.38
       postcss-load-config: 4.0.2(postcss@8.4.38)
-      tailwindcss: 3.4.4
+      tailwindcss: 3.4.7
     transitivePeerDependencies:
       - ts-node
 
@@ -4925,13 +4919,13 @@ snapshots:
 
   '@sideway/pinpoint@2.0.0': {}
 
-  '@tailwindcss/typography@0.5.13(tailwindcss@3.4.4)':
+  '@tailwindcss/typography@0.5.13(tailwindcss@3.4.7)':
     dependencies:
       lodash.castarray: 4.4.0
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       postcss-selector-parser: 6.0.10
-      tailwindcss: 3.4.4
+      tailwindcss: 3.4.7
 
   '@tootallnate/quickjs-emscripten@0.23.0': {}
 
@@ -6370,7 +6364,7 @@ snapshots:
     dependencies:
       config-chain: 1.1.13
       editorconfig: 1.0.4
-      glob: 10.4.1
+      glob: 10.4.2
       js-cookie: 3.0.5
       nopt: 7.2.1
 
@@ -7552,17 +7546,17 @@ snapshots:
     dependencies:
       find-up: 4.1.0
 
-  postcss-import@15.1.0(postcss@8.4.38):
+  postcss-import@15.1.0(postcss@8.4.39):
     dependencies:
-      postcss: 8.4.38
+      postcss: 8.4.39
       postcss-value-parser: 4.2.0
       read-cache: 1.0.0
       resolve: 1.22.8
 
-  postcss-js@4.0.1(postcss@8.4.38):
+  postcss-js@4.0.1(postcss@8.4.39):
     dependencies:
       camelcase-css: 2.0.1
-      postcss: 8.4.38
+      postcss: 8.4.39
 
   postcss-load-config@4.0.2(postcss@8.4.38):
     dependencies:
@@ -7571,9 +7565,16 @@ snapshots:
     optionalDependencies:
       postcss: 8.4.38
 
-  postcss-nested@6.0.1(postcss@8.4.38):
+  postcss-load-config@4.0.2(postcss@8.4.39):
     dependencies:
-      postcss: 8.4.38
+      lilconfig: 3.1.1
+      yaml: 2.4.2
+    optionalDependencies:
+      postcss: 8.4.39
+
+  postcss-nested@6.0.1(postcss@8.4.39):
+    dependencies:
+      postcss: 8.4.39
       postcss-selector-parser: 6.1.0
 
   postcss-selector-parser@6.0.10:
@@ -8082,7 +8083,7 @@ snapshots:
     dependencies:
       '@jridgewell/gen-mapping': 0.3.5
       commander: 4.1.1
-      glob: 10.4.1
+      glob: 10.4.2
       lines-and-columns: 1.2.4
       mz: 2.7.0
       pirates: 4.0.6
@@ -8094,7 +8095,7 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
-  tailwindcss@3.4.4:
+  tailwindcss@3.4.7:
     dependencies:
       '@alloc/quick-lru': 5.2.0
       arg: 5.0.2
@@ -8110,11 +8111,11 @@ snapshots:
       normalize-path: 3.0.0
       object-hash: 3.0.0
       picocolors: 1.0.1
-      postcss: 8.4.38
-      postcss-import: 15.1.0(postcss@8.4.38)
-      postcss-js: 4.0.1(postcss@8.4.38)
-      postcss-load-config: 4.0.2(postcss@8.4.38)
-      postcss-nested: 6.0.1(postcss@8.4.38)
+      postcss: 8.4.39
+      postcss-import: 15.1.0(postcss@8.4.39)
+      postcss-js: 4.0.1(postcss@8.4.39)
+      postcss-load-config: 4.0.2(postcss@8.4.39)
+      postcss-nested: 6.0.1(postcss@8.4.39)
       postcss-selector-parser: 6.1.0
       resolve: 1.22.8
       sucrase: 3.35.0
@@ -8183,10 +8184,6 @@ snapshots:
   type-fest@2.19.0: {}
 
   typesafe-path@0.2.2: {}
-
-  typescript-auto-import-cache@0.3.2:
-    dependencies:
-      semver: 7.6.2
 
   typescript-auto-import-cache@0.3.3:
     dependencies:
@@ -8343,7 +8340,7 @@ snapshots:
 
   volar-service-css@0.0.45(@volar/language-service@2.2.5):
     dependencies:
-      vscode-css-languageservice: 6.2.14
+      vscode-css-languageservice: 6.3.0
       vscode-languageserver-textdocument: 1.0.11
       vscode-uri: 3.0.8
     optionalDependencies:
@@ -8416,7 +8413,7 @@ snapshots:
     dependencies:
       path-browserify: 1.0.1
       semver: 7.6.2
-      typescript-auto-import-cache: 0.3.2
+      typescript-auto-import-cache: 0.3.3
       vscode-languageserver-textdocument: 1.0.11
       vscode-nls: 5.2.0
     optionalDependencies:
@@ -8432,13 +8429,6 @@ snapshots:
       vscode-uri: 3.0.8
     optionalDependencies:
       '@volar/language-service': 2.4.0-alpha.15
-
-  vscode-css-languageservice@6.2.14:
-    dependencies:
-      '@vscode/l10n': 0.0.18
-      vscode-languageserver-textdocument: 1.0.11
-      vscode-languageserver-types: 3.17.5
-      vscode-uri: 3.0.8
 
   vscode-css-languageservice@6.3.0:
     dependencies:
