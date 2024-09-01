@@ -52,7 +52,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.3",
     "@biomejs/biome": "^1.8.3",
-    "@umbrelladocs/linkspector": "^0.3.12",
+    "@umbrelladocs/linkspector": "^0.3.13",
     "to-vfile": "^8.0.0",
     "typescript": "^5.5.4",
     "vfile-matter": "^5.0.0"
