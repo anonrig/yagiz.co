@@ -17,7 +17,7 @@
     "check": "linkspector check"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^11.0.1",
+    "@astrojs/cloudflare": "^11.0.4",
     "@astrojs/mdx": "^3.1.2",
     "@astrojs/rss": "^4.0.7",
     "@astrojs/sitemap": "^3.1.6",
