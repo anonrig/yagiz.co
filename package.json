@@ -14,7 +14,8 @@
     "lint": "biome check .",
     "lint-fix": "biome check . --write",
     "cli": "node --no-warnings ./cli.mjs",
-    "check": "linkspector check"
+    "check": "linkspector check",
+    "presentation": "marp --allow-local-files -s ./presentations"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^11.0.4",
@@ -53,6 +54,7 @@
     "@astrojs/check": "^0.9.3",
     "@biomejs/biome": "^1.8.3",
     "@umbrelladocs/linkspector": "^0.3.13",
+    "@marp-team/marp-cli": "^3.4.0",
     "to-vfile": "^8.0.0",
     "typescript": "^5.5.4",
     "vfile-matter": "^5.0.0"
