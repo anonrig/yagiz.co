@@ -10,3 +10,6 @@ aliveStatusCodes:
   - 200
   - 201
   - 204
+ignorePatterns:
+  - pattern: https://onlinelibrary.wiley.com/*
+  - pattern: https://blog.rafaelgss.dev/*
