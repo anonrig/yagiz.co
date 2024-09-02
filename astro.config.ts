@@ -19,6 +19,10 @@ export default defineConfig({
     imageService: 'compile',
   }),
   trailingSlash: 'never',
+  experimental: {
+    contentIntellisense: true,
+    contentLayer: true,
+  },
   security: {
     checkOrigin: true,
   },
