@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 name: Link Checker
 jobs:
-  linkinator:
+  link-validator:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -33,8 +33,7 @@ jobs:
         with:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+          restore-keys: ${{ runner.os }}-pnpm-store-
       - name: Install dependencies
         run: pnpm install
       - name: Install Chrome
