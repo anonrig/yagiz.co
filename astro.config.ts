@@ -9,14 +9,17 @@ import rehypeAutolinkHeadings, {
 import rehypePrettyCode, { type Options as RehypePrettyCodeOptions } from 'rehype-pretty-code'
 import rehypeSlug from 'rehype-slug'
 import remarkGfm from 'remark-gfm'
-import { websiteUrl } from './src/lib/content'
+import { websiteUrl } from './src/lib/content.ts'
 
 // https://astro.build/config
 export default defineConfig({
   site: websiteUrl,
   output: 'hybrid',
   adapter: cloudflare({
-    imageService: 'compile',
+    imageService: 'cloudflare',
+    platformProxy: {
+      enabled: true,
+    },
   }),
   trailingSlash: 'never',
   experimental: {
