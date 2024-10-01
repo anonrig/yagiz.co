@@ -26,7 +26,7 @@
     "@clack/prompts": "^0.7.0",
     "@fontsource-variable/mulish": "^5.1.0",
     "@tailwindcss/typography": "^0.5.15",
-    "@types/react": "^18.3.9",
+    "@types/react": "^18.3.10",
     "@types/react-dom": "^18.3.0",
     "astro": "^4.15.9",
     "astro-seo": "^0.8.4",
