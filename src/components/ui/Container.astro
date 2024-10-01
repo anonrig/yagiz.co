@@ -1,26 +1,19 @@
 ---
-import { type VariantProps, cva } from 'class-variance-authority'
-
-interface Props extends VariantProps<typeof containerVariants> {
+interface Props {
   class?: string
   as?: string
 }
 
-const containerVariants = cva('mx-auto px-[4vw] w-full', {
-  variants: {
-    size: {
-      wide: 'max-w-[calc(1130px+8vw)]',
-      tight: 'max-w-[calc(750px+8vw)]',
-    },
-  },
-  defaultVariants: {
-    size: 'wide',
-  },
-})
-const { as, size, class: className } = Astro.props
-const Component = as ?? 'div'
+const variants = {
+  wide: 'max-w-[calc(1130px+8vw)]',
+  tight: 'max-w-[calc(750px+8vw)]',
+}
+const props = Astro.props
+const size: keyof typeof variants = props.size ?? 'wide'
+const Component = props.as ?? 'div'
+const className = variants[size]
 ---
 
-<Component class:list={containerVariants({ size, className })} >
+<Component class:list={[props.class, className]} >
   <slot />
 </Component>
