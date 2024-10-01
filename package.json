@@ -30,7 +30,6 @@
     "@types/react-dom": "^18.3.0",
     "astro": "^4.15.9",
     "astro-seo": "^0.8.4",
-    "class-variance-authority": "^0.7.0",
     "date-fns": "^4.1.0",
     "handlebars": "^4.7.8",
     "lucide-astro": "^0.446.0",
