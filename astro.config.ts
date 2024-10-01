@@ -17,9 +17,6 @@ export default defineConfig({
   output: 'hybrid',
   adapter: cloudflare({
     imageService: 'cloudflare',
-    platformProxy: {
-      enabled: true,
-    },
   }),
   trailingSlash: 'never',
   experimental: {

@@ -1,32 +1,16 @@
 ---
 import { Image } from 'astro:assets'
 import type { ImageMetadata } from 'astro'
-import { cva } from 'class-variance-authority'
-import type { VariantProps } from 'class-variance-authority'
 
-const figureVariants = cva('mt-6', {
-  variants: {
-    size: {
-      wide: 'col-wide',
-      main: 'col-main',
-    },
-  },
-  defaultVariants: {
-    size: 'wide',
-  },
-})
-
-interface Props extends VariantProps<typeof figureVariants> {
-  class?: string | undefined
+interface Props {
   caption?: string | undefined
   src: ImageMetadata
   alt: string
 }
 
-const { size, class: className, ...props } = Astro.props
+const props = Astro.props
 ---
-
-<figure class={figureVariants({ size, className })}>
+<figure class="mt-6 col-wide">
   <Image
     src={props.src}
     alt={props.alt}
