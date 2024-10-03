@@ -17,7 +17,7 @@ const next = index !== 0 ? posts.at(index - 1) : undefined
 const previous = index !== posts.length - 1 ? posts.at(index + 1) : undefined
 ---
 
-<Container size="tight" class="mt-16 flex items-center" as="footer">
+<Container size="tight" class="mt-16 flex items-center mx-auto px-[4vw]" as="footer">
   <div class="flex flex-2 text-black dark:text-neutral-400">
     {
       previous !== undefined && (
