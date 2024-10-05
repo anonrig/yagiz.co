@@ -35,6 +35,9 @@
         "noEnum": "error",
         "noExportedImports": "error",
         "noProcessEnv": "error",
+        "useSortedClasses": "error",
+        "useValidAutocomplete": "error",
+        "noCommonJs": "error",
         "noRestrictedImports": {
           "level": "error",
           "options": {
