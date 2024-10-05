@@ -21,18 +21,18 @@
     "@astrojs/cloudflare": "^11.1.0",
     "@astrojs/mdx": "^3.1.7",
     "@astrojs/rss": "^4.0.7",
-    "@astrojs/sitemap": "^3.1.6",
+    "@astrojs/sitemap": "^3.2.0",
     "@astrojs/tailwind": "^5.1.1",
     "@clack/prompts": "^0.7.0",
     "@fontsource-variable/mulish": "^5.1.0",
     "@tailwindcss/typography": "^0.5.15",
-    "@types/react": "^18.3.9",
+    "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.0",
-    "astro": "^4.15.9",
+    "astro": "^4.15.11",
     "astro-seo": "^0.8.4",
     "date-fns": "^4.1.0",
     "handlebars": "^4.7.8",
-    "lucide-astro": "^0.446.0",
+    "lucide-astro": "^0.447.0",
     "mjml": "^4.15.3",
     "motion": "^10.18.0",
     "node-mailjet": "^6.0.6",
@@ -47,16 +47,16 @@
     "satori": "^0.11.1",
     "sharp": "^0.33.5",
     "tailwindcss": "^3.4.13",
-    "wrangler": "^3.78.12"
+    "wrangler": "^3.80.0"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.3",
-    "@biomejs/biome": "^1.9.2",
+    "@astrojs/check": "^0.9.4",
+    "@biomejs/biome": "^1.9.3",
     "@marp-team/marp-cli": "^3.4.0",
     "@umbrelladocs/linkspector": "^0.3.13",
     "to-vfile": "^8.0.0",
     "typescript": "^5.6.2",
     "vfile-matter": "^5.0.0"
   },
-  "packageManager": "pnpm@9.11.0"
+  "packageManager": "pnpm@9.12.0"
 }
