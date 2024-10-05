@@ -97,7 +97,7 @@ const {
       sizes="180x180"
     />
     <slot name="head" />
-    <link rel="alternate" type="application/rss+xml" title={websiteTitle} href={new URL("/rss", Astro.site)} />
+    <link rel="alternate" type="application/rss+xml" title={websiteTitle} href={new URL("/rss.xml", Astro.site)} />
   </head>
   <body>
     <Header />
