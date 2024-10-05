@@ -7,9 +7,9 @@
     "node": ">=20.10.0"
   },
   "scripts": {
-    "dev": "astro dev --port 3000",
-    "build": "astro check && astro build",
-    "preview": "wrangler pages dev ./dist --port 3000",
+    "dev": "wrangler types && astro dev --port 3000",
+    "build": "wrangler types && astro check && astro build",
+    "preview": "wrangler types && astro preview",
     "astro": "astro",
     "lint": "biome check .",
     "lint-fix": "biome check . --write",

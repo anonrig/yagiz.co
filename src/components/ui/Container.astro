@@ -2,18 +2,14 @@
 interface Props {
   class?: string
   as?: string
+  size?: 'wide' | 'tight'
 }
 
-const variants = {
-  wide: 'max-w-[calc(1130px+8vw)]',
-  tight: 'max-w-[calc(750px+8vw)]',
-}
 const props = Astro.props
-const size: keyof typeof variants = props.size ?? 'wide'
+const size = props.size ?? 'wide'
 const Component = props.as ?? 'div'
-const className = variants[size]
 ---
 
-<Component class:list={[props.class, className]} >
+<Component class:list={[props.class, size === 'wide' ? 'max-w-[calc(1130px+8vw)]' : 'max-w-[calc(750px+8vw)]']} >
   <slot />
 </Component>

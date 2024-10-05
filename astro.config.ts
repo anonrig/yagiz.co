@@ -16,15 +16,16 @@ export default defineConfig({
   site: websiteUrl,
   output: 'hybrid',
   adapter: cloudflare({
+    // Uses the Cloudflare Image Resizing service.
     imageService: 'cloudflare',
+    platformProxy: {
+      enabled: true,
+    },
   }),
   trailingSlash: 'never',
   experimental: {
     contentIntellisense: true,
     contentLayer: true,
-  },
-  security: {
-    checkOrigin: true,
   },
   integrations: [
     tailwind({
