@@ -8,3 +8,8 @@ export const websiteDescription =
   'Yagiz Nizipli is a software engineer who writes about software engineering, programming, and technology. His research and work is focused on software performance.'
 export const websiteUrl = 'https://www.yagiz.co'
 export const authorFullName = 'Yagiz Nizipli'
+export const authorJobTitle = 'Software Engineer'
+export const openGraphImage = {
+  width: 1200,
+  height: 600,
+}

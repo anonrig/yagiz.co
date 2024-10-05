@@ -1,5 +1,5 @@
 import type { CollectionEntry } from 'astro:content'
-import { githubImage } from '@/lib/content'
+import { authorFullName, authorJobTitle, githubImage } from '@/lib/content'
 
 declare module 'react' {
   interface HTMLAttributes<T> extends AriaAttributes, DOMAttributes<T> {
@@ -15,12 +15,12 @@ export function BlogOG({ post }: { post: CollectionEntry<'blog'> }) {
       </div>
 
       <div tw="flex flex-row justify-center text-[40px] items-center">
-        <img src={githubImage} tw="rounded-full w-24 h-24" alt="Yagiz Nizipli" />
+        <img src={githubImage} tw="rounded-full w-24 h-24" alt={authorFullName} />
         <div tw="flex flex-col pl-[30px]">
           <div tw="text-orange-500" style={{ fontFamily: 'mulish-bold' }}>
-            Yagiz Nizipli
+            {authorFullName}
           </div>
-          Software Engineer
+          {authorJobTitle}
         </div>
       </div>
     </div>

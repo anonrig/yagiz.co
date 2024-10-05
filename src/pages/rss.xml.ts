@@ -1,5 +1,5 @@
 import { getCollection } from 'astro:content'
-import { websiteDescription, websiteTitle, websiteUrl } from '@/lib/content'
+import { authorFullName, websiteDescription, websiteTitle, websiteUrl } from '@/lib/content'
 import rss, { type RSSFeedItem } from '@astrojs/rss'
 import type { APIRoute } from 'astro'
 import { compareDesc } from 'date-fns'
@@ -16,7 +16,7 @@ export async function GET(): Promise<ReturnType<APIRoute>> {
 <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
 <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
 <language>en-us</language>
-<copyright>Yagiz Nizipli - yagiz.co</copyright>
+<copyright>${authorFullName} - yagiz.co</copyright>
 `,
     items: posts.map((post): RSSFeedItem => {
       return {
@@ -25,7 +25,7 @@ export async function GET(): Promise<ReturnType<APIRoute>> {
         customData: `<guid>${`/${post.slug}`}</guid>`,
         link: `/${post.slug}`,
         pubDate: post.data.date,
-        author: 'Yagiz Nizipli',
+        author: authorFullName,
       }
     }),
   })

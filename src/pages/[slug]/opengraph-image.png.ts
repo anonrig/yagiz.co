@@ -3,6 +3,7 @@ import path from 'node:path'
 import { getCollection } from 'astro:content'
 import type { CollectionEntry } from 'astro:content'
 import { BlogOG } from '@/components/BlogOG'
+import { openGraphImage } from '@/lib/content'
 import type { APIRoute, GetStaticPaths } from 'astro'
 import { compareDesc } from 'date-fns'
 import satori from 'satori'
@@ -11,9 +12,6 @@ import sharp from 'sharp'
 interface Props {
   post: CollectionEntry<'blog'>
 }
-
-const WIDTH = 1200
-const HEIGHT = 600
 
 const fontData = fs.readFile(path.resolve('./public/fonts/mulish.ttf'))
 const boldFontData = fs.readFile(path.resolve('./public/fonts/mulish-bold.ttf'))
@@ -42,8 +40,8 @@ export const GET: APIRoute<Props> = async ({ props: { post } }) => {
         style: 'normal',
       },
     ],
-    height: HEIGHT,
-    width: WIDTH,
+    height: openGraphImage.height,
+    width: openGraphImage.width,
   })
 
   const image = sharp(Buffer.from(svg), {

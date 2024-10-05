@@ -11,6 +11,7 @@ import Figure from '@/components/ui/Figure.astro'
 import Heading from '@/components/ui/Heading.astro'
 import Prose from '@/components/ui/Prose.astro'
 import Layout from '@/layouts/Layout.astro'
+import { authorFullName } from '@/lib/content'
 import type { GetStaticPaths } from 'astro'
 import { compareDesc, format } from 'date-fns'
 import readingTime from 'reading-time/lib/reading-time.js'
@@ -48,7 +49,7 @@ const structuredData = {
   '@type': 'Article',
   mainEntityOfPage: {
     '@type': 'WebPage',
-    '@id': `${Astro.url.origin}/${post.slug}/`,
+    '@id': `${Astro.url.origin}/${post.slug}`,
   },
   headline: post.data.title,
   image: [`${Astro.url.origin}/${post.slug}/opengraph-image.png`],
@@ -56,7 +57,7 @@ const structuredData = {
   dateModified: modifiedTime,
   author: {
     '@type': 'Person',
-    name: 'Yagiz Nizipli',
+    name: authorFullName,
   },
 }
 ---
@@ -66,7 +67,7 @@ const structuredData = {
   description={post.data.description}
   image={`${Astro.url.origin}/${post.slug}/opengraph-image.png`}
   article={{
-    authors: ["Yagiz Nizipli"],
+    authors: [authorFullName],
     publishedTime,
     modifiedTime,
     tags: [tag.data.title],

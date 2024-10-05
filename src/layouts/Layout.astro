@@ -10,6 +10,7 @@ import {
 } from '@/lib/content'
 import '@/styles/globals.css'
 import '@fontsource-variable/mulish'
+import { openGraphImage } from '@/lib/content'
 import mulishFile from '@fontsource-variable/mulish/files/mulish-latin-wght-normal.woff2?url'
 import type { SEO as SeoProps } from 'astro-seo'
 import { SEO } from 'astro-seo'
@@ -52,8 +53,8 @@ const {
         },
         image: {
           type: "image/png",
-          width: 1200,
-          height: 600,
+          width: openGraphImage.width,
+          height: openGraphImage.height,
           alt: websiteTitle,
         },
         article,
