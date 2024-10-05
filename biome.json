@@ -32,6 +32,9 @@
         "all": true
       },
       "nursery": {
+        "noEnum": "error",
+        "noExportedImports": "error",
+        "noProcessEnv": "error",
         "noRestrictedImports": {
           "level": "error",
           "options": {
@@ -86,6 +89,16 @@
           "correctness": {
             "noUnusedVariables": "off",
             "noUnusedImports": "off"
+          }
+        }
+      }
+    },
+    {
+      "include": [".github/**/*"],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "noProcessEnv": "off"
           }
         }
       }

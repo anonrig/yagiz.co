@@ -3,7 +3,7 @@ import type { APIRoute } from 'astro'
 const headers = {
   'content-type': 'application/json',
   authorization: `Basic ${Buffer.from(
-    `${process.env.MAILJET_API_KEY}:${process.env.MAILJET_SECRET_KEY}`,
+    `${import.meta.env.MAILJET_API_KEY}:${import.meta.env.MAILJET_SECRET_KEY}`,
     'base64',
   ).toString()}`,
 }
@@ -63,7 +63,7 @@ export const POST: APIRoute = async ({ request }) => {
       method: 'POST',
       body: JSON.stringify({
         ContactID: contactId,
-        ListID: process.env.MAILJET_CONTACT_LIST_ID ?? '',
+        ListID: import.meta.env.MAILJET_CONTACT_LIST_ID ?? '',
       }),
     })
     const listJson = await listResponse.json()
