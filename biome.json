@@ -85,8 +85,7 @@
         "rules": {
           "correctness": {
             "noUnusedVariables": "off",
-            "noUnusedImports": "off",
-            "noUnusedLabels": "off"
+            "noUnusedImports": "off"
           }
         }
       }
