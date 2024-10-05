@@ -23,6 +23,9 @@ export default defineConfig({
     },
   }),
   trailingSlash: 'never',
+  redirects: {
+    '/rss': '/rss.xml',
+  },
   experimental: {
     contentIntellisense: true,
     contentLayer: true,
