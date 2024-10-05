@@ -23,6 +23,7 @@ export default defineConfig({
     },
   }),
   trailingSlash: 'never',
+  prefetch: true,
   redirects: {
     '/rss': '/rss.xml',
   },
