@@ -35,7 +35,7 @@ const formattedDate = new Intl.DateTimeFormat('en-US', {
     </h2>
   </div>
   <div
-    class="flex items-center transition-margin delay-0 duration-200 ease-in-out group-hover:mr-2"
+    class="items-center transition-margin delay-0 duration-200 ease-in-out group-hover:mr-2 hidden sm:flex"
   >
     <div class="whitespace-nowrap text-sm text-neutral-500">
       {minute_to_read}
@@ -43,6 +43,6 @@ const formattedDate = new Intl.DateTimeFormat('en-US', {
   </div>
   <ChevronRight
     size={16}
-    className="translate-x-8 text-slate-600 transition-transform delay-0 duration-200 ease-in-out group-hover:translate-x-0"
+    className="translate-x-8 text-slate-600 transition-transform delay-0 duration-200 ease-in-out group-hover:translate-x-0 hidden sm:flex"
   />
 </a>
