@@ -27,7 +27,7 @@
     "@fontsource-variable/mulish": "^5.1.0",
     "@tailwindcss/typography": "^0.5.15",
     "@types/react": "^18.3.11",
-    "@types/react-dom": "^18.3.0",
+    "@types/react-dom": "^18.3.1",
     "astro": "^4.16.1",
     "astro-seo": "^0.8.4",
     "date-fns": "^4.1.0",
