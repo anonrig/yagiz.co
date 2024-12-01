@@ -52,7 +52,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
     "@biomejs/biome": "^1.9.3",
-    "@marp-team/marp-cli": "^3.4.0",
+    "@marp-team/marp-cli": "^4.0.3",
     "@umbrelladocs/linkspector": "^0.3.13",
     "to-vfile": "^8.0.0",
     "typescript": "^5.6.3",
