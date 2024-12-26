@@ -894,8 +894,8 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  '@marp-team/marp-core@4.0.0':
-    resolution: {integrity: sha512-a+3cx3QHEe9gNJUuPzYxJOqUYkPWqkI57SZa2bbdNMszUb80bTopRtz7o3yFjn+vTIxbw1Jb+4iqOkZt9mgs7w==}
+  '@marp-team/marp-core@4.0.1':
+    resolution: {integrity: sha512-2D1q6CqYFB1l1AwgDfAgRQplna2pvBb1WBDF7EMqY3ZISYANBeY2d19j7YJ54sAZdV2xljo2rI2AptEH1FDHdQ==}
     engines: {node: '>=18'}
 
   '@marp-team/marpit-svg-polyfill@2.1.0':
@@ -909,6 +909,10 @@ packages:
 
   '@marp-team/marpit@3.1.1':
     resolution: {integrity: sha512-DM/hLG7R7tu3tz0LGRgv+Guy6bYu5lESFkE8tWlyMAWguMFTL2D2lRitIXGzzarVEZnaMqtTUz8r2Gdlp1MXdA==}
+    engines: {node: '>=18'}
+
+  '@marp-team/marpit@3.1.2':
+    resolution: {integrity: sha512-Kw4YPvhjC21VgWZAEb7XvXH1N3o9bLXvtV2lZjeZ7Bp4KJJBFf8SlW6hf7M0tLRq3EtIoaJe9jbh896kCyKhvQ==}
     engines: {node: '>=18'}
 
   '@mdx-js/mdx@3.1.0':
@@ -2142,8 +2146,8 @@ packages:
   hey-listen@1.0.8:
     resolution: {integrity: sha512-COpmrF2NOg4TBWUJ5UVyaCU2A88wEMkUPK4hNqyCkqHbxT92BbvfjoSozkAIIm6XhicGlJHhFdullInrdhwU8Q==}
 
-  highlight.js@11.10.0:
-    resolution: {integrity: sha512-SYVnVFswQER+zu1laSya563s+F8VDGt7o35d4utbamowvUNLLMovFqwCLSocpZTz3MgaSRA1IbqRWZv97dtErQ==}
+  highlight.js@11.11.1:
+    resolution: {integrity: sha512-Xwwo44whKBVCYoliBQwaPvtd/2tYFkRQtXDWj1nackaV2JPXx3L0+Jvd8/qCJ2p+ML0/XVkJ2q+Mr+UVdpJK5w==}
     engines: {node: '>=12.0.0'}
 
   html-escaper@3.0.3:
@@ -2360,8 +2364,8 @@ packages:
     engines: {node: '>=10.0.0'}
     hasBin: true
 
-  katex@0.16.11:
-    resolution: {integrity: sha512-RQrI8rlHY92OLf3rho/Ts8i/XvjgguEjOkO1BEXcU3N8BqPpSzBNwV/G0Ukr+P/l3ivvJUE/Fa/CwbS6HesGNQ==}
+  katex@0.16.18:
+    resolution: {integrity: sha512-LRuk0rPdXrecAFwQucYjMiIs0JFefk6N1q/04mlw14aVIVgxq1FO0MA9RiIIGVaKOB5GIP5GH4aBBNraZERmaQ==}
     hasBin: true
 
   kind-of@6.0.3:
@@ -3022,6 +3026,9 @@ packages:
   picocolors@1.1.0:
     resolution: {integrity: sha512-TQ92mBOW0l3LeMeyLV6mzy/kWr8lkd/hp3mTg7wYK7zJhuBStmGMBG0BdeDZS/dZx1IukaX6Bk11zcln25o1Aw==}
 
+  picocolors@1.1.1:
+    resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
+
   picomatch@2.3.1:
     resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
     engines: {node: '>=8.6'}
@@ -3099,6 +3106,10 @@ packages:
 
   postcss@8.4.47:
     resolution: {integrity: sha512-56rxCq7G/XfB4EkXq9Egn5GCqugWvDFjafDOThIdMBsI15iqPqR5r15TfSr1YPYeEI19YeaXMCbY6u88Y76GLQ==}
+    engines: {node: ^10 || ^12 || >=14}
+
+  postcss@8.4.49:
+    resolution: {integrity: sha512-OCVPnIObs4N29kxTjzLfUryOkvZEq+pf8jTF0lg8E7uETuWHA+v7j3c/xJmiqpX450191LlmZfUKkXxkTry7nA==}
     engines: {node: ^10 || ^12 || >=14}
 
   preferred-pm@4.0.0:
@@ -4425,6 +4436,12 @@ snapshots:
       postcss: 8.4.47
       postcss-selector-parser: 7.0.0
 
+  '@csstools/postcss-is-pseudo-class@5.0.1(postcss@8.4.49)':
+    dependencies:
+      '@csstools/selector-specificity': 5.0.0(postcss-selector-parser@7.0.0)
+      postcss: 8.4.49
+      postcss-selector-parser: 7.0.0
+
   '@csstools/selector-resolve-nested@3.0.0(postcss-selector-parser@7.0.0)':
     dependencies:
       postcss-selector-parser: 7.0.0
@@ -4732,7 +4749,7 @@ snapshots:
 
   '@marp-team/marp-cli@4.0.3(typescript@5.6.3)':
     dependencies:
-      '@marp-team/marp-core': 4.0.0
+      '@marp-team/marp-core': 4.0.1
       '@marp-team/marpit': 3.1.1
       chokidar: 4.0.1
       cosmiconfig: 9.0.0(typescript@5.6.3)
@@ -4747,20 +4764,20 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@marp-team/marp-core@4.0.0':
+  '@marp-team/marp-core@4.0.1':
     dependencies:
-      '@marp-team/marpit': 3.1.1
-      '@marp-team/marpit-svg-polyfill': 2.1.0(@marp-team/marpit@3.1.1)
-      highlight.js: 11.10.0
-      katex: 0.16.11
+      '@marp-team/marpit': 3.1.2
+      '@marp-team/marpit-svg-polyfill': 2.1.0(@marp-team/marpit@3.1.2)
+      highlight.js: 11.11.1
+      katex: 0.16.18
       mathjax-full: 3.2.2
-      postcss: 8.4.47
-      postcss-selector-parser: 6.1.2
+      postcss: 8.4.49
+      postcss-selector-parser: 7.0.0
       xss: 1.0.15
 
-  '@marp-team/marpit-svg-polyfill@2.1.0(@marp-team/marpit@3.1.1)':
+  '@marp-team/marpit-svg-polyfill@2.1.0(@marp-team/marpit@3.1.2)':
     optionalDependencies:
-      '@marp-team/marpit': 3.1.1
+      '@marp-team/marpit': 3.1.2
 
   '@marp-team/marpit@3.1.1':
     dependencies:
@@ -4772,6 +4789,17 @@ snapshots:
       markdown-it-front-matter: 0.2.4
       postcss: 8.4.47
       postcss-nesting: 13.0.1(postcss@8.4.47)
+
+  '@marp-team/marpit@3.1.2':
+    dependencies:
+      '@csstools/postcss-is-pseudo-class': 5.0.1(postcss@8.4.49)
+      cssesc: 3.0.0
+      js-yaml: 4.1.0
+      lodash.kebabcase: 4.1.1
+      markdown-it: 14.1.0
+      markdown-it-front-matter: 0.2.4
+      postcss: 8.4.49
+      postcss-nesting: 13.0.1(postcss@8.4.49)
 
   '@mdx-js/mdx@3.1.0(acorn@8.14.0)':
     dependencies:
@@ -6295,7 +6323,7 @@ snapshots:
 
   hey-listen@1.0.8: {}
 
-  highlight.js@11.10.0: {}
+  highlight.js@11.11.1: {}
 
   html-escaper@3.0.3: {}
 
@@ -6511,7 +6539,7 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  katex@0.16.11:
+  katex@0.16.18:
     dependencies:
       commander: 8.3.0
 
@@ -7644,6 +7672,8 @@ snapshots:
 
   picocolors@1.1.0: {}
 
+  picocolors@1.1.1: {}
+
   picomatch@2.3.1: {}
 
   pify@2.3.0: {}
@@ -7678,13 +7708,20 @@ snapshots:
   postcss-nested@6.0.1(postcss@8.4.47):
     dependencies:
       postcss: 8.4.47
-      postcss-selector-parser: 6.1.0
+      postcss-selector-parser: 6.1.2
 
   postcss-nesting@13.0.1(postcss@8.4.47):
     dependencies:
       '@csstools/selector-resolve-nested': 3.0.0(postcss-selector-parser@7.0.0)
       '@csstools/selector-specificity': 5.0.0(postcss-selector-parser@7.0.0)
       postcss: 8.4.47
+      postcss-selector-parser: 7.0.0
+
+  postcss-nesting@13.0.1(postcss@8.4.49):
+    dependencies:
+      '@csstools/selector-resolve-nested': 3.0.0(postcss-selector-parser@7.0.0)
+      '@csstools/selector-specificity': 5.0.0(postcss-selector-parser@7.0.0)
+      postcss: 8.4.49
       postcss-selector-parser: 7.0.0
 
   postcss-selector-parser@6.0.10:
@@ -7713,6 +7750,12 @@ snapshots:
     dependencies:
       nanoid: 3.3.8
       picocolors: 1.1.0
+      source-map-js: 1.2.1
+
+  postcss@8.4.49:
+    dependencies:
+      nanoid: 3.3.8
+      picocolors: 1.1.1
       source-map-js: 1.2.1
 
   preferred-pm@4.0.0:
