@@ -31,7 +31,7 @@ you to define URL patterns for your routes, and match them.
   If your url pattern inputs come from an untrusted source (like a user),
   you *should not* use std::regex in production. Unsafe regular expression
   libraries have unbounded memory consumption and execution times.
-  The only safe implementations known to authors at this time are "v8" and "re2"
+  We recommend using the "v8" or "Google RE2" regex engines
   which are safe and performant.
   - In future releases, we will expand our C API to support URLPattern as well.
 
