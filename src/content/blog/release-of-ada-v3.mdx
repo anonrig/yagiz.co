@@ -51,7 +51,7 @@ class v8_regex_provider {
 };
 
 // Define a URLPattern
-auto pattern = ada::parse_url_pattern<v8_regex_provider>(("/books/:id(\\d+)", "https://example.com");
+auto pattern = ada::parse_url_pattern<v8_regex_provider>("/books/:id(\\d+)", "https://example.com");
 
 // Check validity
 if (!pattern) { return EXIT_FAILURE; }
