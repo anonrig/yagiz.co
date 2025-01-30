@@ -24,9 +24,13 @@ Redpanda, Kong, Telegram and Cloudflare Workers.
 - Ada now includes an experimental URLPattern implementation that allows
 you to define URL patterns for your routes, and match them.
   - It doesn't provide a regex engine and leaves the decision
-  of choosing the right engine to the user. This is done as a security measure
-  since the default std::regex engine is not safe and open to DDOS attacks.
-  Runtimes like Node.js and Cloudflare Workers use the V8 regex engine,
+  of choosing the right engine to the implementor. This is done as a
+  security measure since the default std::regex engine is not safe
+  and open to DDOS attacks.
+  If your url pattern inputs come from an untrusted source (like a user),
+  you *should not* use std::regex in production. Unsafe regular expression
+  libraries have unbounded memory consumption and execution times.
+  The only safe implementations known to authors at this time are "v8" and "re2"
   which is safe and performant.
   - In future releases, we will expand our C API to support URLPattern as well.
 
