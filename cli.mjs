@@ -2,7 +2,6 @@ import { cancel, isCancel, select } from '@clack/prompts'
 
 import { createBlog } from './.github/cli/create-blog.mjs'
 import { sendEmail } from './.github/cli/send-email.mjs'
-import { updateSponsorships } from './.github/cli/update-sponsorships.mjs'
 
 const intention = await select({
   message: 'What do you want to do?',
@@ -24,8 +23,5 @@ switch (intention) {
     break
   case 'blog':
     await createBlog()
-    break
-  case 'sponsorship':
-    await updateSponsorships()
     break
 }
