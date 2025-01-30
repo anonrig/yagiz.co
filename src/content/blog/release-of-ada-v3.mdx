@@ -1,0 +1,80 @@
+---
+title: 'Release of Ada v3.0 with URLPattern'
+description: >-
+  Announcing Ada's new release with URLPattern, a new feature that allows you to
+  define URL patterns for your routes.
+type: Blog
+date: '2025-01-30'
+tag: performance
+status: published
+---
+
+[We are excited][contributors] to announce the release of Ada v3.0.
+This major release includes a lot of new features, improvements and bug fixes.
+
+Since our last release (v2.9.2), published on September 2, 2024,
+[there have been 262 commits written by 9 contributors][diff-between-292].
+Ada is now used by major products and softwares like Node.js, ClickHouse,
+Redpanda, Kong, Telegram and Cloudflare workers.
+
+## New features
+
+- Ada now supports Bazel build system.
+- Ada now supports Unicode 15.1.0 through [ada_idna][ada-idna] library.
+- Ada now includes an experimental URLPattern implementation that allows
+you to define URL patterns for your routes, and match them.
+  - It doesn't provide a regex engine and leaves the decision
+  of choosing the right engine to the user. This is done as a security measure
+  since the default std::regex engine is not safe and open to DDOS attacks.
+  Runtimes like Node.js and Cloudflare Workers use the V8 regex engine,
+  which is safe and performant.
+  - In future releases, we will expand our C API to support URLPattern as well.
+
+```cpp
+// Define a regex engine that conforms to the following interface
+// For eample we will use v8 regex engine
+
+class v8_regex_provider {
+ public:
+  v8_regex_provider() = default;
+  using regex_type = v8::Global<v8::RegExp>;
+  static std::optional<regex_type> create_instance(std::string_view pattern,
+                                                   bool ignore_case);
+  static std::optional<std::vector<std::optional<std::string>>> regex_search(
+      std::string_view input, const regex_type& pattern);
+  static bool regex_match(std::string_view input, const regex_type& pattern);
+};
+
+// Define a URLPattern
+auto pattern = ada::parse_url_pattern<v8_regex_provider>(("/books/:id(\\d+)", "https://example.com");
+
+// Check validity
+if (!pattern) { return EXIT_FAILURE; }
+
+// Match a URL
+auto match = pattern->match("https://example.com/books/123");
+
+// Test a URL
+auto matched = pattern->test("https://example.com/books/123");
+```
+
+## Changes
+
+- Ada library now includes the source code of CPM (C++ Package Manager)
+to avoid the need of installing it through the internet.
+
+
+## Breaking changes
+
+- Ada now uses C++20 features which requires minimum of GCC 12 or LLVM 14.
+- `ada::errors::generic` has been replaced with `ada::errors::type_error`
+
+We have made a lot of improvements to the library, and we strongly suggest you
+to upgrade to v3.0 to benefit for these improvements.
+
+Full changelog can be found from [Github][github-release]
+
+[ada-idna]: https://github.com/ada-url/idna
+[contributors]: https://github.com/ada-url/ada/graphs/contributors
+[diff-between-v292]: https://github.com/ada-url/ada/compare/v2.9.2...main
+[github-release]: https://github.com/ada-url/ada/releases/tag/v2.9.2
