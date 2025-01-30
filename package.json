@@ -58,5 +58,5 @@
     "typescript": "^5.7.3",
     "vfile-matter": "^5.0.0"
   },
-  "packageManager": "pnpm@9.12.0"
+  "packageManager": "pnpm@9.15.4"
 }
