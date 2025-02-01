@@ -27,8 +27,8 @@ importers:
         specifier: ^0.9.1
         version: 0.9.1
       '@fontsource-variable/mulish':
-        specifier: ^5.1.0
-        version: 5.1.0
+        specifier: ^5.1.1
+        version: 5.1.1
       '@tailwindcss/typography':
         specifier: ^0.5.15
         version: 0.5.15(tailwindcss@3.4.14)
@@ -751,8 +751,8 @@ packages:
     resolution: {integrity: sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA==}
     engines: {node: '>=14'}
 
-  '@fontsource-variable/mulish@5.1.0':
-    resolution: {integrity: sha512-ruMyFi0klNO3ILhkPDKxgNiXg0IxdZnqI5pVQ4MvJx9MdV9+aFKDRK9Cn6eOwz5YmDMeFmAZQBJkVEyyXM78jg==}
+  '@fontsource-variable/mulish@5.1.1':
+    resolution: {integrity: sha512-4IHVRRyGn6enOnif3NLWo3zuggzp2weYudAAzJGMtZoIfze+jOSKZjwPcy77OYtp6HqQMD4ESaa+2B9b8cty4Q==}
 
   '@hapi/hoek@9.3.0':
     resolution: {integrity: sha512-/c6rf4UJlmHlC9b5BaNvzAcFv7HZ2QHaV0D4/HNlBdvFnvQq8RI4kYdhyPCl7Xj+oWvTWQ8ujhqS53LIgAe6KQ==}
@@ -4702,7 +4702,7 @@ snapshots:
 
   '@fastify/busboy@2.1.1': {}
 
-  '@fontsource-variable/mulish@5.1.0': {}
+  '@fontsource-variable/mulish@5.1.1': {}
 
   '@hapi/hoek@9.3.0': {}
 
