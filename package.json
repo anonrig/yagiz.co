@@ -23,7 +23,7 @@
     "@astrojs/rss": "^4.0.10",
     "@astrojs/sitemap": "^3.2.0",
     "@astrojs/tailwind": "^5.1.1",
-    "@clack/prompts": "^0.7.0",
+    "@clack/prompts": "^0.9.1",
     "@fontsource-variable/mulish": "^5.1.0",
     "@tailwindcss/typography": "^0.5.15",
     "@types/react": "^18.3.11",
