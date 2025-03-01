@@ -55,7 +55,7 @@
     "@marp-team/marp-cli": "^4.1.1",
     "@umbrelladocs/linkspector": "^0.3.13",
     "to-vfile": "^8.0.0",
-    "typescript": "^5.7.3",
+    "typescript": "^5.8.2",
     "vfile-matter": "^5.0.0"
   },
   "packageManager": "pnpm@9.15.4"
