@@ -27,16 +27,18 @@ paginate: true
 
 - Since January 2021, I'm married with my lovely wife, Merve.
 - As of June 2023, I've made a person, called Ada.
-- As of August 2024, I've made 263 commits to Node.js.
+- As of March 2025, I've made 337 commits to Node.js.
 
 ---
 
 ## Some of my recent contributions to Node.js
 
 - `node --run <script_name>`
-- `node --env-file=.env`
+- `node --env-file=.env file.js`
 - new URL()
-- new URL.canParse()
+- new URLPattern()
+- process.loadEnvFile()
+- util.parseEnv(data)
 - Lots and lots of performance improvements
 
 ---
@@ -103,7 +105,7 @@ paginate: true
 
 ## How about our daily lives?
 
---- 
+---
 
 ![Kitchen](./kitchen.jpg)
 
@@ -115,7 +117,7 @@ paginate: true
 
 ## Well, Node.js is not different than a kitchen.
 
---- 
+---
 
 ## TextDecoder
 
@@ -231,14 +233,14 @@ class TextDecoder {
         // ...
         this[kUTF8FastPath] = enc === 'utf-8';
     }
-    
+
     decode(input = empty, options = kEmptyObject) {
         this[kUTF8FastPath] &&= !(options?.stream);
-        
+
         if (this[kUTF8FastPath]) {
             return decodeUTF8(input, this[kIgnoreBOM], this[kFatal]);
         }
-        
+
         this.#prepareConverter();
         // ...
         return _decode(this[kHandle], input, flags, this.encoding);
