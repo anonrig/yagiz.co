@@ -34,7 +34,7 @@
     "handlebars": "^4.7.8",
     "lucide-astro": "^0.473.0",
     "mjml": "^4.15.3",
-    "motion": "^10.18.0",
+    "motion": "^12.6.2",
     "node-mailjet": "^6.0.6",
     "open": "^10.1.0",
     "react": "^18.3.1",
