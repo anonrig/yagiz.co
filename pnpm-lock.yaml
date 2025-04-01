@@ -30,8 +30,8 @@ importers:
         specifier: ^5.1.1
         version: 5.1.1
       '@tailwindcss/typography':
-        specifier: ^0.5.15
-        version: 0.5.15(tailwindcss@3.4.17)
+        specifier: ^0.5.16
+        version: 0.5.16(tailwindcss@3.4.17)
       '@types/react':
         specifier: ^18.3.11
         version: 18.3.11
@@ -1088,10 +1088,10 @@ packages:
   '@sideway/pinpoint@2.0.0':
     resolution: {integrity: sha512-RNiOoTPkptFtSVzQevY/yWtZwf/RxyVnPy/OcA9HBM3MlGDnBEYL5B41H0MTn0Uec8Hi+2qUtTfG2WWZBmMejQ==}
 
-  '@tailwindcss/typography@0.5.15':
-    resolution: {integrity: sha512-AqhlCXl+8grUz8uqExv5OTtgpjuVIwFTSXTrh8y9/pw6q2ek7fJ+Y8ZEVw7EB2DCcuCOtEjf9w3+J3rzts01uA==}
+  '@tailwindcss/typography@0.5.16':
+    resolution: {integrity: sha512-0wDLwCVF5V3x3b1SGXPCDcdsbDHMBe+lkFzBRaHeLvNi+nrrnZ1lA18u+OTWO8iSWU2GxUOCvlXtDuqftc1oiA==}
     peerDependencies:
-      tailwindcss: '>=3.0.0 || insiders || >=4.0.0-alpha.20'
+      tailwindcss: '>=3.0.0 || insiders || >=4.0.0-alpha.20 || >=4.0.0-beta.1'
 
   '@tootallnate/quickjs-emscripten@0.23.0':
     resolution: {integrity: sha512-C5Mc6rdnsaJDjO3UpGW/CQTHtCKaYlScZTly4JIu97Jxo/odCiH0ITnDXSJPTOrEKk/ycSZ0AOgTmkDtkOsvIA==}
@@ -2963,8 +2963,8 @@ packages:
     resolution: {integrity: sha512-RSn9F68PjH9HqtltsSnqYC1XXoWe9Bju5+213R98cNGttag9q9yAOTzdbsqvIa7aNm5WffBZFpWYr2aWrklWAw==}
     engines: {node: '>= 6'}
 
-  ohash@1.1.4:
-    resolution: {integrity: sha512-FlDryZAahJmEF3VR3w1KogSEdWX3WhA5GPakFx4J81kEAiHyLMpdLLElS8n8dfNadMgAne/MywcvmogzscVt4g==}
+  ohash@1.1.6:
+    resolution: {integrity: sha512-TBu7PtV8YkAZn0tSxobKY2n2aAQva936lhRrj6957aDaCf9IEtqsKbgMzXE/F/sjqYOwmrukeORHNLe5glk7Cg==}
 
   once@1.4.0:
     resolution: {integrity: sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==}
@@ -5092,7 +5092,7 @@ snapshots:
 
   '@sideway/pinpoint@2.0.0': {}
 
-  '@tailwindcss/typography@0.5.15(tailwindcss@3.4.17)':
+  '@tailwindcss/typography@0.5.16(tailwindcss@3.4.17)':
     dependencies:
       lodash.castarray: 4.4.0
       lodash.isplainobject: 4.0.6
@@ -7681,7 +7681,7 @@ snapshots:
 
   object-hash@3.0.0: {}
 
-  ohash@1.1.4: {}
+  ohash@1.1.6: {}
 
   once@1.4.0:
     dependencies:
@@ -8675,7 +8675,7 @@ snapshots:
   unenv-nightly@2.0.0-20240919-125358-9a64854:
     dependencies:
       defu: 6.1.4
-      ohash: 1.1.4
+      ohash: 1.1.6
       pathe: 1.1.2
       ufo: 1.5.4
 
