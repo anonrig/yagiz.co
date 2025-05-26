@@ -5,11 +5,10 @@ interface Props {
   size?: 'wide' | 'tight'
 }
 
-const props = Astro.props
-const size = props.size ?? 'wide'
-const Component = props.as ?? 'div'
+const { size = 'wide', as = 'div', class: className } = Astro.props
+const Component = as
 ---
 
-<Component class:list={[props.class, size === 'wide' ? 'max-w-[calc(1130px+8vw)]' : 'max-w-[calc(750px+8vw)]']} >
+<Component class:list={[className, size === 'wide' ? 'max-w-[calc(1130px+8vw)]' : 'max-w-[calc(750px+8vw)]']} >
   <slot />
 </Component>

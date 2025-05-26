@@ -77,7 +77,7 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
     ssr: {
-      external: ['node:fs/promises', 'node:path'],
+      external: ['node:fs/promises', 'node:path', 'node:url', 'node:crypto'],
     },
   },
 })

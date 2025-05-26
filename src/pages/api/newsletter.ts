@@ -45,7 +45,8 @@ export const POST: APIRoute = async ({ request }) => {
         Email: body.email,
       }),
     })
-    const contactJson = await contactResponse.json()
+    // biome-ignore lint/suspicious/noExplicitAny: TODO fix this
+    const contactJson = (await contactResponse.json()) as any
     if (contactJson.ErrorMessage) {
       throw new Error(contactJson.ErrorMessage)
     }
@@ -66,7 +67,8 @@ export const POST: APIRoute = async ({ request }) => {
         ListID: import.meta.env.MAILJET_CONTACT_LIST_ID ?? '',
       }),
     })
-    const listJson = await listResponse.json()
+    // biome-ignore lint/suspicious/noExplicitAny: TODO fix this
+    const listJson = (await listResponse.json()) as any
     if (listJson.ErrorMessage) {
       throw new Error(listJson.ErrorMessage)
     }

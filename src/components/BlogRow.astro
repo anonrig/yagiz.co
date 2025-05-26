@@ -8,7 +8,7 @@ interface Props {
 }
 
 const { post } = Astro.props
-const minute_to_read = readingTime(post.body).text
+const minute_to_read = readingTime(post.body ?? '').text
 const formattedDate = new Intl.DateTimeFormat('en-US', {
   month: 'short',
   day: 'numeric',
