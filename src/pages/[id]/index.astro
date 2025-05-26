@@ -1,5 +1,5 @@
 ---
-import type { CollectionEntry } from 'astro:content'
+import { type CollectionEntry, render } from 'astro:content'
 import { getEntry } from 'astro:content'
 import { getCollection } from 'astro:content'
 import BlogFooter from '@/components/BlogFooter.astro'
@@ -25,19 +25,19 @@ export async function getStaticPaths(): Promise<ReturnType<GetStaticPaths>> {
   posts.sort((a, b) => compareDesc(a.data.date, b.data.date))
 
   return posts.map((post) => ({
-    params: { slug: post.slug },
+    params: { id: post.id },
     props: { post },
   }))
 }
 
 const { post } = Astro.props
-const { Content } = await post.render()
-const tag = await getEntry(post.data.tag.collection, post.data.tag.slug)
-const minute_to_read = readingTime(post.body).text
+const { Content } = await render(post)
+const tag = await getEntry(post.data.tag.collection, post.data.tag.id)
+const minute_to_read = readingTime(post.body ?? '').text
 
 const posts = await getCollection('blog', ({ data }) => data.status === 'published')
 posts.sort((a, b) => compareDesc(a.data.date, b.data.date))
-const index = posts.findIndex((p) => p.slug === post.slug)
+const index = posts.findIndex((p) => p.id === post.id)
 const suggestions = [posts.at(index - 2), posts.at(index - 1)].filter(
   Boolean,
 ) as CollectionEntry<'blog'>[]
@@ -49,10 +49,10 @@ const structuredData = {
   '@type': 'Article',
   mainEntityOfPage: {
     '@type': 'WebPage',
-    '@id': `${Astro.url.origin}/${post.slug}`,
+    '@id': `${Astro.url.origin}/${post.id}`,
   },
   headline: post.data.title,
-  image: [`${Astro.url.origin}/${post.slug}/opengraph-image.png`],
+  image: [`${Astro.url.origin}/${post.id}/opengraph-image.png`],
   datePublished: publishedTime,
   dateModified: modifiedTime,
   author: {
@@ -65,7 +65,7 @@ const structuredData = {
 <Layout
   title={post.data.title}
   description={post.data.description}
-  image={`${Astro.url.origin}/${post.slug}/opengraph-image.png`}
+  image={`${Astro.url.origin}/${post.id}/opengraph-image.png`}
   article={{
     authors: [authorFullName],
     publishedTime,
@@ -101,7 +101,7 @@ const structuredData = {
         </span>
         <span class="before:px-2 before:font-serif before:leading-[1] before:content-['·']">
           <a
-            href={`/tag/${post.data.tag.slug}`}
+            href={`/tag/${post.data.tag.id}`}
             class="text-orange-400 hover:text-orange-300"
           >
             {tag.data.title}

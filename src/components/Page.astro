@@ -1,5 +1,5 @@
 ---
-import type { CollectionEntry } from 'astro:content'
+import { type CollectionEntry, render } from 'astro:content'
 import { components } from '@/components/mdx'
 import Figure from '@/components/ui/Figure.astro'
 import Heading from '@/components/ui/Heading.astro'
@@ -10,7 +10,7 @@ interface Props {
 }
 
 const { page } = Astro.props
-const { Content } = await page.render()
+const { Content } = await render(page)
 ---
 
 <section>

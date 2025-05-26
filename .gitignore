@@ -25,3 +25,5 @@ pnpm-debug.log*
 
 sponsorships.json
 worker-configuration.d.ts
+
+.ncurc

@@ -21,7 +21,7 @@ const previous = index !== posts.length - 1 ? posts.at(index + 1) : undefined
   <div class="flex flex-2 text-black dark:text-neutral-400">
     {
       previous !== undefined && (
-        <a href={`/${previous.slug}`}>
+        <a href={`/${previous.id}`}>
           <ArrowLeft size={20} />
           <span class="sr-only">Previous article</span>
         </a>
@@ -52,7 +52,7 @@ const previous = index !== posts.length - 1 ? posts.at(index + 1) : undefined
   <div class="flex flex-2 justify-end text-black dark:text-neutral-400">
     {
       next !== undefined && (
-        <a href={`/${next.slug}`}>
+        <a href={`/${next.id}`}>
           <ArrowRight size={20} />
           <span class="sr-only">Next article</span>
         </a>

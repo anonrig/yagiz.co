@@ -14,16 +14,16 @@ interface Props {
 export async function getStaticPaths(): Promise<ReturnType<GetStaticPaths>> {
   const tags = await getCollection('tags')
 
-  return tags.map((tag) => ({ params: { slug: tag.slug }, props: { tag } }))
+  return tags.map((tag) => ({ params: { id: tag.id }, props: { tag } }))
 }
 
 const { tag } = Astro.props
 
-const otherTags = await getCollection('tags', (entry) => entry.slug !== tag.slug)
-otherTags.sort((a, b) => a.slug.localeCompare(b.slug))
+const otherTags = await getCollection('tags', (entry) => entry.id !== tag.id)
+otherTags.sort((a, b) => a.id.localeCompare(b.id))
 const posts = await getCollection(
   'blog',
-  ({ data }) => data.status === 'published' && data.tag.slug === tag.slug,
+  ({ data }) => data.status === 'published' && data.tag.id === tag.id,
 )
 posts.sort((a, b) => compareDesc(a.data.date, b.data.date))
 ---
@@ -40,7 +40,7 @@ posts.sort((a, b) => compareDesc(a.data.date, b.data.date))
         {
           otherTags.map((tag) => (
             <a
-              href={`/tag/${tag.slug}`}
+              href={`/tag/${tag.id}`}
               class="ml-1 break-keep font-bold text-neutral-500 hover:text-neutral-400 dark:text-neutral-500 dark:hover:text-neutral-400"
             >
               #{tag.data.title}

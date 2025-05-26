@@ -25,14 +25,14 @@ const templatePath = path.resolve('./.github/blog.mjml')
 const template = await fs.promises.readFile(templatePath, 'utf-8')
 
 export async function sendEmail() {
-  const { slug } = await group(
+  const { id } = await group(
     {
-      slug: () =>
+      id: () =>
         select({
           message: 'Which blog post do you want to write about?',
           options: publishedBlogs.map((blog) => ({
             label: blog.data.title,
-            value: blog.slug,
+            value: blog.id,
           })),
         }),
     },
@@ -44,7 +44,7 @@ export async function sendEmail() {
     },
   )
 
-  const blog = publishedBlogs.find((b) => b.slug === slug)
+  const blog = publishedBlogs.find((b) => b.id === id)
   const { errors, html } = mjml2html(template, {
     validationLevel: 'strict',
     preprocessors: [
@@ -55,7 +55,7 @@ export async function sendEmail() {
           imageUrl: 'https://www.yagiz.co/family.png',
           title: blog.data.title,
           description: blog.data.description,
-          url: `https://www.yagiz.co/${blog.slug}`,
+          url: `https://www.yagiz.co/${blog.id}`,
         })
       },
     ],
@@ -123,7 +123,7 @@ export async function sendEmail() {
         HTMLPart: html,
         TrackOpens: 'enabled',
         TrackClicks: 'enabled',
-        CustomCampaign: `blog-${blog.slug}`,
+        CustomCampaign: `blog-${blog.id}`,
       },
     ],
   })
