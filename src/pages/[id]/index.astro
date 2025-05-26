@@ -33,6 +33,9 @@ export async function getStaticPaths(): Promise<ReturnType<GetStaticPaths>> {
 const { post } = Astro.props
 const { Content } = await render(post)
 const tag = await getEntry(post.data.tag.collection, post.data.tag.id)
+if (!tag) {
+  throw new Error('Tag not found')
+}
 const minute_to_read = readingTime(post.body ?? '').text
 
 const posts = await getCollection('blog', ({ data }) => data.status === 'published')

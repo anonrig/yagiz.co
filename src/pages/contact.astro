@@ -5,6 +5,9 @@ import Page from '@/components/Page.astro'
 import Layout from '@/layouts/Layout.astro'
 
 const page = await getEntry('pages', 'contact')
+if (!page) {
+  throw new Error('Page not found')
+}
 ---
 
 <Layout title={page.data.title} description={page.data.description}>
