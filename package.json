@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "wrangler types && astro dev --port 3000",
     "build": "wrangler types && astro check && astro build",
-    "preview": "wrangler types && astro preview",
     "astro": "astro",
     "lint": "biome check .",
     "lint-fix": "biome check . --write",
