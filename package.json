@@ -10,7 +10,6 @@
     "lint": "biome check .",
     "lint-fix": "biome check . --write",
     "cli": "node --no-warnings ./cli.mjs",
-    "check": "linkspector check",
     "presentation": "marp --allow-local-files -s ./presentations"
   },
   "dependencies": {
@@ -50,7 +49,6 @@
     "@biomejs/biome": "^1.9.4",
     "@marp-team/marp-cli": "^4.1.2",
     "@types/node": "^22.15.21",
-    "@umbrelladocs/linkspector": "^0.4.5",
     "to-vfile": "^8.0.0",
     "typescript": "^5.8.3",
     "vfile-matter": "^5.0.1"
