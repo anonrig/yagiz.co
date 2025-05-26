@@ -3,9 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "engines": {
-    "node": ">=20.10.0"
-  },
   "scripts": {
     "dev": "wrangler types && astro dev --port 3000",
     "build": "wrangler types && astro check && astro build",
@@ -58,5 +55,14 @@
     "typescript": "^5.8.2",
     "vfile-matter": "^5.0.0"
   },
-  "packageManager": "pnpm@9.15.4"
+  "packageManager": "pnpm@10.11.0",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@biomejs/biome",
+      "esbuild",
+      "puppeteer",
+      "sharp",
+      "workerd"
+    ]
+  }
 }
