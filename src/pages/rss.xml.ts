@@ -22,8 +22,8 @@ export async function GET(): Promise<ReturnType<APIRoute>> {
       return {
         title: post.data.title,
         description: post.data.description,
-        customData: `<guid>${`/${post.slug}`}</guid>`,
-        link: `/${post.slug}`,
+        customData: `<guid>${`/${post.id}`}</guid>`,
+        link: `/${post.id}`,
         pubDate: post.data.date,
         author: authorFullName,
       }

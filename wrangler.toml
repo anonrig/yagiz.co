@@ -1,6 +1,6 @@
 name = "yagiz"
 pages_build_output_dir = "dist"
-compatibility_date = "2024-09-25"
+compatibility_date = "2025-05-01"
 compatibility_flags = [ "nodejs_compat" ]
 send_metrics = false
 
@@ -12,7 +12,7 @@ MAILJET_CONTACT_LIST_ID = "70041"
 NODE_VERSION = "20"
 
 [env.production]
-compatibility_date = "2024-09-25"
+compatibility_date = "2025-05-01"
 compatibility_flags = [ "nodejs_compat" ]
 
 [env.production.vars]

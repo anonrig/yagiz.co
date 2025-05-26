@@ -1,7 +1,7 @@
 import cloudflare from '@astrojs/cloudflare'
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
-import tailwind from '@astrojs/tailwind'
+import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'astro/config'
 import rehypeAutolinkHeadings, {
   type Options as RehypeAutolinkHeadingsOptions,
@@ -14,13 +14,10 @@ import { websiteUrl } from './src/lib/content.ts'
 // https://astro.build/config
 export default defineConfig({
   site: websiteUrl,
-  output: 'hybrid',
+  output: 'static',
   adapter: cloudflare({
     // Uses the Cloudflare Image Resizing service.
     imageService: 'cloudflare',
-    platformProxy: {
-      enabled: true,
-    },
   }),
   trailingSlash: 'never',
   prefetch: true,
@@ -29,12 +26,8 @@ export default defineConfig({
   },
   experimental: {
     contentIntellisense: true,
-    contentLayer: true,
   },
   integrations: [
-    tailwind({
-      applyBaseStyles: false,
-    }),
     mdx({
       syntaxHighlight: false,
       remarkPlugins: [remarkGfm],
@@ -82,6 +75,7 @@ export default defineConfig({
     }),
   ],
   vite: {
+    plugins: [tailwindcss()],
     ssr: {
       external: ['node:fs/promises', 'node:path'],
     },

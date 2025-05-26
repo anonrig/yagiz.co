@@ -21,7 +21,7 @@ export async function getStaticPaths(): Promise<ReturnType<GetStaticPaths>> {
   posts.sort((a, b) => compareDesc(a.data.date, b.data.date))
 
   return posts.map((post) => ({
-    params: { slug: post.slug },
+    params: { id: post.id },
     props: { post },
   }))
 }
