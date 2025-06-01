@@ -20,7 +20,7 @@
     "@clack/prompts": "^0.11.0",
     "@fontsource-variable/mulish": "^5.2.5",
     "@tailwindcss/typography": "^0.5.16",
-    "@tailwindcss/vite": "^4.1.7",
+    "@tailwindcss/vite": "^4.1.8",
     "@types/react": "^19.1.5",
     "@types/react-dom": "^19.1.5",
     "astro": "^5.8.0",
