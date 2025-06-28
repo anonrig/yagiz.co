@@ -1,8 +1,8 @@
 import { getCollection } from 'astro:content'
-import { authorFullName, websiteDescription, websiteTitle, websiteUrl } from '@/lib/content'
 import rss, { type RSSFeedItem } from '@astrojs/rss'
 import type { APIRoute } from 'astro'
 import { compareDesc } from 'date-fns'
+import { authorFullName, websiteDescription, websiteTitle, websiteUrl } from '@/lib/content'
 
 export async function GET(): Promise<ReturnType<APIRoute>> {
   const posts = await getCollection('blog', (post) => post.data.status === 'published')

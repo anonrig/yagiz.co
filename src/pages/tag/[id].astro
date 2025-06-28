@@ -1,11 +1,11 @@
 ---
 import type { CollectionEntry } from 'astro:content'
 import { getCollection } from 'astro:content'
+import type { GetStaticPaths } from 'astro'
+import { compareDesc } from 'date-fns'
 import BlogRow from '@/components/BlogRow.astro'
 import Container from '@/components/ui/Container.astro'
 import Layout from '@/layouts/Layout.astro'
-import type { GetStaticPaths } from 'astro'
-import { compareDesc } from 'date-fns'
 
 interface Props {
   tag: CollectionEntry<'tags'>

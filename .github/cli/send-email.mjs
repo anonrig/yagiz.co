@@ -1,11 +1,10 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import mjml2html from 'mjml'
-import Mailjet from 'node-mailjet'
-
 import { cancel, confirm, group, select, spinner } from '@clack/prompts'
 import { compareDesc } from 'date-fns'
 import Handlebars from 'handlebars'
+import mjml2html from 'mjml'
+import Mailjet from 'node-mailjet'
 import { readSync } from 'to-vfile'
 import { matter } from 'vfile-matter'
 

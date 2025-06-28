@@ -1,13 +1,13 @@
+import type { CollectionEntry } from 'astro:content'
+import { getCollection } from 'astro:content'
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { getCollection } from 'astro:content'
-import type { CollectionEntry } from 'astro:content'
-import { BlogOG } from '@/components/BlogOG'
-import { openGraphImage } from '@/lib/content'
 import type { APIRoute, GetStaticPaths } from 'astro'
 import { compareDesc } from 'date-fns'
 import satori from 'satori'
 import sharp from 'sharp'
+import { BlogOG } from '@/components/BlogOG'
+import { openGraphImage } from '@/lib/content'
 
 interface Props {
   post: CollectionEntry<'blog'>

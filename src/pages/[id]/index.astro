@@ -1,7 +1,8 @@
 ---
-import { type CollectionEntry, render } from 'astro:content'
-import { getEntry } from 'astro:content'
-import { getCollection } from 'astro:content'
+import { type CollectionEntry, getCollection, getEntry, render } from 'astro:content'
+import type { GetStaticPaths } from 'astro'
+import { compareDesc, format } from 'date-fns'
+import readingTime from 'reading-time/lib/reading-time.js'
 import BlogFooter from '@/components/BlogFooter.astro'
 import BlogRow from '@/components/BlogRow.astro'
 import BlogStickyHeader from '@/components/BlogStickyHeader.astro'
@@ -12,9 +13,6 @@ import Heading from '@/components/ui/Heading.astro'
 import Prose from '@/components/ui/Prose.astro'
 import Layout from '@/layouts/Layout.astro'
 import { authorFullName } from '@/lib/content'
-import type { GetStaticPaths } from 'astro'
-import { compareDesc, format } from 'date-fns'
-import readingTime from 'reading-time/lib/reading-time.js'
 
 interface Props {
   post: CollectionEntry<'blog'>

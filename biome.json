@@ -6,37 +6,35 @@
     "useIgnoreFile": true,
     "defaultBranch": "main"
   },
-  "organizeImports": {
-    "enabled": true
-  },
+  "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "linter": {
     "enabled": true,
     "rules": {
       "recommended": true,
       "a11y": {
-        "all": true
+        "useValidAutocomplete": "error"
       },
-      "security": {
-        "all": true
-      },
+      "security": {},
       "correctness": {
-        "all": true,
         "noNodejsModules": "off"
       },
       "style": {
         "useImportType": "error",
         "useExportType": "error",
-        "useNodejsImportProtocol": "error"
-      },
-      "performance": {
-        "all": true
-      },
-      "nursery": {
+        "useNodejsImportProtocol": "error",
+        "noParameterAssign": "error",
+        "useAsConstAssertion": "error",
+        "useDefaultParameterLast": "error",
+        "useEnumInitializers": "error",
+        "useSelfClosingElements": "error",
+        "useSingleVarDeclarator": "error",
+        "noUnusedTemplateLiteral": "error",
+        "useNumberNamespace": "error",
+        "noInferrableTypes": "error",
+        "noUselessElse": "error",
         "noEnum": "error",
         "noExportedImports": "error",
         "noProcessEnv": "error",
-        "useSortedClasses": "error",
-        "useValidAutocomplete": "error",
         "noCommonJs": "error",
         "noRestrictedImports": {
           "level": "error",
@@ -46,6 +44,10 @@
             }
           }
         }
+      },
+      "performance": {},
+      "nursery": {
+        "useSortedClasses": "error"
       }
     }
   },
@@ -86,7 +88,7 @@
   },
   "overrides": [
     {
-      "include": ["**/*.astro"],
+      "includes": ["**/*.astro"],
       "linter": {
         "rules": {
           "correctness": {
@@ -97,10 +99,11 @@
       }
     },
     {
-      "include": [".github/**/*"],
+      "includes": ["**/.github/**/*"],
       "linter": {
         "rules": {
-          "nursery": {
+          "nursery": {},
+          "style": {
             "noProcessEnv": "off"
           }
         }
