@@ -13,23 +13,23 @@
     "presentation": "marp --allow-local-files -s ./presentations"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^12.5.3",
+    "@astrojs/cloudflare": "^12.6.0",
     "@astrojs/mdx": "^4.3.0",
-    "@astrojs/rss": "^4.0.11",
-    "@astrojs/sitemap": "^3.4.0",
+    "@astrojs/rss": "^4.0.12",
+    "@astrojs/sitemap": "^3.4.1",
     "@clack/prompts": "^0.11.0",
-    "@fontsource-variable/mulish": "^5.2.5",
+    "@fontsource-variable/mulish": "^5.2.6",
     "@tailwindcss/typography": "^0.5.16",
-    "@tailwindcss/vite": "^4.1.7",
-    "@types/react": "^19.1.5",
-    "@types/react-dom": "^19.1.5",
-    "astro": "^5.8.0",
+    "@tailwindcss/vite": "^4.1.11",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "astro": "^5.10.1",
     "astro-seo": "^0.8.4",
     "date-fns": "^4.1.0",
     "handlebars": "^4.7.8",
-    "lucide-astro": "^0.511.0",
+    "lucide-astro": "^0.525.0",
     "mjml": "^4.15.3",
-    "motion": "^12.14.0",
+    "motion": "^12.19.2",
     "node-mailjet": "^6.0.8",
     "open": "^10.1.2",
     "react": "^19.1.0",
@@ -39,22 +39,29 @@
     "rehype-pretty-code": "^0.14.1",
     "rehype-slug": "^6.0.0",
     "remark-gfm": "^4.0.1",
-    "satori": "^0.13.1",
+    "satori": "^0.15.2",
     "sharp": "^0.34.2",
-    "tailwindcss": "^4.1.7",
-    "wrangler": "^4.16.1"
+    "tailwindcss": "^4.1.11",
+    "wrangler": "^4.22.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
-    "@biomejs/biome": "^1.9.4",
-    "@marp-team/marp-cli": "^4.1.2",
-    "@types/node": "^22.15.21",
+    "@biomejs/biome": "^2.0.6",
+    "@marp-team/marp-cli": "^4.2.0",
+    "@types/node": "^24.0.7",
     "to-vfile": "^8.0.0",
     "typescript": "^5.8.3",
     "vfile-matter": "^5.0.1"
   },
-  "packageManager": "pnpm@10.11.0",
+  "packageManager": "pnpm@10.12.4",
   "pnpm": {
-    "onlyBuiltDependencies": ["@biomejs/biome", "esbuild", "puppeteer", "sharp", "workerd"]
+    "onlyBuiltDependencies": [
+      "@biomejs/biome",
+      "@tailwindcss/oxide",
+      "esbuild",
+      "puppeteer",
+      "sharp",
+      "workerd"
+    ]
   }
 }
