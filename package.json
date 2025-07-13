@@ -23,13 +23,13 @@
     "@tailwindcss/vite": "^4.1.11",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
-    "astro": "^5.10.1",
+    "astro": "^5.11.0",
     "astro-seo": "^0.8.4",
     "date-fns": "^4.1.0",
     "handlebars": "^4.7.8",
     "lucide-astro": "^0.525.0",
     "mjml": "^4.15.3",
-    "motion": "^12.19.2",
+    "motion": "^12.23.3",
     "node-mailjet": "^6.0.8",
     "open": "^10.1.2",
     "react": "^19.1.0",
@@ -40,20 +40,20 @@
     "rehype-slug": "^6.0.0",
     "remark-gfm": "^4.0.1",
     "satori": "^0.15.2",
-    "sharp": "^0.34.2",
+    "sharp": "^0.34.3",
     "tailwindcss": "^4.1.11",
-    "wrangler": "^4.22.0"
+    "wrangler": "^4.24.3"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
-    "@biomejs/biome": "^2.0.6",
+    "@biomejs/biome": "^2.1.1",
     "@marp-team/marp-cli": "^4.2.0",
-    "@types/node": "^24.0.7",
+    "@types/node": "^24.0.13",
     "to-vfile": "^8.0.0",
     "typescript": "^5.8.3",
     "vfile-matter": "^5.0.1"
   },
-  "packageManager": "pnpm@10.12.4",
+  "packageManager": "pnpm@10.13.1",
   "pnpm": {
     "onlyBuiltDependencies": [
       "@biomejs/biome",
