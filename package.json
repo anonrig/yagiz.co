@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
-    "@biomejs/biome": "^2.1.1",
+    "@biomejs/biome": "^2.2.2",
     "@marp-team/marp-cli": "^4.2.0",
     "@types/node": "^24.0.13",
     "to-vfile": "^8.0.0",
