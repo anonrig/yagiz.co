@@ -19,7 +19,7 @@
     "@astrojs/sitemap": "^3.4.1",
     "@clack/prompts": "^0.11.0",
     "@fontsource-variable/mulish": "^5.2.6",
-    "@tailwindcss/typography": "^0.5.16",
+    "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.1.11",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
