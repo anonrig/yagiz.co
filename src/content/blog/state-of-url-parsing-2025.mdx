@@ -1,0 +1,156 @@
+---
+title: 'State of URL parsing performance in 2025'
+description: >-
+  Ada is the fastest URL parser, 11.7x faster than cURL. At Vercel scale, Ada saves 361 CPU cores—a 91% reduction.
+type: Blog
+date: '2025-12-09'
+tag: performance
+status: published
+---
+
+## Introduction
+
+Couple of months ago, while searching for usages of Ada URL in real-world applications, I stumbled upon Daniel Stenberg's (author of cURL) [Bluesky post](https://bsky.app/profile/bagder.mastodon.social.ap.brid.gy/post/3lymrtbpzezv2). In the blog post, Daniel mentions how Ada is not 10x faster than cURL, and even mentions that our work is "biased" and "misleading".
+
+I personally take these claims seriously because I've put my daughter's name as the name for this project to leave a lasting legacy for her - something that she can remember me for when she grows up. I assume just like Daniel is doing something similar with cURL, I wanted to do the same for Ada. This is why me and [Daniel Lemire](https://lemire.me) wrote an academic paper and published all of our methodologies and findings in [our paper: Parsing Millions of URLs per Second](https://arxiv.org/abs/2311.10533).
+
+![Hackerman](/content/daniel-stenberg-09-2025.png)
+
+The goal of this blog post is to provide the state of URL parsing performance in 2025 in an open way without any bias or misleading claims. I've tried to use AI to summarize the table results in a way that is easy to understand and compare for those who don't know what each value represents.
+
+I've also used [Vercel's data for Black Friday data](https://vercel.com/bfcm) since it is the latest data available that I could find. I hope you enjoy it.
+
+## Benchmarks
+
+I've run benchmarks running on macOS 26 Tahoe 26.1 on my personal Mac Mini 2024 with 14 cores (10 performance and 4 efficiency cores) and 64 GB memory. In order to reproduce this benchmarks locally you can checkout github.com/ada-url/ada and follow the same commands.
+
+Here's the command to reproduce the benchmarks
+
+```
+cmake -B build \
+  -DADA_BENCHMARKS=ON \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DADA_USE_UNSAFE_STD_REGEX_PROVIDER=ON
+
+sudo ./build/benchmarks/benchdata --benchmark_counters_tabular=true
+```
+
+This will give you a really nice table with some information about the benchmark and the data before the results such as:
+
+```
+loaded db: as4-1 (Apple silicon)
+Loading /Users/yagiz/coding/ada/ada/ada/build/_deps/url-dataset-src/out.txt
+Unable to determine clock rate from sysctl: hw.cpufrequency: No such file or directory
+This does not affect benchmark measurements, only the metadata output.
+***WARNING*** Failed to set thread affinity. Estimated CPU frequency may be incorrect.
+2025-12-09T10:41:01-05:00
+Running ./build/benchmarks/benchdata
+Run on (14 X 24 MHz CPU s)
+CPU Caches:
+  L1 Data 64 KiB
+  L1 Instruction 128 KiB
+  L2 Unified 4096 KiB (x14)
+Load Average: 1.67, 2.03, 3.13
+ada spec: Ada follows whatwg/url
+bad urls: ---------------------
+ada---count of bad URLs       26
+servo/url---count of bad URLs 26
+whatwg---count of bad URLs    26
+curl---count of bad URLs      130
+-------------------------------
+
+bytes/URL: 86.859205
+curl spec: Curl follows RFC3986, not whatwg/url
+curl version : 8.7.1
+input bytes: 8688092
+number of URLs: 100025
+performance counters: Enabled
+rust version : 1.91.1
+zuri : OMITTED
+```
+
+## Defaults on macOS 26 Tahoe
+
+macOS 26 Tahoe comes with cURL 8.7.1. Using the default version of cURL with , the performance of all URL parsers are as follows:
+
+```
+➜ sudo ./build/benchmarks/benchdata --benchmark_counters_tabular=true
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Benchmark                                            Time             CPU   Iterations        GHz cycle/byte cycles/url instructions/byte instructions/cycle instructions/ns instructions/url     ns/url      speed  time/byte   time/url      url/s
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+BenchData_BasicBench_AdaURL_href              15691123 ns     15670386 ns           44    4.28376    7.50021    651.462           36.7012            4.89336          20.962         3.18784k    152.077 554.427M/s  1.80366ns  156.665ns 6.38306M/s
+BenchData_BasicBench_AdaURL_aggregator_href   10755944 ns     10742391 ns           64    4.35728    5.13727    446.219           26.5566            5.16939         22.5245         2.30668k    102.408 808.767M/s  1.23645ns  107.397ns 9.31124M/s
+BenchData_BasicBench_AdaURL_CanParse           6515744 ns      6507162 ns          105    4.33009    3.10174    269.414           16.3532            5.27229         22.8295         1.42043k     62.219 1.33516G/s  748.975ps  65.0554ns 15.3715M/s
+BasicBench_whatwg                             30237078 ns     30214870 ns           23    4.17769     14.328   1.24452k           79.8836            5.57535         23.2921         6.93862k    297.896 287.544M/s  3.47773ns  302.073ns 3.31046M/s
+BasicBench_CURL                               76373611 ns     76343111 ns            9    4.19096    35.5292   3.08604k           190.592            5.36437         22.4819         16.5547k    736.356 113.803M/s   8.7871ns   763.24ns  1.3102M/s
+BasicBench_ServoUrl                           26764394 ns     26734192 ns           26    4.22544     12.858   1.11683k           65.8217            5.11914         21.6306         5.71722k    264.312 324.981M/s  3.07711ns  267.275ns 3.74146M/s
+```
+
+Ada is the fastest URL parser in this comparison. The `CanParse` method completes each URL parse in 65 nanoseconds and processes 15.37 million URLs per second, which is 11.7x faster than CURL. The `aggregator_href` variant (full parsing with all URL components) takes 107 nanoseconds per URL and handles 9.31 million URLs per second, which is 7.1x faster than CURL.
+
+Ada maintains full WHATWG URL Standard compliance. CURL follows RFC 3986, which is a different specification.
+
+## What This Means in Practice
+
+To understand what these numbers mean for production systems, I looked at Vercel's Black Friday/Cyber Monday 2025 traffic. During this period, Vercel handled 115.8 billion requests over four days, with peak traffic reaching 518,027 requests per second.
+
+If each request requires parsing a URL (which is common in web servers for routing, logging, and request handling), here's what the CPU requirements would look like:
+
+**Using cURL:**
+- Each core handles 1.31 million URLs per second
+- Peak traffic of 518,027 req/s requires 395 CPU cores just for URL parsing
+- That's 518,027 ÷ 1,310,000 = 395.4 cores
+
+**Using Ada:**
+- Each core handles 15.37 million URLs per second
+- Same peak traffic requires only 34 CPU cores
+- That's 518,027 ÷ 15,370,000 = 33.7 cores
+
+The difference is 361 CPU cores, or a 91% reduction in compute resources dedicated to URL parsing.
+
+## Cost Impact at Scale
+
+For a platform processing over 100 billion requests during a peak shopping weekend, this difference translates to:
+
+- **Reduced cloud compute costs** from needing fewer CPU cores
+- **Lower power consumption** in data centers (fewer cores running means less electricity)
+- **Smaller cooling requirements** (less heat generated from fewer active cores)
+- **Higher capacity** on existing hardware (more headroom for traffic spikes)
+
+These savings compound over time. If you're running services that parse millions of URLs per day, the efficiency gains from Ada can meaningfully reduce your infrastructure costs while maintaining the same performance characteristics for end users.
+
+## Updating to latest version of cURL
+
+The benchmarks above used cURL 8.7.1, which ships by default with macOS 26 Tahoe. I also tested against the latest version of cURL (8.17.0) available via Homebrew. The latest version performs at 892 nanoseconds per URL and processes 1.12 million URLs per second, which is slightly slower than the default version (763ns, 1.31M URLs/s). Using the latest cURL version, Ada's `CanParse` is 13.7x faster, and the CPU core difference would be even larger—462 cores with latest cURL versus 34 cores with Ada, a 93% reduction.
+
+The performance regression between cURL 8.7.1 and 8.17.0 is notable. The latest version takes 129 nanoseconds longer per URL (892ns vs 763ns), which represents a 17% slowdown. At Vercel's peak traffic scale of 518,027 requests per second, this difference would require 67 additional CPU cores just to maintain the same throughput. This shows how even minor performance regressions in parsing libraries can have significant infrastructure cost implications at scale.
+
+To run the benchmarks with a specific cURL version, you can use the following command. I've compared it with v8.17.0
+
+```
+cmake -B build \
+    -DADA_BENCHMARKS=ON \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DADA_USE_UNSAFE_STD_REGEX_PROVIDER=ON \
+    -DCURL_INCLUDE_DIR=/opt/homebrew/opt/curl/include \
+    -DCURL_LIBRARY=/opt/homebrew/opt/curl/lib/libcurl.dylib \
+    -DCMAKE_FIND_FRAMEWORK=LAST \
+    -DCMAKE_FIND_APPBUNDLE=LAST
+```
+
+And here are the results:
+
+```
+➜  sudo ./build/benchmarks/benchdata --benchmark_counters_tabular=true
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Benchmark                                            Time             CPU   Iterations        GHz cycle/byte cycles/url instructions/byte instructions/cycle instructions/ns instructions/url     ns/url      speed  time/byte   time/url      url/s
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+BenchData_BasicBench_AdaURL_href              15803060 ns     15782000 ns           44     4.2983    7.57612    658.055           36.6275             4.8346         20.7806         3.18144k    153.097 550.506M/s  1.81651ns  157.781ns 6.33792M/s
+BenchData_BasicBench_AdaURL_aggregator_href   10969095 ns     10968484 ns           64    4.24262    5.24663    455.719           26.5629            5.06284         21.4797         2.30723k    107.414 792.096M/s  1.26247ns  109.657ns 9.11931M/s
+BenchData_BasicBench_AdaURL_CanParse           6682434 ns      6676443 ns          106    4.11577    3.13855    272.612           16.3542            5.21076         21.4463         1.42052k    66.2359 1.30131G/s  768.459ps  66.7477ns 14.9818M/s
+BasicBench_whatwg                             31119821 ns     31092348 ns           23    4.15052    14.6009   1.26822k           79.8787            5.47082         22.7067          6.9382k    305.557 279.429M/s  3.57873ns  310.846ns 3.21703M/s
+BasicBench_CURL                               89264557 ns     89178750 ns            8     4.1492    42.1106    3.6577k           233.565            5.54647         23.0134         20.2873k    881.542 97.4233M/s  10.2645ns  891.565ns 1.12162M/s
+BasicBench_ServoUrl                           27290262 ns     27273400 ns           25    4.17501    12.8397   1.11524k           65.8058             5.1252         21.3977         5.71584k    267.124 318.556M/s  3.13917ns  272.666ns 3.66749M/s
+```
