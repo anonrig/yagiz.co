@@ -24,16 +24,28 @@ Ada provides two URL parser implementations optimized for different use cases: `
 
 ## Benchmarks
 
-I've run benchmarks on macOS 26 Tahoe 26.1 on my personal Mac Mini 2024 with 14 cores (10 performance and 4 efficiency cores) and 64 GB memory. In order to reproduce these benchmarks locally you can checkout https://github.com/ada-url/ada and follow the same commands.
+I've run benchmarks on macOS 26 Tahoe 26.1 on my personal Mac Mini 2024 with 14 cores (10 performance and 4 efficiency cores) and 64 GB memory. These benchmarks use Ada commit `662de99d89078a60cc54fa1b696486cfcc814cff`.
 
-Here's the command to reproduce the benchmarks
+To reproduce these benchmarks locally, follow these commands:
 
-```
+```bash
+# Clone the Ada repository
+git clone https://github.com/ada-url/ada.git
+cd ada
+
+# Checkout the specific commit used in these benchmarks
+git checkout 662de99d89078a60cc54fa1b696486cfcc814cff
+
+# Configure the build with benchmarks enabled
 cmake -B build \
   -DADA_BENCHMARKS=ON \
   -DCMAKE_BUILD_TYPE=Release \
   -DADA_USE_UNSAFE_STD_REGEX_PROVIDER=ON
 
+# Build the project
+cmake --build build
+
+# Run the benchmarks (may require sudo for performance counter access)
 sudo ./build/benchmarks/benchdata --benchmark_counters_tabular=true
 ```
 
@@ -130,9 +142,16 @@ The benchmarks above used cURL 8.7.1, which ships by default with macOS 26 Tahoe
 
 The performance regression between cURL 8.7.1 and 8.17.0 is notable. The latest version takes **129 nanoseconds longer per URL** (892ns vs 763ns), which represents a **17% slowdown**. At Vercel's peak traffic scale of 518,027 requests per second, this difference would require **6.7% more of a CPU core** just to maintain the same throughput. This shows how even minor performance regressions in parsing libraries can have measurable infrastructure cost implications at scale.
 
-To run the benchmarks with a specific cURL version, you can use the following command. I've compared it with v8.17.0
+To run the benchmarks with a specific cURL version (tested with v8.17.0), use these commands:
 
-```
+```bash
+# Install the latest cURL via Homebrew (macOS)
+brew install curl
+
+# Clone and configure with specific cURL version
+git clone https://github.com/ada-url/ada.git
+cd ada
+
 cmake -B build \
     -DADA_BENCHMARKS=ON \
     -DCMAKE_BUILD_TYPE=Release \
@@ -141,6 +160,10 @@ cmake -B build \
     -DCURL_LIBRARY=/opt/homebrew/opt/curl/lib/libcurl.dylib \
     -DCMAKE_FIND_FRAMEWORK=LAST \
     -DCMAKE_FIND_APPBUNDLE=LAST
+
+# Build and run
+cmake --build build
+sudo ./build/benchmarks/benchdata --benchmark_counters_tabular=true
 ```
 
 And here are the results:
