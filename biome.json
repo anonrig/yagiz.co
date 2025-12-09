@@ -83,7 +83,8 @@
       "lineWidth": 100
     },
     "parser": {
-      "allowWrongLineComments": false
+      "allowWrongLineComments": false,
+      "tailwindDirectives": true
     }
   },
   "overrides": [

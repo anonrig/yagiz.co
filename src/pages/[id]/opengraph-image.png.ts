@@ -49,7 +49,7 @@ export const GET: APIRoute<Props> = async ({ props: { post } }) => {
   }).png()
   const buffer = await image.toBuffer()
 
-  return new Response(buffer, {
+  return new Response(buffer as BodyInit, {
     headers: {
       'Content-Type': 'image/png',
       'Cache-Control': 'public, max-age=31536000, immutable',
