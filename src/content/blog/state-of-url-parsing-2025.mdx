@@ -105,7 +105,7 @@ Ada is the fastest URL parser in this comparison. The `CanParse` method (which o
 
 Ada maintains full WHATWG URL Standard compliance. CURL follows RFC 3986, which is a different specification.
 
-**Important Note on Fairness**: This comparison isn't entirely apples-to-apples. RFC 3986 is significantly simpler and can be implemented without extra memory allocations, whereas the WHATWG URL Standard is considerably more complex due to the numerous edge cases it handles (internationalized domain names, special schemes, percent encoding normalization, etc.). **Ada is doing substantially more work per URL** while still achieving better performance. If both parsers implemented the same specification, the performance gap would likely be even larger.
+**Important Note on Fairness**: This comparison isn't entirely apples-to-apples. RFC 3986 is significantly simpler and can be implemented without extra memory allocations, whereas the WHATWG URL Standard is considerably more complex due to the numerous edge cases it handles (internationalized domain names, special schemes, percent encoding normalization, etc.). **Ada is doing substantially more work per URL** while still achieving better performance. The performance comparison would be more direct if both parsers implemented the same specification.
 
 ## What This Means in Practice
 
