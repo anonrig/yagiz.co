@@ -10,19 +10,19 @@ status: published
 
 ## Introduction
 
-Couple of months ago, while searching for usages of Ada URL in real-world applications, I stumbled upon Daniel Stenberg's (author of cURL) [Bluesky post](https://bsky.app/profile/bagder.mastodon.social.ap.brid.gy/post/3lymrtbpzezv2). In the blog post, Daniel mentions how Ada is not 10x faster than cURL, and even mentions that our work is "biased" and "misleading".
+A couple of months ago, while searching for usages of Ada URL in real-world applications, I stumbled upon Daniel Stenberg's (author of cURL) [Bluesky post](https://bsky.app/profile/bagder.mastodon.social.ap.brid.gy/post/3lymrtbpzezv2). In the blog post, Daniel mentions how Ada is not 10x faster than cURL, and even mentions that our work is "biased" and "misleading".
 
-I personally take these claims seriously because I've put my daughter's name as the name for this project to leave a lasting legacy for her - something that she can remember me for when she grows up. I assume just like Daniel is doing something similar with cURL, I wanted to do the same for Ada. This is why me and [Daniel Lemire](https://lemire.me) wrote an academic paper and published all of our methodologies and findings in [our paper: Parsing Millions of URLs per Second](https://arxiv.org/abs/2311.10533).
+I personally take these claims seriously because I've put my daughter's name as the name for this project to leave a lasting legacy for her - something that she can remember me for when she grows up. I assume just like Daniel is doing something similar with cURL, I wanted to do the same for Ada. This is why [Daniel Lemire](https://lemire.me) and I wrote an academic paper and published all of our methodologies and findings in [our paper: Parsing Millions of URLs per Second](https://arxiv.org/abs/2311.10533).
 
-![Hackerman](/content/daniel-stenberg-09-2025.png)
+![Bluesky post](/content/daniel-stenberg-09-2025.png)
 
 The goal of this blog post is to provide the state of URL parsing performance in 2025 in an open way without any bias or misleading claims. I've tried to use AI to summarize the table results in a way that is easy to understand and compare for those who don't know what each value represents.
 
-I've also used [Vercel's data for Black Friday data](https://vercel.com/bfcm) since it is the latest data available that I could find. I hope you enjoy it.
+I've also used [Vercel's Black Friday data](https://vercel.com/bfcm) since it is the latest data available that I could find. I hope you enjoy it.
 
 ## Benchmarks
 
-I've run benchmarks running on macOS 26 Tahoe 26.1 on my personal Mac Mini 2024 with 14 cores (10 performance and 4 efficiency cores) and 64 GB memory. In order to reproduce this benchmarks locally you can checkout github.com/ada-url/ada and follow the same commands.
+I've run benchmarks on macOS 26 Tahoe 26.1 on my personal Mac Mini 2024 with 14 cores (10 performance and 4 efficiency cores) and 64 GB memory. In order to reproduce these benchmarks locally you can checkout https://github.com/ada-url/ada and follow the same commands.
 
 Here's the command to reproduce the benchmarks
 
@@ -71,7 +71,7 @@ zuri : OMITTED
 
 ## Defaults on macOS 26 Tahoe
 
-macOS 26 Tahoe comes with cURL 8.7.1. Using the default version of cURL with , the performance of all URL parsers are as follows:
+macOS 26 Tahoe comes with cURL 8.7.1. Using the default version of cURL, the performance of all URL parsers are as follows:
 
 ```
 ➜ sudo ./build/benchmarks/benchdata --benchmark_counters_tabular=true
