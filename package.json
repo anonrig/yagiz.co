@@ -46,7 +46,7 @@
     "@marp-team/marp-cli": "^4.3.1",
     "@types/node": "^25.5.0",
     "to-vfile": "^8.0.0",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.2",
     "vfile-matter": "^5.0.1"
   },
   "packageManager": "pnpm@10.33.0",
