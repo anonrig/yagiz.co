@@ -17,9 +17,6 @@ importers:
       '@astrojs/mdx':
         specifier: ^5.0.3
         version: 5.0.3(astro@6.1.0(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.60.0)(typescript@6.0.2)(yaml@2.8.3))
-      '@astrojs/rss':
-        specifier: ^4.0.18
-        version: 4.0.18
       '@astrojs/sitemap':
         specifier: ^3.7.2
         version: 3.7.2
@@ -87,6 +84,9 @@ importers:
       '@astrojs/check':
         specifier: ^0.9.8
         version: 0.9.8(prettier@3.8.1)(typescript@6.0.2)
+      '@astrojs/rss':
+        specifier: ^4.0.18
+        version: 4.0.18
       '@biomejs/biome':
         specifier: ^2.4.9
         version: 2.4.9
