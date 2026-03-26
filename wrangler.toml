@@ -1,26 +1,24 @@
 name = "yagiz"
-pages_build_output_dir = "./dist"
 compatibility_date = "2026-03-21"
 compatibility_flags = [ "nodejs_compat" ]
 send_metrics = false
+preview_urls = true
+main = "@astrojs/cloudflare/entrypoints/server"
 
 [placement]
 mode = "smart"
 
 [assets]
+binding = "ASSETS"
 directory = "./dist"
+not_found_handling = "single-page-application"
 
 [vars]
 MAILJET_CONTACT_LIST_ID = "70041"
 NODE_VERSION = "20"
 
-[env.production]
-compatibility_date = "2025-12-01"
-compatibility_flags = [ "nodejs_compat" ]
-
 [env.production.vars]
 MAILJET_CONTACT_LIST_ID = "70041"
-NODE_VERSION = "20"
 
 [observability]
 enabled = true
