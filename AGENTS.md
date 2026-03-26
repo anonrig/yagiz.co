@@ -94,7 +94,8 @@ The site uses the Mulish variable font. It is self-hosted via Astro's built-in f
 (`fontProviders.local()`), configured in `astro.config.ts`. The WOFF2 file is at
 `src/assets/fonts/mulish-variable.woff2`. The CSS variable `--font-mulish` is injected
 automatically by the `<Font cssVariable="--font-mulish" preload />` component in
-`src/layouts/Layout.astro`.
+`src/layouts/Layout.astro`. `display: 'optional'` is set in the font config to prevent
+layout shift on reload — do not change this to `'swap'`.
 
 Do **not** use `fontProviders.fontsource()` — it requires outbound HTTPS to
 `api.fontsource.org` which may be blocked in restricted build environments.

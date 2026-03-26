@@ -9,6 +9,15 @@ import Layout from '@/layouts/Layout.astro'
 
 const posts = await getCollection('blog', ({ data }) => data.status === 'published')
 posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+
+const postsByYear = posts.reduce((acc, post) => {
+  const year = post.data.date.getFullYear()
+  if (!acc.has(year)) acc.set(year, [])
+  acc.get(year)!.push(post)
+  return acc
+}, new Map<number, typeof posts>())
+
+const years = [...postsByYear.keys()]
 ---
 
 <Layout>
@@ -33,11 +42,15 @@ posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
       <SubscribeButton />
     </div>
   <div class="pt-8">
-    <Container
-      size="tight"
-      class="divide-y divide-slate-200 dark:divide-neutral-700 mx-auto px-[4vw]"
-    >
-      {posts.map((post) => <BlogRow {post} />)}
-    </Container>
+    {years.map((year) => (
+      <Container size="tight" class="mx-auto px-[4vw] mb-12">
+        <div class="text-sm font-extrabold text-neutral-400 dark:text-neutral-500 mb-2">
+          {year}
+        </div>
+        <div class="divide-y divide-slate-200 dark:divide-neutral-700">
+          {postsByYear.get(year)!.map((post) => <BlogRow {post} />)}
+        </div>
+      </Container>
+    ))}
   </div>
 </Layout>

@@ -22,6 +22,7 @@ export default defineConfig({
       provider: fontProviders.local(),
       name: 'Mulish',
       cssVariable: '--font-mulish',
+      display: 'optional',
       options: {
         variants: [
           {
