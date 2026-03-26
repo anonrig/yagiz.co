@@ -1,6 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content'
-import { ChevronRight } from 'lucide-astro'
+import { ChevronRight } from '@lucide/astro'
 import readingTime from 'reading-time/lib/reading-time.js'
 
 interface Props {
@@ -43,6 +43,6 @@ const formattedDate = new Intl.DateTimeFormat('en-US', {
   </div>
   <ChevronRight
     size={16}
-    className="translate-x-8 text-slate-600 transition-transform delay-0 duration-200 ease-in-out group-hover:translate-x-0 hidden sm:flex"
+    class="translate-x-8 text-slate-600 transition-transform delay-0 duration-200 ease-in-out group-hover:translate-x-0 hidden sm:flex"
   />
 </a>

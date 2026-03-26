@@ -13,19 +13,23 @@ import { websiteUrl } from './src/lib/content.ts'
 
 // https://astro.build/config
 export default defineConfig({
+  experimental: {
+    rustCompiler: true,
+  },
+  security: { csp: true },
   site: websiteUrl,
   output: 'static',
   adapter: cloudflare({
     // Uses the Cloudflare Image Resizing service.
     imageService: 'cloudflare',
+    // sharp and satori (used in OG image generation) require Node.js APIs
+    // that are not compatible with Cloudflare's workerd runtime.
+    prerenderEnvironment: 'node',
   }),
   trailingSlash: 'never',
   prefetch: true,
   redirects: {
     '/rss': '/rss.xml',
-  },
-  experimental: {
-    contentIntellisense: true,
   },
   integrations: [
     mdx({
