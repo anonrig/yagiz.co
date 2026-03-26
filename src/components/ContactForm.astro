@@ -71,14 +71,16 @@
     try {
       submit.disabled = true
 
-      await fetch('https://formspree.io/f/mpzolveb', {
+      const res = await fetch('/api/contact', {
         method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'multipart/form-data',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.value, subject: subject.value, message: message.value }),
       })
+
+      if (!res.ok) {
+        const { message: errorMessage } = await res.json() as { message: string }
+        throw new Error(errorMessage)
+      }
 
       // Clear state
       successMessage.classList.remove('hidden')
