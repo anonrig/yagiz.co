@@ -8,6 +8,10 @@ main = "@astrojs/cloudflare/entrypoints/server"
 [placement]
 mode = "smart"
 
+[[kv_namespaces]]
+binding = "SESSION"
+id = "8cf89a095f9e4cb68ed74c078b642038"
+
 [[d1_databases]]
 binding = "newsletter"
 database_name = "newsletter"
