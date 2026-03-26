@@ -25,22 +25,22 @@ const { post } = Astro.props
 </header>
 
 <script>
-  import { animate, scroll } from 'motion'
+  const header = document.getElementById('sticky-header') as HTMLElement
+  const progressIndicator = document.getElementById('progress-indicator') as HTMLElement
 
-  const header = document.getElementById('sticky-header')!
-
-  // Show the sticky header only once the article's own title/header scrolls out of view.
-  // Using IntersectionObserver is more reliable than scroll-linked offsets: the header
-  // appears as a crisp time-based animation rather than a slow scroll-coupled fade.
+  // Show/hide via CSS transitions — no animation library needed
   const articleHeader = document.querySelector('article > header:not(#sticky-header)')
-
   if (articleHeader) {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) {
-          animate(header, { y: 0, opacity: 1 }, { duration: 0.25, ease: 'easeOut' })
+          header.style.transition = 'transform 0.25s ease-out, opacity 0.25s ease-out'
+          header.style.transform = 'translateY(0)'
+          header.style.opacity = '1'
         } else {
-          animate(header, { y: -50, opacity: 0 }, { duration: 0.15, ease: 'easeIn' })
+          header.style.transition = 'transform 0.15s ease-in, opacity 0.15s ease-in'
+          header.style.transform = 'translateY(-50px)'
+          header.style.opacity = '0'
         }
       },
       { threshold: 0 }
@@ -48,6 +48,11 @@ const { post } = Astro.props
     observer.observe(articleHeader)
   }
 
-  // Animate scroll indicator depending on the window scroll position
-  scroll(animate('#progress-indicator', { scaleX: [0, 1] }))
+  // Scroll progress bar — plain scroll event, no library needed
+  const updateProgress = () => {
+    const scrollable = document.documentElement.scrollHeight - window.innerHeight
+    progressIndicator.style.transform = `scaleX(${scrollable > 0 ? window.scrollY / scrollable : 0})`
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true })
+  updateProgress()
 </script>
