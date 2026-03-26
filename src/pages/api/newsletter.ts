@@ -19,9 +19,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   try {
     await env.newsletter
-      .prepare(
-        'INSERT INTO subscribers (email, name) VALUES (?, ?) ON CONFLICT (email) DO NOTHING',
-      )
+      .prepare('INSERT INTO subscribers (email, name) VALUES (?, ?) ON CONFLICT (email) DO NOTHING')
       .bind(body.email, body.name)
       .run()
   } catch (err) {
