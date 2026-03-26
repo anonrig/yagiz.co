@@ -10,6 +10,8 @@ const { post } = Astro.props
 
 <header
   id="sticky-header"
+  aria-label="Article progress"
+  aria-hidden="true"
   class="inset-x-0 items-center backdrop-blur-sm bg-[hsla(0,0%,100%,.8)] dark:bg-white-reversed/50 flex h-[50px] justify-between px-8 fixed z-[90] top-0"
   style="transform: translateY(-50px); opacity: 0;"
 >
@@ -20,7 +22,15 @@ const { post } = Astro.props
   </div>
 
   <div class="bg-[#e6e6e6] dark:bg-slate-600 bottom-[-2px] h-[2px] left-0 absolute w-full">
-    <div id="progress-indicator" class="bg-orange-400 h-full origin-[0%] scale-x-0" />
+    <div
+      id="progress-indicator"
+      role="progressbar"
+      aria-label="Reading progress"
+      aria-valuenow="0"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      class="bg-orange-400 h-full origin-[0%] scale-x-0"
+    />
   </div>
 </header>
 
@@ -28,16 +38,17 @@ const { post } = Astro.props
   const header = document.getElementById('sticky-header') as HTMLElement
   const progressIndicator = document.getElementById('progress-indicator') as HTMLElement
 
-  // Show/hide via CSS transitions — no animation library needed
   const articleHeader = document.querySelector('article > header:not(#sticky-header)')
   if (articleHeader) {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) {
+          header.removeAttribute('aria-hidden')
           header.style.transition = 'transform 0.25s ease-out, opacity 0.25s ease-out'
           header.style.transform = 'translateY(0)'
           header.style.opacity = '1'
         } else {
+          header.setAttribute('aria-hidden', 'true')
           header.style.transition = 'transform 0.15s ease-in, opacity 0.15s ease-in'
           header.style.transform = 'translateY(-50px)'
           header.style.opacity = '0'
@@ -48,10 +59,11 @@ const { post } = Astro.props
     observer.observe(articleHeader)
   }
 
-  // Scroll progress bar — plain scroll event, no library needed
   const updateProgress = () => {
     const scrollable = document.documentElement.scrollHeight - window.innerHeight
-    progressIndicator.style.transform = `scaleX(${scrollable > 0 ? window.scrollY / scrollable : 0})`
+    const progress = scrollable > 0 ? window.scrollY / scrollable : 0
+    progressIndicator.style.transform = `scaleX(${progress})`
+    progressIndicator.setAttribute('aria-valuenow', String(Math.round(progress * 100)))
   }
   window.addEventListener('scroll', updateProgress, { passive: true })
   updateProgress()

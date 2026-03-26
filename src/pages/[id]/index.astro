@@ -84,7 +84,7 @@ const structuredData = {
   <article>
     <header class="mb-6 grid grid-cols-canvas text-center">
       <div
-        class="col-main mb-4 text-xs font-extrabold uppercase text-slate-400"
+        class="col-main mb-4 text-xs font-extrabold uppercase text-slate-500"
       >
         <span>
           <time datetime={post.data.date.toISOString()}>
@@ -115,9 +115,9 @@ const structuredData = {
       {
         post.data.image && (
           <Figure
-            alt={post.data.title}
+            alt={post.data.image.alt}
             src={post.data.image.src}
-            caption={post.data.image.alt}
+            caption={post.data.title}
           />
         )
       }
@@ -133,9 +133,9 @@ const structuredData = {
     suggestions.length > 0 && (
       <section class="mt-24 bg-[#f6f6f6] dark:bg-[#2f333c] py-12 px-[4vw]">
         <Container size="tight" class="mx-auto">
-          <h3 class="mb-4 text-xl font-extrabold dark:text-white">
+          <h2 class="mb-4 text-xl font-extrabold dark:text-white">
             You might also like...
-          </h3>
+          </h2>
           <div class="divide-y divide-slate-200 dark:divide-neutral-700">
             {suggestions.map((post) => (
               <BlogRow {post} />

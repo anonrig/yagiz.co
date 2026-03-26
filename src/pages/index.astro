@@ -12,8 +12,9 @@ posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
 
 const postsByYear = posts.reduce((acc, post) => {
   const year = post.data.date.getFullYear()
-  if (!acc.has(year)) acc.set(year, [])
-  acc.get(year)!.push(post)
+  const bucket = acc.get(year) ?? []
+  bucket.push(post)
+  acc.set(year, bucket)
   return acc
 }, new Map<number, typeof posts>())
 
@@ -44,9 +45,9 @@ const years = [...postsByYear.keys()]
   <div class="pt-8">
     {years.map((year) => (
       <Container size="tight" class="mx-auto px-[4vw] mb-12">
-        <div class="text-sm font-extrabold text-neutral-400 dark:text-neutral-500 mb-2">
+        <h2 class="text-sm font-extrabold text-neutral-500 dark:text-neutral-400 mb-2">
           {year}
-        </div>
+        </h2>
         <div class="divide-y divide-slate-200 dark:divide-neutral-700">
           {postsByYear.get(year)!.map((post) => <BlogRow {post} />)}
         </div>

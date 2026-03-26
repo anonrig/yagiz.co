@@ -95,8 +95,14 @@ const pageTitle = title ? `${title} - ${websiteTitle}` : websiteTitle
     <link rel="alternate" type="application/rss+xml" title={websiteTitle} href={new URL("/rss.xml", Astro.site)} />
   </head>
   <body>
+    <a
+      href="#main-content"
+      class="sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:left-4 focus-visible:top-4 focus-visible:z-50 focus-visible:rounded focus-visible:bg-white focus-visible:px-4 focus-visible:py-2 focus-visible:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+    >
+      Skip to main content
+    </a>
     <Header />
-    <main class="py-14">
+    <main id="main-content" class="py-14">
       <slot />
     </main>
     <Footer />

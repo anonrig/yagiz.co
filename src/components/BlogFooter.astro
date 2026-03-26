@@ -5,6 +5,7 @@ import { getCollection } from 'astro:content'
 import { ArrowLeft, ArrowRight } from '@lucide/astro'
 import authorImg from '@/assets/author-image.png'
 import Container from '@/components/ui/Container.astro'
+import { authorFullName } from '@/lib/content'
 
 interface Props {
   index: number
@@ -21,9 +22,12 @@ const previous = index !== posts.length - 1 ? posts.at(index + 1) : undefined
   <div class="flex flex-2 text-black dark:text-neutral-400">
     {
       previous !== undefined && (
-        <a href={`/${previous.id}`}>
-          <ArrowLeft size={20} />
-          <span class="sr-only">Previous article</span>
+        <a
+          href={`/${previous.id}`}
+          aria-label={`Previous article: ${previous.data.title}`}
+          class="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2 rounded"
+        >
+          <ArrowLeft size={20} aria-hidden="true" />
         </a>
       )
     }
@@ -31,20 +35,21 @@ const previous = index !== posts.length - 1 ? posts.at(index + 1) : undefined
 
   <div class="flex flex-col">
     <div class="flex flex-col items-center gap-y-4">
-      <h3
-        class="mb-4 font-extrabold tracking-wide text-slate-800 dark:text-white"
-      >
+      <p class="mb-4 font-extrabold tracking-wide text-slate-800 dark:text-white">
         Published by:
-      </h3>
-      <a href="/about">
+      </p>
+      <a
+        href="/about"
+        aria-label={`About ${authorFullName}`}
+        class="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2 rounded-full"
+      >
         <Image
           src={authorImg}
-          alt=""
+          alt={authorFullName}
           width={50}
           height={50}
           class="rounded-full"
         />
-        <span class="sr-only">About</span>
       </a>
     </div>
   </div>
@@ -52,9 +57,12 @@ const previous = index !== posts.length - 1 ? posts.at(index + 1) : undefined
   <div class="flex flex-2 justify-end text-black dark:text-neutral-400">
     {
       next !== undefined && (
-        <a href={`/${next.id}`}>
-          <ArrowRight size={20} />
-          <span class="sr-only">Next article</span>
+        <a
+          href={`/${next.id}`}
+          aria-label={`Next article: ${next.data.title}`}
+          class="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2 rounded"
+        >
+          <ArrowRight size={20} aria-hidden="true" />
         </a>
       )
     }

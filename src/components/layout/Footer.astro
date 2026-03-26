@@ -14,17 +14,16 @@ const footerItems: Item[] = [
 ]
 ---
 <footer class="flex flex-col items-center pb-20 pt-12 mx-auto w-full max-w-6xl gap-y-4">
-  <nav class="flex flex-wrap items-center justify-center">
+  <nav aria-label="Footer navigation" class="flex flex-wrap items-center justify-center">
     {
       footerItems.map((item, index) => (
         <a
           href={item.href}
-          class:list={[
-            "flex items-center text-xs font-normal text-slate-500 dark:text-neutral-400",
-            index !== 0 &&
-              "before:block before:px-[0.7rem] before:font-serif before:leading-[1] before:content-['·']",
-          ]}
+          class="flex items-center text-xs font-normal text-slate-500 dark:text-neutral-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2 rounded"
         >
+          {index !== 0 && (
+            <span aria-hidden="true" class="px-[0.7rem] font-serif leading-[1]">·</span>
+          )}
           {item.title}
         </a>
       ))
