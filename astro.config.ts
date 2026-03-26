@@ -2,7 +2,7 @@ import cloudflare from '@astrojs/cloudflare'
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
 import tailwindcss from '@tailwindcss/vite'
-import { defineConfig } from 'astro/config'
+import { defineConfig, fontProviders } from 'astro/config'
 import rehypeAutolinkHeadings, {
   type Options as RehypeAutolinkHeadingsOptions,
 } from 'rehype-autolink-headings'
@@ -17,6 +17,23 @@ export default defineConfig({
     rustCompiler: true,
   },
   security: { csp: true },
+  fonts: [
+    {
+      provider: fontProviders.local(),
+      name: 'Mulish',
+      cssVariable: '--font-mulish',
+      options: {
+        variants: [
+          {
+            // Variable font — supports the full weight range (100–900)
+            weight: '100 900',
+            style: 'normal',
+            src: ['./src/assets/fonts/mulish-variable.woff2'],
+          },
+        ],
+      },
+    },
+  ],
   site: websiteUrl,
   output: 'static',
   adapter: cloudflare({

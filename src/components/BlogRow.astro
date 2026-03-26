@@ -1,14 +1,14 @@
 ---
 import type { CollectionEntry } from 'astro:content'
 import { ChevronRight } from '@lucide/astro'
-import readingTime from 'reading-time/lib/reading-time.js'
 
 interface Props {
   post: CollectionEntry<'blog'>
 }
 
 const { post } = Astro.props
-const minute_to_read = readingTime(post.body ?? '').text
+const words = (post.body ?? '').trim().split(/\s+/).length
+const minute_to_read = `${Math.max(1, Math.round(words / 200))} min read`
 const formattedDate = new Intl.DateTimeFormat('en-US', {
   month: 'short',
   day: 'numeric',

@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets'
 import { getCollection } from 'astro:content'
-import { compareDesc } from 'date-fns'
+
 import { ArrowLeft, ArrowRight } from '@lucide/astro'
 import authorImg from '@/assets/author-image.png'
 import Container from '@/components/ui/Container.astro'
@@ -12,7 +12,7 @@ interface Props {
 
 const { index } = Astro.props
 const posts = await getCollection('blog', ({ data }) => data.status === 'published')
-posts.sort((a, b) => compareDesc(a.data.date, b.data.date))
+posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
 const next = index !== 0 ? posts.at(index - 1) : undefined
 const previous = index !== posts.length - 1 ? posts.at(index + 1) : undefined
 ---

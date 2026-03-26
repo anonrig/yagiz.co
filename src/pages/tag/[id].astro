@@ -2,7 +2,6 @@
 import type { CollectionEntry } from 'astro:content'
 import { getCollection } from 'astro:content'
 import type { GetStaticPaths } from 'astro'
-import { compareDesc } from 'date-fns'
 import BlogRow from '@/components/BlogRow.astro'
 import Container from '@/components/ui/Container.astro'
 import Layout from '@/layouts/Layout.astro'
@@ -25,7 +24,7 @@ const posts = await getCollection(
   'blog',
   ({ data }) => data.status === 'published' && data.tag.id === tag.id,
 )
-posts.sort((a, b) => compareDesc(a.data.date, b.data.date))
+posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
 ---
 
 <Layout title={tag.data.title} description={tag.data.description}>

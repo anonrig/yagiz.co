@@ -27,3 +27,4 @@ sponsorships.json
 worker-configuration.d.ts
 
 .ncurc
+.wrangler/

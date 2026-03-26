@@ -3,7 +3,6 @@ import { getCollection } from 'astro:content'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import type { APIRoute, GetStaticPaths } from 'astro'
-import { compareDesc } from 'date-fns'
 import satori from 'satori'
 import sharp from 'sharp'
 import { BlogOG } from '@/components/BlogOG'
@@ -18,7 +17,7 @@ const boldFontData = fs.readFile(path.resolve('./public/fonts/mulish-bold.ttf'))
 
 export async function getStaticPaths(): Promise<ReturnType<GetStaticPaths>> {
   const posts = await getCollection('blog', ({ data }) => data.status === 'published')
-  posts.sort((a, b) => compareDesc(a.data.date, b.data.date))
+  posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
 
   return posts.map((post) => ({
     params: { id: post.id },

@@ -1,7 +1,6 @@
 ---
 import { Image } from 'astro:assets'
 import { getCollection } from 'astro:content'
-import { compareDesc } from 'date-fns'
 import familyImg from '@/assets/family.png'
 import BlogRow from '@/components/BlogRow.astro'
 import SubscribeButton from '@/components/SubscribeButton.astro'
@@ -9,7 +8,7 @@ import Container from '@/components/ui/Container.astro'
 import Layout from '@/layouts/Layout.astro'
 
 const posts = await getCollection('blog', ({ data }) => data.status === 'published')
-posts.sort((a, b) => compareDesc(a.data.date, b.data.date))
+posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
 ---
 
 <Layout>

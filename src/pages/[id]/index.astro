@@ -1,8 +1,7 @@
 ---
 import { type CollectionEntry, getCollection, getEntry, render } from 'astro:content'
 import type { GetStaticPaths } from 'astro'
-import { compareDesc, format } from 'date-fns'
-import readingTime from 'reading-time/lib/reading-time.js'
+
 import BlogFooter from '@/components/BlogFooter.astro'
 import BlogRow from '@/components/BlogRow.astro'
 import BlogStickyHeader from '@/components/BlogStickyHeader.astro'
@@ -20,7 +19,7 @@ interface Props {
 
 export async function getStaticPaths(): Promise<ReturnType<GetStaticPaths>> {
   const posts = await getCollection('blog', ({ data }) => data.status === 'published')
-  posts.sort((a, b) => compareDesc(a.data.date, b.data.date))
+  posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
 
   return posts.map((post) => ({
     params: { id: post.id },
@@ -34,16 +33,17 @@ const tag = await getEntry(post.data.tag.collection, post.data.tag.id)
 if (!tag) {
   throw new Error('Tag not found')
 }
-const minute_to_read = readingTime(post.body ?? '').text
+const words = (post.body ?? '').trim().split(/\s+/).length
+const minute_to_read = `${Math.max(1, Math.round(words / 200))} min read`
 
 const posts = await getCollection('blog', ({ data }) => data.status === 'published')
-posts.sort((a, b) => compareDesc(a.data.date, b.data.date))
+posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
 const index = posts.findIndex((p) => p.id === post.id)
 const suggestions = [posts.at(index - 2), posts.at(index - 1)].filter(
   Boolean,
 ) as CollectionEntry<'blog'>[]
-const publishedTime = format(post.data.date, 'yyyy-MM-dd')
-const modifiedTime = format(new Date(), 'yyyy-MM-dd')
+const publishedTime = post.data.date.toISOString().split('T')[0]
+const modifiedTime = new Date().toISOString().split('T')[0]
 
 const structuredData = {
   '@context': 'https://schema.org',

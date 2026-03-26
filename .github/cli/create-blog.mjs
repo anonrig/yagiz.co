@@ -1,7 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { cancel, group, outro, select, spinner, text } from '@clack/prompts'
-import { format } from 'date-fns'
 
 const contentFolder = path.resolve('./src/content')
 const allTags = fs
@@ -20,7 +19,7 @@ title: '${title}'
 description: >-
   ${description}
 type: Blog
-date: '${format(new Date(), 'yyyy-MM-dd')}'
+  date: '${new Date().toISOString().split('T')[0]}'
 tag: ${tag}
 status: ${status}
 ---

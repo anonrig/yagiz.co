@@ -1,25 +1,27 @@
 ---
+import { Font } from 'astro:assets'
 import Footer from '@/components/layout/Footer.astro'
 import Header from '@/components/layout/Header.astro'
 import {
   authorFullName,
+  openGraphImage,
   twitterId,
   twitterUsername,
   websiteDescription,
   websiteTitle,
 } from '@/lib/content'
 import '@/styles/globals.css'
-import '@fontsource-variable/mulish'
-import mulishFile from '@fontsource-variable/mulish/files/mulish-latin-wght-normal.woff2?url'
-import type { SEO as SeoProps } from 'astro-seo'
-import { SEO } from 'astro-seo'
-import { openGraphImage } from '@/lib/content'
 
 interface Props {
   title?: string
   description?: string
   image?: string
-  article?: Required<Parameters<typeof SeoProps>[0]>['openGraph']['article']
+  article?: {
+    authors?: string[]
+    publishedTime?: string
+    modifiedTime?: string
+    tags?: string[]
+  }
 }
 
 const {
@@ -28,54 +30,46 @@ const {
   image = `${Astro.url.origin}/opengraph-image.png`,
   article,
 } = Astro.props
+
+const pageTitle = title ? `${title} - ${websiteTitle}` : websiteTitle
 ---
 
 <html lang="en" class="bg-white text-black dark:bg-white-reversed">
   <head>
-    <SEO
-      charset="utf-8"
-      {title}
-      titleTemplate={`%s - ${websiteTitle}`}
-      titleDefault={websiteTitle}
-      {description}
-      canonical={Astro.url.href}
-      openGraph={{
-        basic: {
-          title: title ?? websiteTitle,
-          image,
-          type: "website",
-          url: Astro.url.href,
-        },
-        optional: {
-          description,
-          locale: "en_US",
-          siteName: websiteTitle,
-        },
-        image: {
-          type: "image/png",
-          width: openGraphImage.width,
-          height: openGraphImage.height,
-          alt: websiteTitle,
-        },
-        article,
-      }}
-      twitter={{
-        creator: `@${twitterUsername}`,
-        title: title ?? websiteTitle,
-        image,
-        imageAlt: websiteTitle,
-        description,
-        card: "summary_large_image",
-      }}
-    />
+    <meta charset="utf-8" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={Astro.url.href} />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={title ?? websiteTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={article ? 'article' : 'website'} />
+    <meta property="og:url" content={Astro.url.href} />
+    <meta property="og:image" content={image} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content={String(openGraphImage.width)} />
+    <meta property="og:image:height" content={String(openGraphImage.height)} />
+    <meta property="og:image:alt" content={websiteTitle} />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content={websiteTitle} />
+
+    <!-- Article meta (blog posts only) -->
+    {article?.publishedTime && <meta property="article:published_time" content={article.publishedTime} />}
+    {article?.modifiedTime && <meta property="article:modified_time" content={article.modifiedTime} />}
+    {article?.authors?.map((author) => <meta property="article:author" content={author} />)}
+    {article?.tags?.map((tag) => <meta property="article:tag" content={tag} />)}
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:creator" content={`@${twitterUsername}`} />
+    <meta name="twitter:title" content={title ?? websiteTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={image} />
+    <meta name="twitter:image:alt" content={websiteTitle} />
+
+    <Font cssVariable="--font-mulish" preload />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link
-      rel="preload"
-      as="font"
-      crossorigin="anonymous"
-      href={mulishFile}
-      type="font/woff2"
-    />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <meta name="category" content="technology" />
     <meta name="creator" content={authorFullName} />

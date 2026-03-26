@@ -1,7 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { cancel, confirm, group, select, spinner } from '@clack/prompts'
-import { compareDesc } from 'date-fns'
 import Handlebars from 'handlebars'
 import mjml2html from 'mjml'
 import Mailjet from 'node-mailjet'
@@ -18,7 +17,7 @@ const publishedBlogs = fs
     return { slug, data: contents.data.matter }
   })
   .filter((b) => b.data.status === 'published')
-  .sort((a, b) => compareDesc(b.data.date, a.data.date))
+  .sort((a, b) => new Date(a.data.date).getTime() - new Date(b.data.date).getTime())
 
 const templatePath = path.resolve('./.github/blog.mjml')
 const template = await fs.promises.readFile(templatePath, 'utf-8')
