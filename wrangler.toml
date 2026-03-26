@@ -1,10 +1,13 @@
 name = "yagiz"
-compatibility_date = "2025-12-01"
+compatibility_date = "2026-03-21"
 compatibility_flags = [ "nodejs_compat" ]
 send_metrics = false
 
 [placement]
 mode = "smart"
+
+[assets]
+directory = "./dist"
 
 [vars]
 MAILJET_CONTACT_LIST_ID = "70041"
@@ -17,3 +20,6 @@ compatibility_flags = [ "nodejs_compat" ]
 [env.production.vars]
 MAILJET_CONTACT_LIST_ID = "70041"
 NODE_VERSION = "20"
+
+[observability]
+enabled = true
