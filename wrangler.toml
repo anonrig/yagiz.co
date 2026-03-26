@@ -8,17 +8,15 @@ main = "@astrojs/cloudflare/entrypoints/server"
 [placement]
 mode = "smart"
 
+[[d1_databases]]
+binding = "newsletter"
+database_name = "newsletter"
+database_id = "33ad2d37-f48c-4033-86fd-81c7ade04178"
+
 [assets]
 binding = "ASSETS"
 directory = "./dist"
-not_found_handling = "single-page-application"
-
-[vars]
-MAILJET_CONTACT_LIST_ID = "70041"
-NODE_VERSION = "20"
-
-[env.production.vars]
-MAILJET_CONTACT_LIST_ID = "70041"
+not_found_handling = "404-page"
 
 [observability]
 enabled = true

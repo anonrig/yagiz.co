@@ -1,32 +1,14 @@
+import { env } from 'cloudflare:workers'
 import type { APIRoute } from 'astro'
 
-const headers = {
-  'content-type': 'application/json',
-  authorization: `Basic ${Buffer.from(
-    `${import.meta.env.MAILJET_API_KEY}:${import.meta.env.MAILJET_SECRET_KEY}`,
-    'base64',
-  ).toString()}`,
-}
-
 const response = ({ status, message }: { status: number; message: string }) =>
-  new Response(
-    JSON.stringify({
-      status,
-      message,
-    }),
-    {
-      status,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    },
-  )
+  new Response(JSON.stringify({ status, message }), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
+  })
 
 export const POST: APIRoute = async ({ request }) => {
-  const body: {
-    email?: string
-    name?: string
-  } = await request.json()
+  const body: { email?: string; name?: string } = await request.json()
 
   if (!body.email?.length || !body.name?.length) {
     return response({
@@ -36,55 +18,20 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   try {
-    const contactResponse = await fetch('https://api.mailjet.com/v3/REST/contact', {
-      headers,
-      method: 'POST',
-      body: JSON.stringify({
-        IsExcludedFromCampaigns: 'true',
-        Name: body.name,
-        Email: body.email,
-      }),
-    })
-    // biome-ignore lint/suspicious/noExplicitAny: TODO fix this
-    const contactJson = (await contactResponse.json()) as any
-    if (contactJson.ErrorMessage) {
-      throw new Error(contactJson.ErrorMessage)
-    }
-    const contactId = contactJson.Data.at(0)?.ID
-
-    if (!contactId) {
-      return response({
-        status: 500,
-        message: 'ContactID was missing from Mailjet API',
-      })
-    }
-
-    const listResponse = await fetch('https://api.mailjet.com/v3/REST/listrecipient', {
-      headers,
-      method: 'POST',
-      body: JSON.stringify({
-        ContactID: contactId,
-        ListID: import.meta.env.MAILJET_CONTACT_LIST_ID ?? '',
-      }),
-    })
-    // biome-ignore lint/suspicious/noExplicitAny: TODO fix this
-    const listJson = (await listResponse.json()) as any
-    if (listJson.ErrorMessage) {
-      throw new Error(listJson.ErrorMessage)
-    }
-    // biome-ignore lint/suspicious/noExplicitAny: Unnecessary validation
-  } catch (error: any) {
-    console.error(error)
-    const message = error.response?.statusText ?? error.message ?? ''
-    return response({
-      status: 400,
-      message,
-    })
+    await env.newsletter
+      .prepare(
+        'INSERT INTO subscribers (email, name) VALUES (?, ?) ON CONFLICT (email) DO NOTHING',
+      )
+      .bind(body.email, body.name)
+      .run()
+  } catch (err) {
+    console.error('Failed to insert subscriber into D1:', err)
+    return response({ status: 500, message: 'Failed to register. Please try again.' })
   }
 
   return response({
-    message: 'Added you to the newsletter. Thank you for signing up.',
     status: 200,
+    message: 'Added you to the newsletter. Thank you for signing up.',
   })
 }
 
