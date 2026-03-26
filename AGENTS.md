@@ -33,9 +33,8 @@ type checking, and the full Astro build in one step.
 
 ## TypeScript
 
-- Use TypeScript **5.x** (`^5.9.3`). Do NOT upgrade to v6 — Astro and its ecosystem
-  require `typescript@^5.0.0`. Running `pnpm update --latest` will pull in v6; pin it
-  back with `pnpm add -D typescript@^5` and update `package.json` to `"typescript": "^5.9.3"`.
+- Use the latest TypeScript (`^6.0.0`). Astro and its ecosystem declare `typescript@^5.0.0`
+  as a peer dependency, but TypeScript 6 works in practice — the peer warning is cosmetic.
 
 ## Astro-specific
 
