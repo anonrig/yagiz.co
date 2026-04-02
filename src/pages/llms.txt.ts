@@ -4,6 +4,15 @@ import { getCollection } from 'astro:content'
 import type { APIRoute } from 'astro'
 import { authorFullName, websiteDescription, websiteTitle, websiteUrl } from '@/lib/content'
 
+function toAscii(str: string): string {
+  return str
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201C\u201D]/g, '"')
+    .replace(/[\u2013\u2014]/g, '-')
+    .replace(/\u2026/g, '...')
+    .replace(/[^\x00-\x7F]/g, '')
+}
+
 export const GET: APIRoute = async () => {
   const posts = await getCollection('blog', ({ data }) => data.status === 'published')
   posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
@@ -11,7 +20,7 @@ export const GET: APIRoute = async () => {
   const postLinks = posts
     .map((post) => {
       const date = post.data.date.toISOString().split('T')[0]
-      return `- [${post.data.title}](${websiteUrl}/${post.id}.md): ${post.data.description} (${date})`
+      return `- [${toAscii(post.data.title)}](${websiteUrl}/${post.id}.md): ${toAscii(post.data.description)} (${date})`
     })
     .join('\n')
 
