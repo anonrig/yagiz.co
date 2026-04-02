@@ -20,11 +20,13 @@ export const GET: APIRoute = async () => {
     '',
     `> ${websiteDescription}`,
     '',
-    `*By ${authorFullName}*`,
-    '',
     '---',
     '',
     postList,
+    '',
+    '---',
+    '',
+    `Authored by ${authorFullName}`,
   ].join('\n')
 
   return new Response(markdown, {

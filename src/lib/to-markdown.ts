@@ -1,4 +1,7 @@
 import type { CollectionEntry } from 'astro:content'
+import { authorFullName } from '@/lib/content'
+
+const FOOTER = `\n---\n\nAuthored by ${authorFullName}`
 
 export function postToMarkdown(post: CollectionEntry<'blog'>): string {
   const date = post.data.date.toISOString().split('T')[0]
@@ -12,11 +15,21 @@ export function postToMarkdown(post: CollectionEntry<'blog'>): string {
     '---',
     '',
     post.body ?? '',
+    FOOTER,
   ].join('\n')
 }
 
 export function pageToMarkdown(page: CollectionEntry<'pages'>): string {
-  return [`# ${page.data.title}`, '', `> ${page.data.description}`, '', '---', '', page.body ?? ''].join('\n')
+  return [
+    `# ${page.data.title}`,
+    '',
+    `> ${page.data.description}`,
+    '',
+    '---',
+    '',
+    page.body ?? '',
+    FOOTER,
+  ].join('\n')
 }
 
 export function tagToMarkdown(
@@ -38,5 +51,6 @@ export function tagToMarkdown(
     '---',
     '',
     postList,
+    FOOTER,
   ].join('\n')
 }
