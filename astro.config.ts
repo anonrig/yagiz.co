@@ -1,3 +1,4 @@
+import { readdirSync, readFileSync } from 'node:fs'
 import cloudflare from '@astrojs/cloudflare'
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
@@ -10,6 +11,27 @@ import rehypePrettyCode, { type Options as RehypePrettyCodeOptions } from 'rehyp
 import rehypeSlug from 'rehype-slug'
 import remarkGfm from 'remark-gfm'
 import { websiteUrl } from './src/lib/content.ts'
+
+function listSlugs(dir: string): string[] {
+  return readdirSync(dir)
+    .filter((f) => !f.startsWith('_'))
+    .map((f) => f.replace(/\.mdx?$/, ''))
+}
+
+function publishedBlogSlugs(): string[] {
+  const dir = './src/content/blog'
+  return readdirSync(dir)
+    .filter((f) => !f.startsWith('_'))
+    .filter((f) => readFileSync(`${dir}/${f}`, 'utf-8').includes('status: published'))
+    .map((f) => f.replace(/\.mdx?$/, ''))
+}
+
+const markdownPages: string[] = [
+  `${websiteUrl}/index.md`,
+  ...publishedBlogSlugs().map((slug) => `${websiteUrl}/${slug}.md`),
+  ...listSlugs('./src/content/pages').map((slug) => `${websiteUrl}/${slug}.md`),
+  ...listSlugs('./src/content/tags').map((slug) => `${websiteUrl}/tag/${slug}.md`),
+]
 
 // https://astro.build/config
 export default defineConfig({
@@ -94,6 +116,7 @@ export default defineConfig({
     }),
     sitemap({
       lastmod: new Date(),
+      customPages: markdownPages,
     }),
   ],
   vite: {
