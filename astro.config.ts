@@ -1,16 +1,16 @@
+import { readdirSync, readFileSync } from 'node:fs'
 import cloudflare from '@astrojs/cloudflare'
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig, fontProviders } from 'astro/config'
-import { readdirSync, readFileSync } from 'node:fs'
 import rehypeAutolinkHeadings, {
   type Options as RehypeAutolinkHeadingsOptions,
 } from 'rehype-autolink-headings'
 import rehypePrettyCode, { type Options as RehypePrettyCodeOptions } from 'rehype-pretty-code'
 import rehypeSlug from 'rehype-slug'
 import remarkGfm from 'remark-gfm'
-import { authorFullName, websiteUrl } from './src/lib/content.ts'
+import { websiteUrl } from './src/lib/content.ts'
 
 function listSlugs(dir: string): string[] {
   return readdirSync(dir)

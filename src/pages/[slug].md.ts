@@ -15,8 +15,14 @@ export const getStaticPaths: GetStaticPaths = async () => {
   ])
 
   return [
-    ...posts.map((entry) => ({ params: { slug: entry.id }, props: { type: 'post' as const, entry } })),
-    ...pages.map((entry) => ({ params: { slug: entry.id }, props: { type: 'page' as const, entry } })),
+    ...posts.map((entry) => ({
+      params: { slug: entry.id },
+      props: { type: 'post' as const, entry },
+    })),
+    ...pages.map((entry) => ({
+      params: { slug: entry.id },
+      props: { type: 'page' as const, entry },
+    })),
   ]
 }
 
