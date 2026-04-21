@@ -19,7 +19,7 @@
     "@astrojs/compiler-rs": "^0.1.6",
     "@astrojs/mdx": "^5.0.3",
     "@astrojs/sitemap": "^3.7.2",
-    "@clack/prompts": "^1.1.0",
+    "@clack/prompts": "^1.2.0",
     "@lucide/astro": "^1.7.0",
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.2.2",
