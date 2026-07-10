@@ -1,5 +1,6 @@
 import { readdirSync, readFileSync } from 'node:fs'
 import cloudflare from '@astrojs/cloudflare'
+import { unified } from '@astrojs/markdown-remark'
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
 import tailwindcss from '@tailwindcss/vite'
@@ -35,45 +36,13 @@ const markdownPages: string[] = [
 
 // https://astro.build/config
 export default defineConfig({
-  experimental: {
-    rustCompiler: true,
-  },
-  security: { csp: true },
-  fonts: [
-    {
-      provider: fontProviders.local(),
-      name: 'Mulish',
-      cssVariable: '--font-mulish',
-      display: 'optional',
-      options: {
-        variants: [
-          {
-            // Variable font — supports the full weight range (100–900)
-            weight: '100 900',
-            style: 'normal',
-            src: ['./src/assets/fonts/mulish-variable.woff2'],
-          },
-        ],
-      },
-    },
-  ],
-  site: websiteUrl,
-  output: 'static',
-  adapter: cloudflare({
-    // Uses the Cloudflare Image Resizing service.
-    imageService: 'cloudflare',
-    // sharp and satori (used in OG image generation) require Node.js APIs
-    // that are not compatible with Cloudflare's workerd runtime.
-    prerenderEnvironment: 'node',
-  }),
-  trailingSlash: 'never',
-  prefetch: true,
-  redirects: {
-    '/rss': '/rss.xml',
-  },
-  integrations: [
-    mdx({
-      syntaxHighlight: false,
+  // Keep previous HTML-aware whitespace handling (v7 defaults to JSX rules).
+  compressHTML: true,
+  // Stay on unified/remark/rehype for existing plugins (rehype-pretty-code, etc.).
+  // MDX inherits markdown.processor options in Astro 7.
+  markdown: {
+    processor: unified({
+      gfm: true,
       remarkPlugins: [remarkGfm],
       rehypePlugins: [
         rehypeSlug,
@@ -113,6 +82,44 @@ export default defineConfig({
           } satisfies RehypeAutolinkHeadingsOptions,
         ],
       ],
+    }),
+  },
+  security: { csp: true },
+  fonts: [
+    {
+      provider: fontProviders.local(),
+      name: 'Mulish',
+      cssVariable: '--font-mulish',
+      display: 'optional',
+      options: {
+        variants: [
+          {
+            // Variable font — supports the full weight range (100–900)
+            weight: '100 900',
+            style: 'normal',
+            src: ['./src/assets/fonts/mulish-variable.woff2'],
+          },
+        ],
+      },
+    },
+  ],
+  site: websiteUrl,
+  output: 'static',
+  adapter: cloudflare({
+    // Uses the Cloudflare Image Resizing service.
+    imageService: 'cloudflare',
+    // sharp and satori (used in OG image generation) require Node.js APIs
+    // that are not compatible with Cloudflare's workerd runtime.
+    prerenderEnvironment: 'node',
+  }),
+  trailingSlash: 'never',
+  prefetch: true,
+  redirects: {
+    '/rss': '/rss.xml',
+  },
+  integrations: [
+    mdx({
+      syntaxHighlight: false,
     }),
     sitemap({
       lastmod: new Date(),

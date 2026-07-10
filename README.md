@@ -17,4 +17,4 @@ I welcome any feedback, suggestions, and contributions to my blog. If you find a
 
 ### Contact
 
-If you have any questions or comments, feel free to contact me via [contact page](https://www.yagiz.co/contact) or [Twitter](https://twitter.com/yagiznizipli). I'm always happy to chat with fellow developers and bloggers.
+If you have any questions or comments, feel free to contact me via [contact page](https://www.yagiz.co/contact) or [X](https://x.com/yagiznizipli). I'm always happy to chat with fellow developers and bloggers.

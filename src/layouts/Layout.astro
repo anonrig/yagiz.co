@@ -60,7 +60,7 @@ const pageTitle = title ? `${title} - ${websiteTitle}` : websiteTitle
     {article?.authors?.map((author) => <meta property="article:author" content={author} />)}
     {article?.tags?.map((tag) => <meta property="article:tag" content={tag} />)}
 
-    <!-- Twitter -->
+    <!-- X (Twitter Cards protocol) -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:creator" content={`@${twitterUsername}`} />
     <meta name="twitter:title" content={title ?? websiteTitle} />

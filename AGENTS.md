@@ -19,7 +19,7 @@ type checking, and the full Astro build in one step.
 
 ## Stack
 
-- **Framework**: Astro 6 — static output, deployed to Cloudflare Workers via `@astrojs/cloudflare` v13
+- **Framework**: Astro 7 — static output, deployed to Cloudflare Workers via `@astrojs/cloudflare` v14
 - **Styling**: Tailwind CSS v4 via `@tailwindcss/vite` (no `tailwind.config` file needed for basic use)
 - **Fonts**: Mulish variable font via `fontProviders.local()` — file lives at `src/assets/fonts/mulish-variable.woff2`
 - **Linter/formatter**: Biome v2
@@ -33,21 +33,27 @@ type checking, and the full Astro build in one step.
 
 ## TypeScript
 
-- Use the latest TypeScript (`^6.0.0`). Astro and its ecosystem declare `typescript@^5.0.0`
-  as a peer dependency, but TypeScript 6 works in practice — the peer warning is cosmetic.
+- Use TypeScript 6 (`^6.0.0`). TypeScript 7 is available but breaks `@astrojs/check`
+  (language-server incompatibility). Stay on TS 6 until Astro check supports TS 7.
+  Peer warnings about `typescript@^5` are cosmetic.
 
 ## Astro-specific
 
 - **Content config**: lives at `src/content.config.ts` (NOT `src/content/config.ts` —
   that was the Astro v4 location). All collections must use loaders (e.g. `glob()`).
 - **`z` (Zod)**: import from `astro/zod`, not from `astro:content`.
-- **`experimental.contentIntellisense`**: removed in Astro 6 — do not add it back.
+- **Rust compiler**: default in Astro 7 — do not set `experimental.rustCompiler`.
+- **Markdown/MDX plugins**: use `markdown.processor: unified({...})` from
+  `@astrojs/markdown-remark`. Plugins on `mdx({ remarkPlugins, rehypePlugins })` are
+  deprecated. This project stays on unified (not Sätteri) for rehype-pretty-code, etc.
+- **`compressHTML`**: Astro 7 defaults to `'jsx'` whitespace rules; this project sets
+  `compressHTML: true` to keep previous HTML-aware spacing.
 
-## Cloudflare adapter (v13)
+## Cloudflare adapter (v14)
 
-These APIs were **removed** in `@astrojs/cloudflare` v13 / Astro 6. Do not use them:
+These APIs were **removed** in `@astrojs/cloudflare` v13+ / Astro 6+. Do not use them:
 
-| Old (v4/v5) | New (v13 / Astro 6) |
+| Old (v4/v5) | New (v13+ / Astro 6+) |
 |---|---|
 | `Astro.locals.runtime.env` | `import { env } from "cloudflare:workers"` |
 | `Astro.locals.runtime.cf` | `Astro.request.cf` |
