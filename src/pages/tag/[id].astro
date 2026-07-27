@@ -29,7 +29,7 @@ posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
 
 <Layout title={tag.data.title} description={tag.data.description}>
   <section>
-    <Container size="tight" class="-mt-6 flex flex-col gap-8 text-center">
+    <Container size="tight" class="mx-auto -mt-6 flex flex-col gap-8 px-[4vw] text-center">
       <h1 class="text-2xl font-extrabold text-orange-400">#{tag.data.title}</h1>
 
       <div class="leading-6 dark:text-white">{tag.data.description}</div>
@@ -49,10 +49,10 @@ posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
       </div>
     </Container>
 
-    <div class="flex grow py-14">
+    <div class="py-14">
       <Container
         size="tight"
-        class="divide-y divide-slate-200 dark:divide-neutral-700"
+        class="mx-auto divide-y divide-slate-200 px-[4vw] dark:divide-neutral-700"
       >
         {posts.map((post) => <BlogRow {post} />)}
       </Container>
