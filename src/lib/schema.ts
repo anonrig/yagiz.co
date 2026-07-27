@@ -92,7 +92,7 @@ export function blogPostingJsonLd(
       websiteJsonLd(),
       {
         '@type': 'BlogPosting',
-        '@id': url,
+        '@id': `${url}#blogposting`,
         mainEntityOfPage: {
           '@type': 'WebPage',
           '@id': url,

@@ -50,6 +50,7 @@ export const GET: APIRoute = async () => {
     '## Full content',
     '',
     `- [Complete markdown dump](${websiteUrl}/llms-full.txt): Every published post and key page concatenated for single-fetch ingestion`,
+    '- HTML pages also negotiate `Accept: text/markdown` and advertise markdown via HTTP `Link: rel=alternate`',
     '',
     '## Optional',
     '',
