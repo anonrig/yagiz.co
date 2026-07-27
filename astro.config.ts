@@ -106,8 +106,10 @@ export default defineConfig({
   site: websiteUrl,
   output: 'static',
   adapter: cloudflare({
-    // Uses the Cloudflare Image Resizing service.
-    imageService: 'cloudflare',
+    // Optimize images at build time (sharp). Cloudflare Image Resizing
+    // (`/cdn-cgi/image/...`) 404s on workers.dev preview URLs; compile emits
+    // plain `/_astro/*` assets that work on preview and production.
+    imageService: 'compile',
     // sharp and satori (used in OG image generation) require Node.js APIs
     // that are not compatible with Cloudflare's workerd runtime.
     prerenderEnvironment: 'node',
