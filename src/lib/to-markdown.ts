@@ -13,8 +13,12 @@ const ATTRIBUTION = [
 ].join('\n')
 
 function escapeYaml(value: string): string {
-  if (/[:#{}[\],&*?|>!%@`]/.test(value) || value.includes('\n') || value.includes('"')) {
-    return `"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`
+  if (/[:#{}[\],&*?|>!%@`]/.test(value) || /[\n\r"]/.test(value) || value.includes('\\')) {
+    return `"${value
+      .replace(/\\/g, '\\\\')
+      .replace(/"/g, '\\"')
+      .replace(/\r/g, '\\r')
+      .replace(/\n/g, '\\n')}"`
   }
   return value
 }

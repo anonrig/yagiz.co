@@ -1,4 +1,3 @@
-import { readdirSync, readFileSync } from 'node:fs'
 import cloudflare from '@astrojs/cloudflare'
 import { unified } from '@astrojs/markdown-remark'
 import mdx from '@astrojs/mdx'
@@ -13,34 +12,8 @@ import rehypeSlug from 'rehype-slug'
 import remarkGfm from 'remark-gfm'
 import { websiteUrl } from './src/lib/content.ts'
 
-function listSlugs(dir: string): string[] {
-  return readdirSync(dir)
-    .filter((f) => !f.startsWith('_'))
-    .map((f) => f.replace(/\.mdx?$/, ''))
-}
-
-function publishedBlogSlugs(): string[] {
-  const dir = './src/content/blog'
-  return readdirSync(dir)
-    .filter((f) => !f.startsWith('_'))
-    .filter((f) => readFileSync(`${dir}/${f}`, 'utf-8').includes('status: published'))
-    .map((f) => f.replace(/\.mdx?$/, ''))
-}
-
-const markdownPages: string[] = [
-  `${websiteUrl}/index.md`,
-  ...publishedBlogSlugs().map((slug) => `${websiteUrl}/${slug}.md`),
-  ...listSlugs('./src/content/pages').map((slug) => `${websiteUrl}/${slug}.md`),
-  ...listSlugs('./src/content/tags').map((slug) => `${websiteUrl}/tag/${slug}.md`),
-]
-
 function isMarkdownOrLlmsAsset(page: string): boolean {
-  return (
-    page.endsWith('.md') ||
-    page.endsWith('/llms.txt') ||
-    page.endsWith('/llms-full.txt') ||
-    markdownPages.includes(page)
-  )
+  return page.endsWith('.md') || page.endsWith('/llms.txt') || page.endsWith('/llms-full.txt')
 }
 
 // https://astro.build/config
