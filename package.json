@@ -15,17 +15,17 @@
     "presentation": "marp --allow-local-files -s ./presentations"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^14.1.2",
+    "@astrojs/cloudflare": "^14.1.5",
     "@astrojs/compiler-rs": "^0.3.1",
     "@astrojs/markdown-remark": "^7.2.1",
     "@astrojs/markdown-satteri": "^0.3.3",
-    "@astrojs/mdx": "^7.0.2",
+    "@astrojs/mdx": "^7.0.4",
     "@astrojs/sitemap": "^3.7.3",
     "@clack/prompts": "^1.7.0",
     "@lucide/astro": "^1.24.0",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.2",
-    "astro": "^7.0.7",
+    "astro": "^7.1.4",
     "handlebars": "^4.7.9",
     "mjml": "^5.4.0",
     "node-mailjet": "^6.0.11",
@@ -36,10 +36,10 @@
     "satori": "^0.26.0",
     "sharp": "^0.35.3",
     "tailwindcss": "^4.3.2",
-    "wrangler": "^4.110.0"
+    "wrangler": "^4.114.0"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.9",
+    "@astrojs/check": "^0.9.10",
     "@astrojs/rss": "^4.0.19",
     "@biomejs/biome": "^2.5.3",
     "@marp-team/marp-cli": "^4.4.1",
