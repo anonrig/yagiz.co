@@ -3,7 +3,8 @@ compatibility_date = "2026-03-21"
 compatibility_flags = [ "nodejs_compat" ]
 send_metrics = false
 preview_urls = true
-main = "@astrojs/cloudflare/entrypoints/server"
+# Custom worker wraps Astro's handler for Accept negotiation + Link headers.
+main = "./src/worker.ts"
 
 [placement]
 mode = "smart"
@@ -21,6 +22,8 @@ database_id = "33ad2d37-f48c-4033-86fd-81c7ade04178"
 binding = "ASSETS"
 directory = "./dist"
 not_found_handling = "404-page"
+# Run the Worker before asset short-circuit so Accept negotiation can run on static HTML.
+run_worker_first = true
 
 [observability]
 enabled = true
