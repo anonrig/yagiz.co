@@ -174,7 +174,6 @@ harness moved onto the C++ amalgamation).
 | [#1142][issue-1142] | `set_hostname` silently accepted `#` / `?` and truncated the host — fixed by full rollback on host parse failure ([#1169][pr-1169]). |
 | [#1127][issue-1127] | Unchecked `simdutf` result in IDNA `to_unicode` — addressed in subsequent ada-idna syncs. |
 | [#1098][issue-1098] | ABI breakage report from Debian packaging of 3.4.3→3.4.4 — led to restoring `set_scheme` export and adding ABI CI ([#1099][pr-1099]). |
-| [#1192][issue-1192] | Node.js asked for a tagged release that includes the IDNA punycode `xn--` fix (labels that round-trip under ICU but failed to re-parse under 3.4.4, aborting on setter re-parse). That fix has been on `main` since the idna **v0.5.4** sync ([#1147][pr-1147]). |
 
 ### Spec / correctness fixes (selected)
 
@@ -211,8 +210,7 @@ untrusted URL strings, set `ada::set_max_input_length` to something appropriate
 for your service.
 
 Thanks to everyone who filed issues, sent fuzz crashes, and opened PRs —
-especially the Node.js team for [#1192][issue-1192] and Debian packaging for the
-ABI report that sharpened our export/CI story.
+especially Debian packaging for the ABI report that sharpened our export/CI story.
 
 Full changelog: [v3.4.4...v4.0.0][diff]
 
@@ -221,7 +219,6 @@ Full changelog: [v3.4.4...v4.0.0][diff]
 [issue-1098]: https://github.com/ada-url/ada/issues/1098
 [issue-1127]: https://github.com/ada-url/ada/issues/1127
 [issue-1142]: https://github.com/ada-url/ada/issues/1142
-[issue-1192]: https://github.com/ada-url/ada/issues/1192
 [pr-1091]: https://github.com/ada-url/ada/pull/1091
 [pr-1099]: https://github.com/ada-url/ada/pull/1099
 [pr-1102]: https://github.com/ada-url/ada/pull/1102
@@ -236,7 +233,6 @@ Full changelog: [v3.4.4...v4.0.0][diff]
 [pr-1136]: https://github.com/ada-url/ada/pull/1136
 [pr-1139]: https://github.com/ada-url/ada/pull/1139
 [pr-1145]: https://github.com/ada-url/ada/pull/1145
-[pr-1147]: https://github.com/ada-url/ada/pull/1147
 [pr-1148]: https://github.com/ada-url/ada/pull/1148
 [pr-1156]: https://github.com/ada-url/ada/pull/1156
 [pr-1157]: https://github.com/ada-url/ada/pull/1157
