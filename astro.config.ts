@@ -34,6 +34,15 @@ const markdownPages: string[] = [
   ...listSlugs('./src/content/tags').map((slug) => `${websiteUrl}/tag/${slug}.md`),
 ]
 
+function isMarkdownOrLlmsAsset(page: string): boolean {
+  return (
+    page.endsWith('.md') ||
+    page.endsWith('/llms.txt') ||
+    page.endsWith('/llms-full.txt') ||
+    markdownPages.includes(page)
+  )
+}
+
 // https://astro.build/config
 export default defineConfig({
   // Keep previous HTML-aware whitespace handling (v7 defaults to JSX rules).
@@ -125,7 +134,8 @@ export default defineConfig({
     }),
     sitemap({
       lastmod: new Date(),
-      customPages: markdownPages,
+      // Markdown / llms endpoints are for agents; keep them out of the HTML sitemap.
+      filter: (page) => !isMarkdownOrLlmsAsset(page),
     }),
   ],
   vite: {

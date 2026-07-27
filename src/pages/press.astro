@@ -1,14 +1,32 @@
 ---
 import { getEntry } from 'astro:content'
+import MarkdownLink from '@/components/MarkdownLink.astro'
 import Page from '@/components/Page.astro'
 import Layout from '@/layouts/Layout.astro'
+import { websiteUrl } from '@/lib/content'
+import { webPageJsonLd } from '@/lib/schema'
 
 const page = await getEntry('pages', 'press')
 
 if (!page) {
   throw new Error('Page not found')
 }
+
+const markdownUrl = `${websiteUrl}/press.md`
 ---
-<Layout title={page.data.title} description={page.data.description}>
+<Layout
+  title={page.data.title}
+  description={page.data.description}
+  markdownUrl={markdownUrl}
+  jsonLd={webPageJsonLd({
+    path: '/press',
+    title: page.data.title,
+    description: page.data.description,
+    type: 'CollectionPage',
+  })}
+>
   <Page {page} />
+  <div class="mx-auto mt-8 max-w-[calc(750px+8vw)] px-[4vw] text-center">
+    <MarkdownLink href={markdownUrl} />
+  </div>
 </Layout>

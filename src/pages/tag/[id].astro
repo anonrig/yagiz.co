@@ -3,8 +3,11 @@ import type { CollectionEntry } from 'astro:content'
 import { getCollection } from 'astro:content'
 import type { GetStaticPaths } from 'astro'
 import BlogRow from '@/components/BlogRow.astro'
+import MarkdownLink from '@/components/MarkdownLink.astro'
 import Container from '@/components/ui/Container.astro'
 import Layout from '@/layouts/Layout.astro'
+import { websiteUrl } from '@/lib/content'
+import { tagCollectionJsonLd } from '@/lib/schema'
 
 interface Props {
   tag: CollectionEntry<'tags'>
@@ -25,9 +28,15 @@ const posts = await getCollection(
   ({ data }) => data.status === 'published' && data.tag.id === tag.id,
 )
 posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+const markdownUrl = `${websiteUrl}/tag/${tag.id}.md`
 ---
 
-<Layout title={tag.data.title} description={tag.data.description}>
+<Layout
+  title={tag.data.title}
+  description={tag.data.description}
+  markdownUrl={markdownUrl}
+  jsonLd={tagCollectionJsonLd(tag, posts)}
+>
   <section>
     <Container size="tight" class="mx-auto -mt-6 flex flex-col gap-8 px-[4vw] text-center">
       <h1 class="text-2xl font-extrabold text-orange-400">#{tag.data.title}</h1>
@@ -47,6 +56,8 @@ posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
           ))
         }
       </div>
+
+      <MarkdownLink href={markdownUrl} />
     </Container>
 
     <div class="py-14">

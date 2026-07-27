@@ -5,13 +5,15 @@ import type { GetStaticPaths } from 'astro'
 import BlogFooter from '@/components/BlogFooter.astro'
 import BlogRow from '@/components/BlogRow.astro'
 import BlogStickyHeader from '@/components/BlogStickyHeader.astro'
+import MarkdownLink from '@/components/MarkdownLink.astro'
 import { components } from '@/components/mdx'
 import Container from '@/components/ui/Container.astro'
 import Figure from '@/components/ui/Figure.astro'
 import Heading from '@/components/ui/Heading.astro'
 import Prose from '@/components/ui/Prose.astro'
 import Layout from '@/layouts/Layout.astro'
-import { authorFullName } from '@/lib/content'
+import { authorFullName, websiteUrl } from '@/lib/content'
+import { blogPostingJsonLd } from '@/lib/schema'
 
 interface Props {
   post: CollectionEntry<'blog'>
@@ -43,44 +45,22 @@ const suggestions = [posts.at(index - 2), posts.at(index - 1)].filter(
   Boolean,
 ) as CollectionEntry<'blog'>[]
 const publishedTime = post.data.date.toISOString().split('T')[0]
-const modifiedTime = new Date().toISOString().split('T')[0]
-
-const structuredData = {
-  '@context': 'https://schema.org',
-  '@type': 'Article',
-  mainEntityOfPage: {
-    '@type': 'WebPage',
-    '@id': `${Astro.url.origin}/${post.id}`,
-  },
-  headline: post.data.title,
-  image: [`${Astro.url.origin}/${post.id}/opengraph-image.png`],
-  datePublished: publishedTime,
-  dateModified: modifiedTime,
-  author: {
-    '@type': 'Person',
-    name: authorFullName,
-  },
-}
+const markdownUrl = `${websiteUrl}/${post.id}.md`
 ---
 
 <Layout
   title={post.data.title}
   description={post.data.description}
   image={`${Astro.url.origin}/${post.id}/opengraph-image.png`}
+  markdownUrl={markdownUrl}
+  jsonLd={blogPostingJsonLd(post, tag)}
   article={{
     authors: [authorFullName],
     publishedTime,
-    modifiedTime,
+    modifiedTime: publishedTime,
     tags: [tag.data.title],
   }}
 >
-  <Fragment slot="head">
-    <script
-      type="application/ld+json"
-      set:html={JSON.stringify(structuredData)}
-      is:inline
-    />
-  </Fragment>
   <article>
     <header class="mb-6 grid grid-cols-canvas text-center">
       <div
@@ -108,6 +88,9 @@ const structuredData = {
             {tag.data.title}
           </a>
         </span>
+      </div>
+      <div class="col-main mb-4">
+        <MarkdownLink href={markdownUrl} />
       </div>
 
       <Heading>{post.data.title}</Heading>
