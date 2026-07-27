@@ -1,0 +1,259 @@
+---
+title: 'Release of Ada v4.0'
+description: >-
+  Ada 4.0 is faster on the common path, ships a much smaller binary, and hardens
+  URL parsing with max-length limits, ABI soname 4, and a wave of correctness fixes.
+date: '2026-07-27'
+tag: performance
+status: published
+image:
+  src: ada-url-parser.png
+  alt: Ada URL Parser is available on github.com/ada-url/ada
+---
+
+Ada is the fastest WHATWG-compliant URL parser in the world.
+It powers URL handling in Node.js, Cloudflare Workers, Redpanda, Kong, Telegram,
+Datadog, ClickHouse, and more. We are announcing **Ada v4.0.0** — the first major
+release since [v3.4.4][v344] (23 March 2026).
+
+Since that release, [main picked up 79 commits][diff]. This release is about three
+things: speed on the common path, a materially smaller IDNA/binary footprint, and
+hardening against incorrect and unsafe inputs. Shared-library consumers should
+plan for the soname bump: `libada.so.3` → `libada.so.4`.
+
+All numbers below were measured on an **Apple M5 Max** (macOS 26.5), Release builds
+(`-DCMAKE_BUILD_TYPE=Release -DADA_BENCHMARKS=ON`), five Google Benchmark
+repetitions (means). Same machine, same flags, same datasets for v3.4.4 and
+current `main` (`16a57723`).
+
+## Performance
+
+### Large realistic dataset (`benchdata`, ~100k URLs)
+
+| Benchmark | v3.4.4 | v4.0.0 | Speedup |
+| --- | ---: | ---: | ---: |
+| `ada::url` parse + href | 159.3 ns/URL | 128.8 ns/URL | **1.24×** (−19%) |
+| `url_aggregator` parse + href | 98.5 ns/URL | 81.5 ns/URL | **1.21×** (−17%) |
+| `ada::can_parse` | 58.5 ns/URL | 28.1 ns/URL | **2.08×** (−52%) |
+
+Throughput on this corpus is about **6.3M → 7.8M URLs/s** for `ada::url`,
+**10.2M → 12.3M URLs/s** for `url_aggregator`, and **17.1M → 35.6M URLs/s** for
+`can_parse`.
+
+### Small “top sites” set (`bench`)
+
+| Benchmark | v3.4.4 | v4.0.0 | Speedup |
+| --- | ---: | ---: | ---: |
+| `ada::url` | 164.3 ns/URL | 110.2 ns/URL | **1.49×** (−33%) |
+| `url_aggregator` | 98.2 ns/URL | 74.6 ns/URL | **1.32×** (−24%) |
+| `ada::can_parse` | 64.2 ns/URL | 39.9 ns/URL | **1.61×** (−38%) |
+
+### URLSearchParams and hosts
+
+| Benchmark | v3.4.4 | v4.0.0 | Speedup |
+| --- | ---: | ---: | ---: |
+| `url_search_params` (Indeed fixtures) | 6.40 µs | 3.60 µs | **1.78×** (−44%) |
+| IPv4 non-decimal (`ada::url`) | 79.8 ns | 74.2 ns | **1.08×** (−7%) |
+| DNS-style hosts (`ada::url`) | 150.3 ns | 127.6 ns | **1.18×** (−15%) |
+
+The already-tuned pure-decimal IPv4 fast path is roughly unchanged after the
+shared IP parser refactor. The wins show up on the general IPv4 path, host
+parsing overall, search-params decoding, absolute `http(s)` parsing, and
+especially `can_parse`.
+
+### What got faster
+
+- **`can_parse` fast path** ([#1106][pr-1106], follow-ups [#1111][pr-1111],
+  [#1118][pr-1118], [#1119][pr-1119], [#1189][pr-1189]): validation without
+  constructing a full URL object, with size-limit and IDNA-expansion awareness
+  so it stays equivalent to `parse(...).has_value()`.
+- **Absolute `http`/`https` parsing** ([#1175][pr-1175]): `try_parse_simple_absolute`,
+  a table-driven single-pass path for already-normalized absolute URLs (clean
+  ASCII host, no credentials/port/IPv4/IDNA, no messy path segments), shared by
+  `url` and `url_aggregator`. Also a faster `get_href` for the common
+  special-scheme case.
+- **`url_search_params` form-urlencoded decoding** ([#1178][pr-1178]): single-pass
+  `+` / percent decoding, reserved capacity, fewer intermediate strings.
+- **Shared IPv4/IPv6 parsers** ([#1179][pr-1179]): one implementation for both URL
+  types, hand-rolled number parsers, LUT-backed serialization, less duplication.
+- **ada-idna** updates through v0.6.0: compressed tables, safer validation, and
+  better throughput on IDNA-heavy hosts.
+
+## Bundle size
+
+IDNA table compression is the main story: `src/ada_idna.cpp` dropped from
+**683 KiB → 400 KiB** (−41%). That flows through to every packaging form we ship.
+
+| Artifact (Release, Apple Clang) | v3.4.4 | v4.0.0 | Δ |
+| --- | ---: | ---: | ---: |
+| Amalgamated `ada.cpp` | 956 KiB | 706 KiB | **−26%** |
+| Amalgamated `ada.h` | 404 KiB | 415 KiB | +3% |
+| `ada.h` + `ada.cpp` zip | 253 KiB | 248 KiB | −2% |
+| Static `libada.a` | 782 KiB | 618 KiB | **−21%** |
+| Shared `libada` (stripped `.dylib`) | 616 KiB | 427 KiB | **−31%** |
+| `ada.cpp.o` `__TEXT` | 579 KiB | 393 KiB | **−32%** |
+
+Node.js and other single-header consumers get a noticeably smaller drop-in.
+Distro shared libraries get a matching soname bump and a smaller `.so`/`.dylib`.
+
+## Breaking changes
+
+### Shared library soname: `libada.so.3` → `libada.so.4`
+
+`ADA_LIB_SOVERSION` moved from `3` to `4`. Downstream packages that link the
+shared library must rebuild against 4.0.0 (or install a package that provides
+`libada.so.4`). Static linking and the amalgamated `ada.h` / `ada.cpp` pair are
+unaffected beyond the usual recompile.
+
+This follows the ABI discipline we added after [Debian packaging feedback on
+v3.4.4][issue-1098]: restore exported symbols when needed, keep `abidiff` in CI
+([#1099][pr-1099]), and bump the soname when the ABI intentionally changes.
+
+### Configurable maximum URL length
+
+Parsing and setters now enforce a configurable maximum on both the raw input and
+the **normalized href**, including percent-encoding expansion ([#1126][pr-1126]):
+
+```cpp
+ada::set_max_input_length(2048);           // bytes
+auto url = ada::parse("http://example.com/" + std::string(2048, 'a'));
+assert(!url);                              // normalized form too long
+
+uint32_t limit = ada::get_max_input_length();
+size_t n = url->get_href_size();           // length without allocating
+```
+
+The default remains ~4 GB (`UINT32_MAX`), so most applications see no behavior
+change. If you embed Ada in a service that accepts untrusted URL strings, set a
+tighter limit. C API: `ada_set_max_input_length` / `ada_get_max_input_length`.
+
+### Correctness fixes that reject previously accepted bad input
+
+Several fixes change results for inputs that should never have succeeded. If you
+were accidentally relying on the old behavior, you will see parse/setter failures
+instead of silently wrong URLs:
+
+- **`set_hostname` / `set_host` no longer keep a partial host** when parsing
+  fails — full rollback ([#1169][pr-1169]), fixing [#1142][issue-1142]
+  (`set_hostname("sneaky.com#legit.org")` and `?` variants).
+- Hex IPv4 pieces are bounded by **value**, not digit count ([#1185][pr-1185]).
+- No-scheme state no longer accepts arbitrary input that merely contains a
+  fragment ([#1186][pr-1186]).
+- URLPattern / IDNA / file-scheme / Windows-drive and related edge cases listed
+  under bug fixes below.
+
+### C API lifetime documentation
+
+`ada_string` values from getters are borrowed views into the `ada_url` instance.
+They are invalidated by any mutating `ada_set_*` / `ada_clear_*` call
+([#1091][pr-1091]). This was always true; 4.0.0 documents it explicitly. Prefer
+`ada_owned_string` getters (e.g. `ada_get_origin`) when you need a stable copy.
+
+## Security and hardening
+
+- **URLPattern tokenizer DoS on malformed UTF-8** ([#1125][pr-1125]): malformed
+  sequences always advance the cursor; strict policy errors, lenient policy emits
+  an invalid-char token.
+- **Max input length** ([#1126][pr-1126]): defense in depth against huge or
+  expansion-amplified URLs.
+- **Component offset wraparound** ([#1123][pr-1123]): unsigned wraparound
+  eliminated when updating URL component offsets.
+- **IDNA Bidi rules** ([#1136][pr-1136], [#1145][pr-1145]): LTR labels must end
+  with an allowed class; first-character Bidi rule enforced.
+- **Empty DNS length check UB** ([#1109][pr-1109]).
+
+Fuzzing coverage also grew (serializers harness, stronger invariants, C API
+harness moved onto the C++ amalgamation).
+
+## Bug reports addressed since v3.4.4
+
+### Issues
+
+| Issue | Summary |
+| --- | --- |
+| [#1142][issue-1142] | `set_hostname` silently accepted `#` / `?` and truncated the host — fixed by full rollback on host parse failure ([#1169][pr-1169]). |
+| [#1127][issue-1127] | Unchecked `simdutf` result in IDNA `to_unicode` — addressed in subsequent ada-idna syncs. |
+| [#1098][issue-1098] | ABI breakage report from Debian packaging of 3.4.3→3.4.4 — led to restoring `set_scheme` export and adding ABI CI ([#1099][pr-1099]). |
+| [#1192][issue-1192] | Node.js asked for a tagged release that includes the IDNA punycode `xn--` fix (labels that round-trip under ICU but failed to re-parse under 3.4.4, aborting on setter re-parse). That fix has been on `main` since the idna **v0.5.4** sync ([#1147][pr-1147]). |
+
+### Spec / correctness fixes (selected)
+
+- [#1186][pr-1186] — no-scheme + fragment false accepts
+- [#1185][pr-1185] — hex IPv4 overflow by digit count
+- [#1181][pr-1181] — `set_host` dash-dot / port path
+- [#1167][pr-1167] — hostname canonicalize fast path skipped IPv4/IDNA
+- [#1166][pr-1166] — explicit port `0` preserved across `set_protocol` on non-special schemes
+- [#1168][pr-1168] — leading-zero ports in canonicalize
+- [#1157][pr-1157] — empty host on non-special URL without authority
+- [#1156][pr-1156] — Windows drive letter must be exactly two code points
+- [#1139][pr-1139] — `set_protocol` slow-path return consistency
+- URLPattern: [#1187][pr-1187], [#1188][pr-1188], [#1190][pr-1190], [#1191][pr-1191],
+  [#1171][pr-1171], [#1172][pr-1172], [#1148][pr-1148]
+
+Web Platform Tests were rolled forward throughout the cycle. We also listed an
+official **Kotlin** client alongside the other language bindings ([#1102][pr-1102]).
+
+## Try it
+
+```bash
+git clone https://github.com/ada-url/ada
+cd ada
+cmake -B build -DADA_BENCHMARKS=ON -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+./build/benchmarks/benchdata --benchmark_filter=AdaURL
+```
+
+Single-header consumers can amalgamate (`python3 singleheader/amalgamate.py`) or
+grab the GitHub release assets (`ada.h` / `ada.cpp` / `singleheader.zip`).
+
+If you ship Ada as a shared library, plan for **`libada.so.4`**. If you accept
+untrusted URL strings, set `ada::set_max_input_length` to something appropriate
+for your service.
+
+Thanks to everyone who filed issues, sent fuzz crashes, and opened PRs —
+especially the Node.js team for [#1192][issue-1192] and Debian packaging for the
+ABI report that sharpened our export/CI story.
+
+Full changelog: [v3.4.4...v4.0.0][diff]
+
+[v344]: https://github.com/ada-url/ada/releases/tag/v3.4.4
+[diff]: https://github.com/ada-url/ada/compare/v3.4.4...main
+[issue-1098]: https://github.com/ada-url/ada/issues/1098
+[issue-1127]: https://github.com/ada-url/ada/issues/1127
+[issue-1142]: https://github.com/ada-url/ada/issues/1142
+[issue-1192]: https://github.com/ada-url/ada/issues/1192
+[pr-1091]: https://github.com/ada-url/ada/pull/1091
+[pr-1099]: https://github.com/ada-url/ada/pull/1099
+[pr-1102]: https://github.com/ada-url/ada/pull/1102
+[pr-1106]: https://github.com/ada-url/ada/pull/1106
+[pr-1109]: https://github.com/ada-url/ada/pull/1109
+[pr-1111]: https://github.com/ada-url/ada/pull/1111
+[pr-1118]: https://github.com/ada-url/ada/pull/1118
+[pr-1119]: https://github.com/ada-url/ada/pull/1119
+[pr-1123]: https://github.com/ada-url/ada/pull/1123
+[pr-1125]: https://github.com/ada-url/ada/pull/1125
+[pr-1126]: https://github.com/ada-url/ada/pull/1126
+[pr-1136]: https://github.com/ada-url/ada/pull/1136
+[pr-1139]: https://github.com/ada-url/ada/pull/1139
+[pr-1145]: https://github.com/ada-url/ada/pull/1145
+[pr-1147]: https://github.com/ada-url/ada/pull/1147
+[pr-1148]: https://github.com/ada-url/ada/pull/1148
+[pr-1156]: https://github.com/ada-url/ada/pull/1156
+[pr-1157]: https://github.com/ada-url/ada/pull/1157
+[pr-1166]: https://github.com/ada-url/ada/pull/1166
+[pr-1167]: https://github.com/ada-url/ada/pull/1167
+[pr-1168]: https://github.com/ada-url/ada/pull/1168
+[pr-1169]: https://github.com/ada-url/ada/pull/1169
+[pr-1171]: https://github.com/ada-url/ada/pull/1171
+[pr-1172]: https://github.com/ada-url/ada/pull/1172
+[pr-1175]: https://github.com/ada-url/ada/pull/1175
+[pr-1178]: https://github.com/ada-url/ada/pull/1178
+[pr-1179]: https://github.com/ada-url/ada/pull/1179
+[pr-1181]: https://github.com/ada-url/ada/pull/1181
+[pr-1185]: https://github.com/ada-url/ada/pull/1185
+[pr-1186]: https://github.com/ada-url/ada/pull/1186
+[pr-1187]: https://github.com/ada-url/ada/pull/1187
+[pr-1188]: https://github.com/ada-url/ada/pull/1188
+[pr-1189]: https://github.com/ada-url/ada/pull/1189
+[pr-1190]: https://github.com/ada-url/ada/pull/1190
+[pr-1191]: https://github.com/ada-url/ada/pull/1191
