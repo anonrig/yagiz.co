@@ -1,3 +1,7 @@
-<div class="bg-[#f6f6f6] dark:bg-[#2f333c] px-2 py-4 rounded-md">
-  <table class="my-0"><slot /></table>
+<div class="bg-[#f6f6f6] dark:bg-[#2f333c] px-2 py-4 rounded-md overflow-x-auto">
+  <table
+    class="my-0 w-full [word-break:normal] [&_th]:whitespace-nowrap [&_td:first-child]:whitespace-nowrap [&_th]:align-top [&_td]:align-top"
+  >
+    <slot />
+  </table>
 </div>
