@@ -1,5 +1,9 @@
 User-agent: *
 Allow: /
 
+# LLM-oriented discovery
+# https://www.yagiz.co/llms.txt
+# https://www.yagiz.co/llms-full.txt
+
 Host: https://www.yagiz.co
 Sitemap: https://www.yagiz.co/sitemap-index.xml

@@ -3,9 +3,12 @@ import { Image } from 'astro:assets'
 import { getCollection } from 'astro:content'
 import familyImg from '@/assets/family.png'
 import BlogRow from '@/components/BlogRow.astro'
+import MarkdownLink from '@/components/MarkdownLink.astro'
 import SubscribeButton from '@/components/SubscribeButton.astro'
 import Container from '@/components/ui/Container.astro'
 import Layout from '@/layouts/Layout.astro'
+import { websiteUrl } from '@/lib/content'
+import { homeJsonLd } from '@/lib/schema'
 
 const posts = await getCollection('blog', ({ data }) => data.status === 'published')
 posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
@@ -19,9 +22,10 @@ const postsByYear = posts.reduce((acc, post) => {
 }, new Map<number, typeof posts>())
 
 const years = [...postsByYear.keys()]
+const markdownUrl = `${websiteUrl}/index.md`
 ---
 
-<Layout>
+<Layout markdownUrl={markdownUrl} jsonLd={homeJsonLd(posts)}>
     <div class="-mt-8 mx-auto mb-4 flex max-w-lg flex-col items-center text-center">
       <div class="relative mb-8">
         <Image
@@ -41,6 +45,7 @@ const years = [...postsByYear.keys()]
       </div>
 
       <SubscribeButton />
+      <MarkdownLink href={markdownUrl} class="mt-4" />
     </div>
   <div class="pt-8">
     {years.map((year) => (

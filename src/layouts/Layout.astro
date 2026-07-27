@@ -10,12 +10,15 @@ import {
   websiteDescription,
   websiteTitle,
 } from '@/lib/content'
+import type { JsonLd } from '@/lib/schema'
 import '@/styles/globals.css'
 
 interface Props {
   title?: string
   description?: string
   image?: string
+  markdownUrl?: string
+  jsonLd?: JsonLd | JsonLd[]
   article?: {
     authors?: string[]
     publishedTime?: string
@@ -28,10 +31,13 @@ const {
   title,
   description = websiteDescription,
   image = `${Astro.url.origin}/opengraph-image.png`,
+  markdownUrl,
+  jsonLd,
   article,
 } = Astro.props
 
 const pageTitle = title ? `${title} - ${websiteTitle}` : websiteTitle
+const jsonLdDocuments = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : []
 ---
 
 <html lang="en" class="bg-white text-black dark:bg-white-reversed">
@@ -91,8 +97,28 @@ const pageTitle = title ? `${title} - ${websiteTitle}` : websiteTitle
       type="image/png"
       sizes="180x180"
     />
+    {
+      markdownUrl && (
+        <link
+          rel="alternate"
+          type="text/markdown"
+          title="Markdown"
+          href={markdownUrl}
+        />
+      )
+    }
+    {
+      jsonLdDocuments.map((document) => (
+        <script
+          type="application/ld+json"
+          set:html={JSON.stringify(document)}
+          is:inline
+        />
+      ))
+    }
     <slot name="head" />
     <link rel="alternate" type="application/rss+xml" title={websiteTitle} href={new URL("/rss.xml", Astro.site)} />
+    <link rel="alternate" type="text/plain" title="llms.txt" href={new URL("/llms.txt", Astro.site)} />
   </head>
   <body>
     <a
