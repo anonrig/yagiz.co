@@ -57,6 +57,9 @@
       "puppeteer",
       "sharp",
       "workerd"
-    ]
+    ],
+    "overrides": {
+      "@cloudflare/vite-plugin": "^1.53.1"
+    }
   }
 }

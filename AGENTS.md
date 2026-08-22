@@ -57,6 +57,9 @@ must include the LLM surfaces: `/llms.txt`, `/llms-full.txt`, `Accept: text/mark
   are cosmetic.
 - Stay on `@astrojs/compiler-rs` 0.3.2. Astro 7.2.4 still depends on `^0.3.2`;
   forcing 0.4.0 via a pnpm override broke Workers Builds.
+- Keep the `@cloudflare/vite-plugin` override at `^1.53.1` so `astro dev` and
+  `wrangler preview` share Wrangler 4.125's Miniflare 5 / workerd runtime.
+  `@astrojs/cloudflare` 14.2.3 otherwise resolves vite-plugin 1.47 (Miniflare 4).
 
 ## Astro-specific
 
