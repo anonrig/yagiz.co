@@ -1,0 +1,815 @@
+---
+title: 'Eliminating branches in C++ loops'
+description: >-
+  A for loop that returns false from a branch and true at the end is easy
+  to read, but the branch can be expensive. In this post I show how to
+  remove it with bitwise operations, a 256-byte table, SWAR, and NEON,
+  and then apply the same ideas to UTF-16 validation.
+date: '2026-08-22'
+tag: performance
+status: published
+---
+
+Suppose you want to check whether a string is made entirely of ASCII
+lowercase letters. It is a common check in parsers. In [Ada][ada] we do
+this kind of classification constantly for URL characters: is this a
+hex digit, an unreserved character, a forbidden host code point?
+
+A reasonable function might look as follows.
+
+```cpp title="The obvious validating loop"
+bool is_ascii_lowercase(std::string_view input) {
+  for (unsigned char c : input) {
+    if (c < 'a' || c > 'z') {
+      return false;
+    }
+  }
+  return true;
+}
+```
+
+If any byte falls outside `a-z`, we return `false`. If the loop
+finishes, we return `true`. Importantly, this function exits as soon as
+a bad character is found.
+
+If we expect that almost every input is valid, that early `return` can
+be expensive. The CPU guesses which side of the `if` will run. When it
+guesses wrong, you pay a pipeline flush. `||` and `&&` make it worse
+because they short-circuit: the second compare is itself a branch.
+
+[Daniel Lemire][lemire] has a [post][escaping] on a similar problem:
+checking whether a JSON string needs escaping. The structure is the
+same. A loop, a branch, `return true` at the end. The rest of this
+post follows the same ladder he uses there: scan the whole string,
+replace the compare with a table, then do eight or sixteen bytes at
+once.
+
+Always cast the byte to `unsigned char` (or `uint8_t`) before you
+classify it. A plain `char` may be signed, and a signed value above
+127 can become a negative index or break the range check.
+
+## Scan the whole string
+
+If we expect that no bad character will be found, we can always scan
+the whole input. That lets the compiler try other optimizations. In
+particular, it is more likely to autovectorize the loop: to compile it
+using SIMD instructions on its own. Daniel calls this version
+branchless, because it does not branch out of the loop.
+
+```cpp title="Branchless accumulation"
+bool is_ascii_lowercase(std::string_view input) {
+  bool ok = true;
+  for (unsigned char c : input) {
+    ok &= (c >= 'a') & (c <= 'z');
+  }
+  return ok;
+}
+```
+
+`&` is not `&&`. Bitwise AND always evaluates both sides, so there is
+no short-circuit branch. The loop body is load, compare, compare, and,
+store. After the last byte we return the flag.
+
+I prefer the dual form when I am looking for problems rather than
+confirming that everything is valid. Accumulate errors with OR:
+
+```cpp title="Branchless accumulation with OR"
+bool is_ascii_lowercase(std::string_view input) {
+  unsigned errors = 0;
+  for (unsigned char c : input) {
+    errors |= static_cast<unsigned>(c < 'a');
+    errors |= static_cast<unsigned>(c > 'z');
+  }
+  return errors == 0;
+}
+```
+
+On x86 those compares compile to `setcc`. That is a flag write, not a
+jump. The loop always runs to completion. That is what you want when
+the happy path is that the whole string is fine, and it is what the
+vectorizer wants to see.
+
+We still have two comparisons per byte. We can do better.
+
+## One compare: the wraparound test
+
+A byte is an ASCII lowercase letter if and only if it sits in
+`['a', 'z']`. Subtract `'a'` and that statement becomes "the result
+fits in 0 to 25".
+
+```cpp title="Range check that wraps into a single unsigned compare"
+static inline bool is_lower(unsigned char c) {
+  return static_cast<unsigned char>(c - 'a') <= 25;
+}
+```
+
+Let's walk through a few values:
+
+- `'a' - 'a'` is `0`, and `0 <= 25`.
+- `'z' - 'a'` is `25`, still in range.
+- `` '`' - 'a' `` wraps to `255`, and `255 <= 25` is false.
+- `'{' - 'a'` is `26`, just outside.
+- `'A' - 'a'` wraps well above 25, so uppercase is rejected.
+
+Bytes below `'a'` underflow modulo 256 and land in the high end of the
+`unsigned char` range, where they fail the same `<= 25` test as bytes
+above `'z'`. Two comparisons become one.
+
+```cpp title="Validating a string with a wraparound predicate"
+bool is_ascii_lowercase(std::string_view input) {
+  unsigned errors = 0;
+  for (unsigned char c : input) {
+    errors |= static_cast<unsigned>(
+        static_cast<unsigned char>(c - 'a') > 25);
+  }
+  return errors == 0;
+}
+```
+
+The body is now subtract, compare, or. There is no `if`, no `return` in
+the middle, and no `||`. For a single closed interval like `a-z`, this
+is usually as far as scalar code needs to go.
+
+The wraparound test only works for one interval. Hex digits, unreserved
+URL characters, and forbidden host code points are unions of ranges
+and punctuation. Bitwise arithmetic gets ugly there. A table does not.
+
+## A 256-byte lookup table
+
+A simple way to classify a byte is to generate a 256-element array and
+look the value up. Daniel calls this [memoization][tables] (and not
+memorization). You will sometimes hear "a table of size 255". The last
+valid index of an 8-bit value is 255, but the length of the array is
+**256**. Byte values run from `0x00` through `0xFF` inclusive. A table
+of 255 entries leaves `0xFF` unmapped.
+
+Using C++17, you can have the compiler build the array at compile time
+from a lambda:
+
+```cpp title="Build a 256-entry lowercase table at compile time"
+static constexpr std::array<uint8_t, 256> kIsLower = []() {
+  std::array<uint8_t, 256> table{};
+  for (unsigned c = 'a'; c <= 'z'; ++c) {
+    table[c] = 1;
+  }
+  return table;
+}();
+
+bool is_ascii_lowercase(std::string_view input) {
+  uint8_t ok = 1;
+  for (unsigned char c : input) {
+    ok &= kIsLower[c];
+  }
+  return ok != 0;
+}
+```
+
+`table{}` zero-initializes every slot. The loop turns on only `'a'`
+through `'z'`. Everything else stays `0`. Each character is checked
+with a single load, plus an AND. This might compile down to a single
+lookup instruction.
+
+I am using lowercase here so the skeleton is easy to see. I would not
+ship a table for `a-z`. The wraparound test is already one subtract
+and one compare. A table replaces that with a load, and the load is
+slower. The table starts to win when the check is no longer a single
+interval.
+
+Hex is the example I actually use this for. Two ranges plus a gap:
+
+```cpp title="Hex digits are a messy range and a clean table"
+static constexpr std::array<uint8_t, 256> kIsHex = []() {
+  std::array<uint8_t, 256> table{};
+  for (unsigned c = '0'; c <= '9'; ++c) table[c] = 1;
+  for (unsigned c = 'a'; c <= 'f'; ++c) table[c] = 1;
+  for (unsigned c = 'A'; c <= 'F'; ++c) table[c] = 1;
+  return table;
+}();
+
+bool is_ascii_hex(std::string_view input) {
+  uint8_t ok = 1;
+  for (unsigned char c : input) {
+    ok &= kIsHex[c];
+  }
+  return ok != 0;
+}
+```
+
+The scalar version of that check is
+`(c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')`.
+Six comparisons and a tree of short-circuit branches, or one load.
+
+This is how Ada classifies URL characters. [Daniel's compile-time
+table post][tables] uses the same idea for forbidden host code points:
+`'\0'`, tab, space, `#`, `/`, `:`, and so on. Those are not a single
+interval. They are a pile of allowed and forbidden bytes. A 256-byte
+table per class is cheaper than explaining those rules to the branch
+predictor.
+
+Two caveats:
+
+- Index the table with `uint8_t` or `unsigned char`. A signed `char`
+  of `0xFF` becomes `-1` and walks off the front of the array.
+- A table only wins if it stays in cache. 256 bytes is four cache
+  lines. Rebuilding the table on every call is extra work, not a
+  table.
+
+I will come back to this with numbers. The short version is that a
+table is the right tool for hex or forbidden host bytes, and the
+wrong tool for `a-z`. A range is already one subtract and one
+compare. A table turns that into a load, and loads have latency.
+
+Can we do better?
+
+## SWAR when SIMD is not available
+
+If you do not have SIMD, or you do not want a runtime ISA dispatch,
+you can still process eight bytes at a time. The technique is called
+SWAR: SIMD within a register. [Lamport described it in 1975][swar].
+The intuition is that modern computers have 64-bit registers.
+Processing eight consecutive bytes as eight distinct words is
+inefficient given how wide our registers are.
+
+The first step is to load eight characters into a `uint64_t`. In C++,
+you might do it this way:
+
+```cpp title="Load eight bytes into a register"
+uint64_t word;
+std::memcpy(&word, chars, 8);
+```
+
+It looks maybe expensive, but most compilers will translate the
+`memcpy` into a single load when optimizations are on.
+
+We then treat that register as a vector of eight bytes and use
+ordinary integer arithmetic on all of them at once. [Daniel's SWAR
+posts][swar-json] are the best explanation I know. The building block
+is to repeat a constant across every lane:
+
+```cpp title="Broadcast one byte across a 64-bit word"
+constexpr uint64_t kOnes = 0x0101010101010101ULL;
+constexpr uint64_t kHigh = 0x8080808080808080ULL;
+
+constexpr uint64_t splat(uint8_t x) {
+  return kOnes * x;
+}
+```
+
+`splat('a')` is `0x6161616161616161`. `kHigh` is a mask of the top bit
+of every byte. That high bit is our per-lane boolean. `0x80` means
+this byte failed. `0x00` means it did not.
+
+If you have 8 bytes in a 64-bit word `x`, computing
+`x - splat(32)` subtracts 32 from each byte. It works well if each
+byte is greater than or equal to 32. Otherwise the operation
+overflows: if the least significant byte is too small, its most
+significant bit is set, and you cannot rely on the other lanes. That
+is why we first keep only ASCII bytes (`x & kHigh` is zero when every
+byte is below 128), and then apply both bounds.
+
+```cpp title="Per-byte comparisons inside a uint64_t"
+// High bit set in each byte of x that is strictly less than n.
+// Requires n <= 128.
+constexpr uint64_t bytes_less_than(uint64_t x, uint8_t n) {
+  return (x - splat(n)) & ~x & kHigh;
+}
+
+// High bit set in each byte of x that is strictly greater than n.
+// Requires n < 128.
+constexpr uint64_t bytes_greater_than(uint64_t x, uint8_t n) {
+  return ((x + splat(127 - n)) | x) & kHigh;
+}
+
+bool eight_bytes_are_lowercase(uint64_t word) {
+  const uint64_t non_ascii = word & kHigh;
+  const uint64_t too_small = bytes_less_than(word, 'a');
+  const uint64_t too_large = bytes_greater_than(word, 'z');
+  return (non_ascii | too_small | too_large) == 0;
+}
+```
+
+`bytes_less_than` subtracts `n` from each byte. A lane that was
+already below `n` underflows, and the `& ~x & kHigh` filter keeps only
+those underflows. `bytes_greater_than` adds `127 - n`. A lane above
+`n` crosses 127 and lights the high bit.
+
+If `word` is eight lowercase letters, the three masks are zero. If one
+lane is `'A'` or `'{'` or `0xC3`, the corresponding high bit in the OR
+is set.
+
+The string-level version ORs the failure masks into an accumulator and
+finishes the leftover bytes with the scalar wraparound test. That's
+slightly more than one operation per input byte in the main loop,
+which is the same claim Daniel makes for his JSON-escapable SWAR
+check.
+
+```cpp title="SWAR lowercase scan with a scalar tail"
+bool is_ascii_lowercase(std::string_view input) {
+  const auto* p = reinterpret_cast<const unsigned char*>(input.data());
+  size_t n = input.size();
+  uint64_t bad = 0;
+
+  while (n >= 8) {
+    uint64_t word;
+    std::memcpy(&word, p, sizeof(word));
+    bad |= word & kHigh;
+    bad |= bytes_less_than(word, 'a');
+    bad |= bytes_greater_than(word, 'z');
+    p += 8;
+    n -= 8;
+  }
+
+  while (n--) {
+    bad |= static_cast<uint64_t>(
+        static_cast<unsigned char>(*p++ - 'a') > 25);
+  }
+
+  return bad == 0;
+}
+```
+
+The inner loop never branches on a character value. It always consumes
+eight bytes, always updates `bad`, and always continues. The leftover
+`n < 8` bytes are not worth the SWAR setup.
+
+SWAR is also a good way to understand the SIMD code. NEON is the same
+algorithm with 16-byte registers and real compare instructions.
+
+## The same check with NEON
+
+[ARM NEON][neon] can process 16 bytes at a time. One load, one
+compare, one OR. There is no SWAR carry trick, because the hardware
+already knows the lanes are independent. For the most part, your
+computer is either an ARM machine supporting at least NEON, or an x64
+machine supporting at least SSE2. It is easy to distinguish at compile
+time.
+
+A good general strategy, which Daniel uses in the [escaping
+post][escaping], is to load the data in blocks of 16 bytes and do a
+few comparisons over those 16 bytes. What about fewer than 16
+characters? If you do not want to read past the string, fall back on
+one of the conventional functions. If the leftover is non-empty but
+the string was already at least 16 bytes, you can reload the last 16
+bytes of the input. That overlapping load avoids a scalar tail.
+
+The first NEON version I wrote used two compares, an AND, and a NOT:
+`vcgeq` against `'a'`, `vcleq` against `'z'`. That works. It is also
+more work than we need. The wraparound test is faster here too.
+Unsigned subtract wraps the same way in every lane, so we get
+`c - 'a'` for 16 bytes at once, then one unsigned compare against 25.
+
+```cpp title="NEON wraparound scan, 16 bytes per iteration"
+#include <arm_neon.h>
+
+bool is_ascii_lowercase(std::string_view input) {
+  if (input.size() < 16) {
+    unsigned errors = 0;
+    for (unsigned char c : input) {
+      errors |= static_cast<unsigned>(
+          static_cast<unsigned char>(c - 'a') > 25);
+    }
+    return errors == 0;
+  }
+
+  const auto* p = reinterpret_cast<const uint8_t*>(input.data());
+  size_t n = input.size();
+  uint8x16_t errors = vdupq_n_u8(0);
+  const uint8x16_t va = vdupq_n_u8('a');
+  const uint8x16_t limit = vdupq_n_u8(25);
+
+  size_t i = 0;
+  for (; i + 15 < n; i += 16) {
+    const uint8x16_t v = vld1q_u8(p + i);
+    const uint8x16_t d = vsubq_u8(v, va);
+    errors = vorrq_u8(errors, vcgtq_u8(d, limit));
+  }
+  if (i < n) {
+    const uint8x16_t v = vld1q_u8(p + n - 16);
+    const uint8x16_t d = vsubq_u8(v, va);
+    errors = vorrq_u8(errors, vcgtq_u8(d, limit));
+  }
+
+  return vmaxvq_u8(errors) == 0;
+}
+```
+
+That is load, subtract, compare, OR. The two-bound version was load,
+compare, compare, AND, NOT, OR. Same answer, fewer instructions.
+
+Here is what each intrinsic is doing:
+
+- `vdupq_n_u8('a')` is the NEON splat. Every lane holds `'a'`.
+- `vld1q_u8` loads 16 consecutive bytes. The instruction accepts
+  unaligned addresses, so you do not need `memcpy`.
+- `vsubq_u8` subtracts `'a'` from every lane. Bytes below `'a'` wrap,
+  exactly like `unsigned char(c - 'a')`.
+- `vcgtq_u8` is an unsigned greater-than. A lane becomes `0xFF` when
+  that wrapped value is greater than 25.
+- `vorrq_u8` into `errors` is the same OR-accumulation as before.
+- `vmaxvq_u8` (AArch64) reduces the vector. If any lane is non-zero,
+  some byte was out of range.
+
+If the leftover is non-empty but the string was already at least 16
+bytes, we reload the last 16 bytes. That overlapping load avoids a
+scalar tail. Duplicate bytes are fine: we only OR errors.
+
+On x64 the same wraparound is subtract plus saturating unsigned
+subtract. `_mm_subs_epu8(d, 25)` becomes zero when `d <= 25`, and
+non-zero otherwise. Signed SIMD compares (`_mm_cmplt_epi8`) are a
+trap for bytes above 127, because those bytes look negative. The
+wraparound path stays unsigned the whole way.
+
+```cpp title="AVX2 wraparound scan, 32 bytes per iteration"
+bool is_ascii_lowercase(std::string_view input) {
+  if (input.size() < 32) {
+    unsigned errors = 0;
+    for (unsigned char c : input) {
+      errors |= static_cast<unsigned>(
+          static_cast<unsigned char>(c - 'a') > 25);
+    }
+    return errors == 0;
+  }
+
+  const auto* p = reinterpret_cast<const uint8_t*>(input.data());
+  size_t n = input.size();
+  __m256i errors = _mm256_setzero_si256();
+  const __m256i va = _mm256_set1_epi8('a');
+  const __m256i limit = _mm256_set1_epi8(25);
+
+  size_t i = 0;
+  for (; i + 31 < n; i += 32) {
+    const __m256i v =
+        _mm256_loadu_si256(reinterpret_cast<const __m256i*>(p + i));
+    const __m256i d = _mm256_sub_epi8(v, va);
+    errors = _mm256_or_si256(errors, _mm256_subs_epu8(d, limit));
+  }
+  if (i < n) {
+    const __m256i v =
+        _mm256_loadu_si256(reinterpret_cast<const __m256i*>(p + n - 32));
+    const __m256i d = _mm256_sub_epi8(v, va);
+    errors = _mm256_or_si256(errors, _mm256_subs_epu8(d, limit));
+  }
+
+  return _mm256_testz_si256(errors, errors) != 0;
+}
+```
+
+I ran these on an Intel Xeon with GCC 13.3 (`-O3 -march=native`),
+scanning a 1 MiB all-lowercase buffer. The happy path is the
+interesting one: you almost always scan the whole string.
+
+| Approach | Throughput |
+| --- | ---: |
+| Branchy early `return` | 4.0 GB/s |
+| 256-byte table | 3.1 GB/s |
+| Wraparound (GCC autovectorized) | 14.2 GB/s |
+| SSE2 two-compare | 31.6 GB/s |
+| SWAR | 53.2 GB/s |
+| SSE2 wraparound | 56.0 GB/s |
+| AVX2 wraparound | 63.9 GB/s |
+
+The table loses to the naive loop. It is bound by load latency, which
+is the same thing Daniel saw when he compared a 256-byte identifier
+table to NEON. GCC already turns the scalar wraparound loop into
+SIMD, and that is 3.5 times the branchy version, but the hand-written
+SWAR and AVX2 paths still win by a lot.
+
+If the first bad byte is near the start, the branchy loop wins, and
+the GB/s number becomes meaningless because you barely touch the
+buffer. That is the only case where I would keep the early `return`.
+
+For messier classes, the 256-byte table fails in SIMD: there is no
+256-byte gather on NEON. The usual trick is [vectorized
+classification][neon-ids] (see Langdale and Lemire, [Parsing
+Gigabytes of JSON per Second][pgjson]). We use the same idea in Ada.
+Split each byte into two 4-bit nibbles and look those up in two
+16-byte tables:
+
+```cpp title="Nibble lookup: a 256-byte class table in two 16-byte vectors"
+uint8x16_t classify(uint8x16_t input,
+                    uint8x16_t table_lo,
+                    uint8x16_t table_hi) {
+  const uint8x16_t lo = vandq_u8(input, vdupq_n_u8(0x0F));
+  const uint8x16_t hi = vshrq_n_u8(input, 4);
+  return vandq_u8(vqtbl1q_u8(table_lo, lo), vqtbl1q_u8(table_hi, hi));
+}
+```
+
+`vqtbl1q_u8` is a 16-entry table lookup done on all sixteen lanes at
+once. The low nibble picks a row, the high nibble picks a row, and the
+AND is 1 only when both halves of the original 256-entry table would
+have said yes. The table now lives in registers and you classify 16
+bytes per call.
+
+On x86 the same ideas map to SSE/AVX (`_mm_cmpeq_epi8`,
+`_mm_shuffle_epi8`). The NEON names change. The loop shape does not.
+
+## Which one should you use?
+
+It depends on the check and on the length of the input. For a single
+interval like `a-z`, the numbers above are the whole story.
+
+1. **Early `return false`** when invalid input is common and usually
+   fails in the first few bytes. That is the only case where the
+   obvious loop is the fast one.
+2. **Wraparound** (`unsigned char(c - 'a') <= 25`) for a single
+   interval. Write it as a branchless scalar loop first. GCC and
+   LLVM will often autovectorize it. If that is already off the
+   profile, stop.
+3. **SWAR or SIMD wraparound** when the strings are long and you
+   still see the scan in a profile. Prefer subtract-and-compare over
+   two bounds. AVX2 or NEON will beat a portable SWAR loop when you
+   have them. SWAR is the right fallback when you do not.
+4. **A 256-byte table** when the check is a union of ranges or a mix
+   of punctuation: hex, unreserved, forbidden host bytes. Size it at
+   256, not 255. Do not use a table for `a-z`. You are paying a load
+   for a subtract.
+5. **Nibble tables in NEON/SSSE3** when that messy class is also
+   the hot SIMD path. That is vectorized classification, the same
+   idea we use in Ada.
+
+You can still go further. Unrolling the NEON or AVX2 loop to 32 or
+64 bytes hides some of the reduction latency. If invalid input is
+common but not always at byte 0, check the accumulator every few
+vectors and return early. On newer ARM, SVE2 `match` / `nmatch` can
+replace a pile of equality tests for small character sets. I would
+not start there.
+
+Compilers will not invent a 256-byte character class for you, and they
+will not write the SWAR masks. Measure the version you are about to
+delete.
+
+I used "is this string ASCII lowercase?" as the running example
+because the check is small enough to see every transformation. In
+practice, the checks I care about are the other ones: hex,
+unreserved, forbidden host bytes, whitespace. Those are the loops
+that show up in a URL parser, and they are often where a simple
+`for` loop with an early `return` becomes the bottleneck.
+
+So far every byte stood on its own. Suppose you want a harder
+problem.
+
+## A harder problem: is this valid UTF-16?
+
+Modern-day text in software can be expected to be Unicode. Unicode
+is stored in two formats: UTF-8 and UTF-16.
+
+UTF-16 is used by several platforms to represent Unicode
+characters. Microsoft Windows uses it for file names and registry
+keys. Java and JavaScript use it for strings.
+
+UTF-16 represents each character by one or two 16-bit code units.
+For characters in the Basic Multilingual Plane, which includes most
+commonly used characters from around the world, a single 16-bit
+unit suffices. For characters beyond this plane, UTF-16 uses a
+pair of 16-bit units known as a surrogate pair. That is how it
+covers a bit more than a million code points while keeping most
+characters in 16 bits.
+
+Values making up surrogate pairs are either high surrogates
+(`U+D800` to `U+DBFF`) or low surrogates (`U+DC00` to `U+DFFF`). A
+pair is always made of a high surrogate followed by a low
+surrogate. Otherwise, we have an error.
+
+[Daniel has a post][utf16-neon] on putting a replacement character
+(`U+FFFD`) wherever that rule breaks. [simdutf][simdutf] is the
+production version, and it is what V8 uses for
+`String.toWellFormed`. I only need the boolean: is this valid
+UTF-16?
+
+A basic C++ function might look as follows.
+
+```cpp title="A basic UTF-16 validator"
+bool is_high_surrogate(char16_t c) {
+  return (c >= 0xD800 && c <= 0xDBFF);
+}
+
+bool is_low_surrogate(char16_t c) {
+  return (c >= 0xDC00 && c <= 0xDFFF);
+}
+
+bool is_valid_utf16(std::u16string_view input) {
+  for (size_t i = 0; i < input.size(); ++i) {
+    if (is_high_surrogate(input[i])) {
+      if (i + 1 < input.size() && is_low_surrogate(input[i + 1])) {
+        ++i;
+      } else {
+        return false;
+      }
+    } else if (is_low_surrogate(input[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+```
+
+The function scans a buffer of `char16_t` values. If a high
+surrogate is followed by a low surrogate, we skip both. If a high
+surrogate is not followed by a low surrogate, or if a low
+surrogate appears without a preceding high surrogate, we return
+`false`. If the loop finishes, we return `true`. The function
+should be reasonably efficient.
+
+Most of our processors have instructions that process eight 16-bit
+words per register. Most mobile processors today are 64-bit ARM
+with NEON. And most UTF-16 text never leaves the BMP. I suspect
+that this is the typical case: there are relatively few surrogate
+pairs in most text.
+
+If you do not have NEON, you can still ask whether four code units
+contain any surrogate at all. Mask each 16-bit lane of a
+`uint64_t` with `0xF800` and look for `0xD800`. No match means
+those four units are valid BMP text and you can skip the pairing.
+That is the same SWAR trick as the lowercase scan, just on 16-bit
+lanes.
+
+We can write a function targeting ARM NEON using intrinsic
+functions. These give us low-level access to NEON. There are
+comparable intrinsics for Intel/AMD, RISC-V, and so on.
+
+The classification inside the loop is the wraparound test from
+earlier. Adding `0x2800` to a high surrogate wraps it into
+`0x0000` to `0x03FF`. Adding `0x2400` does the same for a low
+surrogate.
+
+```cpp title="NEON: validate eight code units at a time"
+bool is_valid_utf16_neon(std::u16string_view input) {
+  const char16_t* buffer = input.data();
+  const size_t length = input.size();
+  const size_t vec_size = 8;
+  size_t i = 0;
+
+  if (length >= vec_size) {
+    uint16x8_t previous_high_surrogate_mask = vdupq_n_u16(0);
+    for (; i + vec_size <= length; i += vec_size) {
+      const uint16x8_t vec = vld1q_u16(
+          reinterpret_cast<const uint16_t*>(buffer + i));
+
+      const uint16x8_t low_surrogate_mask = vcleq_u16(
+          vaddq_u16(vec, vdupq_n_u16(0x2400)), vdupq_n_u16(0x03FF));
+      const uint16x8_t high_surrogate_mask = vcleq_u16(
+          vaddq_u16(vec, vdupq_n_u16(0x2800)), vdupq_n_u16(0x03FF));
+
+      const uint16x8_t offset_high_surrogate_mask = vextq_u16(
+          previous_high_surrogate_mask, high_surrogate_mask, 7);
+      const uint16x8_t offset_low_surrogate_mask =
+          (i + vec_size < length &&
+           is_low_surrogate(buffer[i + vec_size]))
+              ? vextq_u16(low_surrogate_mask, vdupq_n_u16(0xFFFF), 1)
+              : vextq_u16(low_surrogate_mask, vdupq_n_u16(0), 1);
+
+      const uint16x8_t low_not_preceded_by_high =
+          vbicq_u16(low_surrogate_mask, offset_high_surrogate_mask);
+      const uint16x8_t high_not_followed_by_low =
+          vbicq_u16(high_surrogate_mask, offset_low_surrogate_mask);
+
+      if (vmaxvq_u16(vorrq_u16(low_not_preceded_by_high,
+                               high_not_followed_by_low)) != 0) {
+        return false;
+      }
+      previous_high_surrogate_mask = high_surrogate_mask;
+    }
+  }
+
+  if (i > 0 && is_high_surrogate(buffer[i - 1]) && i < length &&
+      is_low_surrogate(buffer[i])) {
+    ++i;
+  }
+
+  for (; i < length; ++i) {
+    if (is_high_surrogate(buffer[i])) {
+      if (i + 1 < length && is_low_surrogate(buffer[i + 1])) {
+        ++i;
+      } else {
+        return false;
+      }
+    } else if (is_low_surrogate(buffer[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+```
+
+This function uses NEON to validate UTF-16 in chunks of eight
+code units. For each chunk it loads the data, builds a high
+surrogate mask and a low surrogate mask, shifts those masks to
+check for valid pairs across vector boundaries, and returns
+`false` on a lone high or a lone low. After as many full chunks
+as we can, the remaining units go through the scalar function.
+If the last vector unit was a high surrogate and the first tail
+unit is its low partner, we skip that low so the scalar loop
+does not treat it as unmatched.
+
+Though reasonably efficient, I expect that it is possible to do
+much better than this function.
+
+A reader of Daniel's post proposed a faster alternative that uses
+the fact that ARM NEON has interleaved loads. When we load the
+data, we put the most significant bytes in one register and the
+least significant bytes in the other. The most significant bytes
+are sufficient to check for errors, so we can check 32 bytes of
+input by validating just one 16-byte register.
+
+```cpp title="Faster NEON: classify 16 code units from the high bytes"
+bool is_valid_utf16_neon_v2(std::u16string_view input) {
+  const char16_t* buffer = input.data();
+  const size_t length = input.size();
+  const int high_vec = 1;
+  const size_t vec_size = 32;
+  size_t i = 0;
+
+  if (length * 2 >= vec_size) {
+    uint8x16_t previous_high_surrogate_mask = vdupq_n_u8(0);
+    const uint8_t* buffer8 =
+        reinterpret_cast<const uint8_t*>(buffer);
+    for (; i + vec_size < length * 2; i += vec_size) {
+      const uint8x16x2_t pair = vld2q_u8(buffer8 + i);
+      const uint8x16_t vec = vshrq_n_u8(pair.val[high_vec], 2);
+
+      const uint8x16_t low_surrogate_mask =
+          vceqq_u8(vec, vdupq_n_u8(0x37));
+      const uint8x16_t high_surrogate_mask =
+          vceqq_u8(vec, vdupq_n_u8(0x36));
+
+      const uint8x16_t offset_high_surrogate_mask = vextq_u8(
+          previous_high_surrogate_mask, high_surrogate_mask, 15);
+      const uint8_t next_char_type =
+          buffer8[i + vec_size + high_vec] >> 2;
+      const uint8x16_t offset_low_surrogate_mask = vextq_u8(
+          low_surrogate_mask,
+          vdupq_n_u8(next_char_type == 0x37 ? 0xFF : 0), 1);
+
+      const uint8x16_t low_not_preceded_by_high =
+          vbicq_u8(low_surrogate_mask, offset_high_surrogate_mask);
+      const uint8x16_t high_not_followed_by_low =
+          vbicq_u8(high_surrogate_mask, offset_low_surrogate_mask);
+
+      if (vmaxvq_u8(vorrq_u8(low_not_preceded_by_high,
+                             high_not_followed_by_low)) != 0) {
+        return false;
+      }
+      previous_high_surrogate_mask = high_surrogate_mask;
+    }
+    i >>= 1;
+  }
+
+  if (i > 0 && is_high_surrogate(buffer[i - 1]) && i < length &&
+      is_low_surrogate(buffer[i])) {
+    ++i;
+  }
+
+  for (; i < length; ++i) {
+    const uint16_t surrogate_type =
+        static_cast<uint16_t>(buffer[i]) >> 10;
+    if (surrogate_type == 0x36) {
+      if (i + 1 < length && is_low_surrogate(buffer[i + 1])) {
+        ++i;
+      } else {
+        return false;
+      }
+    } else if (surrogate_type == 0x37) {
+      return false;
+    }
+  }
+  return true;
+}
+```
+
+`0x36` is a high surrogate's top six bits (`0xD800 >> 10`). `0x37`
+is a low surrogate (`0xDC00 >> 10`). [The follow-up paper][utf16-paper]
+pushes the same idea to 64-unit blocks.
+
+You can do even better if you assume that the input rarely
+contains invalid characters, or rarely contains surrogates at
+all. I am going to leave that as an exercise for the reader.
+
+To benchmark these functions, Daniel used a single string made of
+10 million space characters. It is the easiest case: no
+replacement and no surrogate pairs. I suspect that it also
+represents a typical case. Using LLVM 16 and an Apple M2, he got:
+
+| Approach | Throughput |
+| --- | ---: |
+| Regular C | 1.7 GB/s |
+| NEON | 5.5 GB/s |
+| Fast NEON | 13 GB/s |
+
+So the fast ARM NEON code is about 8 times faster than the
+conventional code. He was measuring the correction version. The
+boolean one is the same pairing, with a `return false` instead of
+a store of `U+FFFD`.
+
+[ada]: https://github.com/ada-url/ada
+[lemire]: https://lemire.me
+[escaping]: https://lemire.me/blog/2024/05/31/quickly-checking-whether-a-string-needs-escaping/
+[tables]: https://lemire.me/blog/2023/11/07/generating-arrays-at-compile-time-in-c-with-lambdas/
+[swar]: https://lemire.me/blog/2022/01/21/swar-explained-parsing-eight-digits/
+[swar-json]: https://lemire.me/blog/2025/04/13/detect-control-characters-quotes-and-backslashes-efficiently-using-swar/
+[neon-ids]: https://lemire.me/blog/2023/09/04/locating-identifiers-quickly-arm-neon-edition/
+[pgjson]: https://arxiv.org/abs/1902.08318
+[neon]: https://developer.arm.com/architectures/instruction-sets/intrinsics/
+[utf16-neon]: https://lemire.me/blog/2024/12/29/efficient-in-place-utf-16-unicode-correction-with-arm-neon/
+[simdutf]: https://github.com/simdutf/simdutf
+[utf16-paper]: https://arxiv.org/abs/2601.06349
