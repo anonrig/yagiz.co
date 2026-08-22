@@ -552,15 +552,19 @@ problem.
 ## A harder problem: is this valid UTF-16?
 
 Modern-day text in software can be expected to be Unicode. Unicode
-is stored in two formats: UTF-8 and UTF-16. Microsoft Windows uses
-UTF-16 for file names and registry keys. Java and JavaScript use
-it for strings.
+is stored in two formats: UTF-8 and UTF-16.
+
+UTF-16 is used by several platforms to represent Unicode
+characters. Microsoft Windows uses it for file names and registry
+keys. Java and JavaScript use it for strings.
 
 UTF-16 represents each character by one or two 16-bit code units.
 For characters in the Basic Multilingual Plane, which includes most
 commonly used characters from around the world, a single 16-bit
 unit suffices. For characters beyond this plane, UTF-16 uses a
-pair of 16-bit units known as a surrogate pair.
+pair of 16-bit units known as a surrogate pair. That is how it
+covers a bit more than a million code points while keeping most
+characters in 16 bits.
 
 Values making up surrogate pairs are either high surrogates
 (`U+D800` to `U+DBFF`) or low surrogates (`U+DC00` to `U+DFFF`). A
@@ -568,8 +572,10 @@ pair is always made of a high surrogate followed by a low
 surrogate. Otherwise, we have an error.
 
 [Daniel has a post][utf16-neon] on putting a replacement character
-wherever that rule breaks. [simdutf][simdutf] is the production
-version. I want the simpler question: is the input valid?
+(`U+FFFD`) wherever that rule breaks. [simdutf][simdutf] is the
+production version, and it is what V8 uses for
+`String.toWellFormed`. I only need the boolean: is this valid
+UTF-16?
 
 A basic C++ function might look as follows.
 
@@ -602,153 +608,198 @@ The function scans a buffer of `char16_t` values. If a high
 surrogate is followed by a low surrogate, we skip both. If a high
 surrogate is not followed by a low surrogate, or if a low
 surrogate appears without a preceding high surrogate, we return
-`false`. If the loop finishes, we return `true`. It is the same
-shape as the lowercase loop we started with. The function should
-be reasonably efficient.
+`false`. If the loop finishes, we return `true`. The function
+should be reasonably efficient.
 
-It is also a different problem. The predicate looks at the next
-unit. You have state. You cannot AND a per-unit flag and be done.
-A 256-byte table does not help much: the input is 16-bit, and a
-table of 65536 entries is 64 KiB.
+Most of our processors have instructions that process eight 16-bit
+words per register. Most mobile processors today are 64-bit ARM
+with NEON. And most UTF-16 text never leaves the BMP. I suspect
+that this is the typical case: there are relatively few surrogate
+pairs in most text.
 
-We can do better with the wraparound test. Adding `0x2800` to a
-high surrogate wraps it into `0x0000..0x03FF`. Adding `0x2400`
-does the same for a low surrogate. That is the same
-`unsigned(c - lo) <= hi - lo` trick, written as an add.
+If you do not have NEON, you can still ask whether four code units
+contain any surrogate at all. Mask each 16-bit lane of a
+`uint64_t` with `0xF800` and look for `0xD800`. No match means
+those four units are valid BMP text and you can skip the pairing.
+That is the same SWAR trick as the lowercase scan, just on 16-bit
+lanes.
 
-```cpp title="Wraparound tests for high and low surrogates"
-bool is_high_surrogate(char16_t c) {
-  return static_cast<uint16_t>(c + 0x2800) <= 0x03FF;
-}
+We can write a function targeting ARM NEON using intrinsic
+functions. These give us low-level access to NEON. There are
+comparable intrinsics for Intel/AMD, RISC-V, and so on.
 
-bool is_low_surrogate(char16_t c) {
-  return static_cast<uint16_t>(c + 0x2400) <= 0x03FF;
-}
-```
+The classification inside the loop is the wraparound test from
+earlier. Adding `0x2800` to a high surrogate wraps it into
+`0x0000` to `0x03FF`. Adding `0x2400` does the same for a low
+surrogate.
 
-You can also do it with a mask. All values from `0xD800` to
-`0xDFFF` have the top five bits set to `11011`. High vs low is the
-next two bits.
+```cpp title="NEON: validate eight code units at a time"
+bool is_valid_utf16_neon(std::u16string_view input) {
+  const char16_t* buffer = input.data();
+  const size_t length = input.size();
+  const size_t vec_size = 8;
+  size_t i = 0;
 
-```cpp title="Classify a code unit with a mask"
-bool is_surrogate(char16_t c) {
-  return (c & 0xF800) == 0xD800;
-}
+  if (length >= vec_size) {
+    uint16x8_t previous_high_surrogate_mask = vdupq_n_u16(0);
+    for (; i + vec_size <= length; i += vec_size) {
+      const uint16x8_t vec = vld1q_u16(
+          reinterpret_cast<const uint16_t*>(buffer + i));
 
-bool is_high_surrogate(char16_t c) {
-  return (c & 0xFC00) == 0xD800;
-}
+      const uint16x8_t low_surrogate_mask = vcleq_u16(
+          vaddq_u16(vec, vdupq_n_u16(0x2400)), vdupq_n_u16(0x03FF));
+      const uint16x8_t high_surrogate_mask = vcleq_u16(
+          vaddq_u16(vec, vdupq_n_u16(0x2800)), vdupq_n_u16(0x03FF));
 
-bool is_low_surrogate(char16_t c) {
-  return (c & 0xFC00) == 0xDC00;
-}
-```
+      const uint16x8_t offset_high_surrogate_mask = vextq_u16(
+          previous_high_surrogate_mask, high_surrogate_mask, 7);
+      const uint16x8_t offset_low_surrogate_mask =
+          (i + vec_size < length &&
+           is_low_surrogate(buffer[i + vec_size]))
+              ? vextq_u16(low_surrogate_mask, vdupq_n_u16(0xFFFF), 1)
+              : vextq_u16(low_surrogate_mask, vdupq_n_u16(0), 1);
 
-Can we do better? Most of our processors have instructions that
-process eight 16-bit words per register. And most UTF-16 text never
-leaves the BMP. I suspect that this is the typical case: there are
-relatively few surrogate pairs in most text. If a block has no
-word in `0xD800..0xDFFF`, the whole block is valid and we can skip
-the pairing.
+      const uint16x8_t low_not_preceded_by_high =
+          vbicq_u16(low_surrogate_mask, offset_high_surrogate_mask);
+      const uint16x8_t high_not_followed_by_low =
+          vbicq_u16(high_surrogate_mask, offset_low_surrogate_mask);
 
-SWAR can ask that question for four code units in a `uint64_t`.
-Mask each 16-bit lane with `0xF800`, XOR with `0xD800`, and look
-for a zero lane.
-
-```cpp title="Any surrogate in four UTF-16 code units?"
-constexpr uint64_t kSurrogateBits = 0xF800F800F800F800ULL;
-constexpr uint64_t kSurrogateWant = 0xD800D800D800D800ULL;
-constexpr uint64_t kLaneHigh = 0x8000800080008000ULL;
-constexpr uint64_t kLaneOne = 0x0001000100010001ULL;
-
-bool has_surrogate_word(uint64_t word) {
-  const uint64_t xor_lanes = (word & kSurrogateBits) ^ kSurrogateWant;
-  return ((xor_lanes - kLaneOne) & ~xor_lanes & kLaneHigh) != 0;
-}
-```
-
-If there is no surrogate, those four units are valid. If there is
-one, we fall back to the scalar function for that block. You can
-do even better if you assume that the input is almost always
-valid. I am going to leave the full skip-until-you-find-one loop
-as an exercise.
-
-When we do have to pair, ARM NEON can do it in chunks of eight
-code units. We build a high-surrogate mask and a low-surrogate
-mask, then shift them to check for valid pairs across vector
-boundaries. The last high-surrogate lane of the previous chunk
-has to come along. That carry is the whole difference from the
-lowercase scan.
-
-```cpp title="NEON: pair surrogates eight code units at a time"
-bool is_valid_utf16_block(uint16x8_t vec, bool& pending_high) {
-  const uint16x8_t high_surrogate_mask = vcleq_u16(
-      vaddq_u16(vec, vdupq_n_u16(0x2800)), vdupq_n_u16(0x03FF));
-  const uint16x8_t low_surrogate_mask = vcleq_u16(
-      vaddq_u16(vec, vdupq_n_u16(0x2400)), vdupq_n_u16(0x03FF));
-
-  if (pending_high && vgetq_lane_u16(low_surrogate_mask, 0) == 0) {
-    return false;
+      if (vmaxvq_u16(vorrq_u16(low_not_preceded_by_high,
+                               high_not_followed_by_low)) != 0) {
+        return false;
+      }
+      previous_high_surrogate_mask = high_surrogate_mask;
+    }
   }
 
-  const uint16x8_t previous_high = vdupq_n_u16(pending_high ? 0xFFFF : 0);
-  const uint16x8_t offset_high =
-      vextq_u16(previous_high, high_surrogate_mask, 7);
-  const uint16x8_t offset_low =
-      vextq_u16(low_surrogate_mask, vdupq_n_u16(0), 1);
+  if (i > 0 && is_high_surrogate(buffer[i - 1]) && i < length &&
+      is_low_surrogate(buffer[i])) {
+    ++i;
+  }
 
-  const uint16x8_t low_not_preceded_by_high =
-      vbicq_u16(low_surrogate_mask, offset_high);
-  uint16x8_t high_not_followed_by_low =
-      vbicq_u16(high_surrogate_mask, offset_low);
-  high_not_followed_by_low =
-      vsetq_lane_u16(0, high_not_followed_by_low, 7);
-
-  pending_high = vgetq_lane_u16(high_surrogate_mask, 7) != 0;
-  return vmaxvq_u16(vorrq_u16(low_not_preceded_by_high,
-                              high_not_followed_by_low)) == 0;
+  for (; i < length; ++i) {
+    if (is_high_surrogate(buffer[i])) {
+      if (i + 1 < length && is_low_surrogate(buffer[i + 1])) {
+        ++i;
+      } else {
+        return false;
+      }
+    } else if (is_low_surrogate(buffer[i])) {
+      return false;
+    }
+  }
+  return true;
 }
 ```
 
-`vextq_u16` shifts the masks so each lane is checked against its
-neighbor. `vbicq` is AND-NOT: a low with no high in front of it,
-or a high with no low after it. If the chunk ends on a high
-surrogate, we do not fail yet. We set `pending_high` and let the
-next chunk pair it. If `pending_high` is still set after the last
-chunk, the string ended on a lone high surrogate and we return
-`false`.
+This function uses NEON to validate UTF-16 in chunks of eight
+code units. For each chunk it loads the data, builds a high
+surrogate mask and a low surrogate mask, shifts those masks to
+check for valid pairs across vector boundaries, and returns
+`false` on a lone high or a lone low. After as many full chunks
+as we can, the remaining units go through the scalar function.
+If the last vector unit was a high surrogate and the first tail
+unit is its low partner, we skip that low so the scalar loop
+does not treat it as unmatched.
 
-The function should be reasonably efficient. Though I expect that
-it is possible to do much better.
+Though reasonably efficient, I expect that it is possible to do
+much better than this function.
 
 A reader of Daniel's post proposed a faster alternative that uses
-the fact that ARM NEON has interleaved loads. `vld2q_u8` puts the
-most significant bytes in one register and the least significant
-bytes in the other. The most significant bytes are sufficient to
-check for errors. You throw the low bytes away and classify 16
-code units from one 16-byte register. [The follow-up paper][utf16-paper]
-pushes that idea to 64-unit blocks.
+the fact that ARM NEON has interleaved loads. When we load the
+data, we put the most significant bytes in one register and the
+least significant bytes in the other. The most significant bytes
+are sufficient to check for errors, so we can check 32 bytes of
+input by validating just one 16-byte register.
 
-Daniel measured the correction version of this, not the boolean
-one, on an Apple M2 with LLVM 16. A 10 million space string, no
-surrogates, the easiest case and I suspect also the typical one:
+```cpp title="Faster NEON: classify 16 code units from the high bytes"
+bool is_valid_utf16_neon_v2(std::u16string_view input) {
+  const char16_t* buffer = input.data();
+  const size_t length = input.size();
+  const int high_vec = 1;
+  const size_t vec_size = 32;
+  size_t i = 0;
+
+  if (length * 2 >= vec_size) {
+    uint8x16_t previous_high_surrogate_mask = vdupq_n_u8(0);
+    const uint8_t* buffer8 =
+        reinterpret_cast<const uint8_t*>(buffer);
+    for (; i + vec_size < length * 2; i += vec_size) {
+      const uint8x16x2_t pair = vld2q_u8(buffer8 + i);
+      const uint8x16_t vec = vshrq_n_u8(pair.val[high_vec], 2);
+
+      const uint8x16_t low_surrogate_mask =
+          vceqq_u8(vec, vdupq_n_u8(0x37));
+      const uint8x16_t high_surrogate_mask =
+          vceqq_u8(vec, vdupq_n_u8(0x36));
+
+      const uint8x16_t offset_high_surrogate_mask = vextq_u8(
+          previous_high_surrogate_mask, high_surrogate_mask, 15);
+      const uint8_t next_char_type =
+          buffer8[i + vec_size + high_vec] >> 2;
+      const uint8x16_t offset_low_surrogate_mask = vextq_u8(
+          low_surrogate_mask,
+          vdupq_n_u8(next_char_type == 0x37 ? 0xFF : 0), 1);
+
+      const uint8x16_t low_not_preceded_by_high =
+          vbicq_u8(low_surrogate_mask, offset_high_surrogate_mask);
+      const uint8x16_t high_not_followed_by_low =
+          vbicq_u8(high_surrogate_mask, offset_low_surrogate_mask);
+
+      if (vmaxvq_u8(vorrq_u8(low_not_preceded_by_high,
+                             high_not_followed_by_low)) != 0) {
+        return false;
+      }
+      previous_high_surrogate_mask = high_surrogate_mask;
+    }
+    i >>= 1;
+  }
+
+  if (i > 0 && is_high_surrogate(buffer[i - 1]) && i < length &&
+      is_low_surrogate(buffer[i])) {
+    ++i;
+  }
+
+  for (; i < length; ++i) {
+    const uint16_t surrogate_type =
+        static_cast<uint16_t>(buffer[i]) >> 10;
+    if (surrogate_type == 0x36) {
+      if (i + 1 < length && is_low_surrogate(buffer[i + 1])) {
+        ++i;
+      } else {
+        return false;
+      }
+    } else if (surrogate_type == 0x37) {
+      return false;
+    }
+  }
+  return true;
+}
+```
+
+`0x36` is a high surrogate's top six bits (`0xD800 >> 10`). `0x37`
+is a low surrogate (`0xDC00 >> 10`). [The follow-up paper][utf16-paper]
+pushes the same idea to 64-unit blocks.
+
+You can do even better if you assume that the input rarely
+contains invalid characters, or rarely contains surrogates at
+all. I am going to leave that as an exercise for the reader.
+
+To benchmark these functions, Daniel used a single string made of
+10 million space characters. It is the easiest case: no
+replacement and no surrogate pairs. I suspect that it also
+represents a typical case. Using LLVM 16 and an Apple M2, he got:
 
 | Approach | Throughput |
 | --- | ---: |
 | Regular C | 1.7 GB/s |
-| NEON, eight units | 5.5 GB/s |
-| Fast NEON (`vld2q_u8`) | 13 GB/s |
+| NEON | 5.5 GB/s |
+| Fast NEON | 13 GB/s |
 
 So the fast ARM NEON code is about 8 times faster than the
-conventional code. Validation is the same pairing with a
-`return false` instead of a store of `U+FFFD`.
-
-The ladder did not change. You still want fewer branches. You
-still want a cheap test that accepts the common case without
-pairing. You still want SIMD when the strings are long. The new
-cost is one bit of state between blocks, because a pair is always
-made of a high surrogate followed by a low surrogate. Otherwise,
-we have an error.
+conventional code. He was measuring the correction version. The
+boolean one is the same pairing, with a `return false` instead of
+a store of `U+FFFD`.
 
 [ada]: https://github.com/ada-url/ada
 [lemire]: https://lemire.me
