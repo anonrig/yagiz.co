@@ -1,23 +1,29 @@
 ---
 title: 'Eliminating branches in C++ loops'
 description: >-
-  How to turn a validating for-loop into branchless code with bitwise
-  operations, a 256-byte lookup table, SWAR, and ARM NEON — the same
-  techniques we use in Ada.
+  A for loop that returns false from a branch and true at the end is easy
+  to read, but the branch can be expensive. In this post I show how to
+  remove it with bitwise operations, a 256-byte table, SWAR, and NEON.
 date: '2026-08-22'
 tag: performance
 status: published
 ---
 
-Hot loops in parsers, tokenizers, and validators almost always look the same.
-You walk a string, test each byte, and bail out as soon as something is
-wrong. That shape is easy to read. On a modern CPU it is often the wrong
-default, because the expensive part is not the comparison — it is the
-branch that depends on it.
+Writing efficient C++ can be quite challenging when you are working on
+hot loops in parsers, tokenizers, and validators. A very common pattern
+is a for loop that checks each character, returns false as soon as
+something is wrong, and returns true when the function ends. This is
+easy to read, but on a modern CPU it is often the wrong default. The
+expensive part is usually not the comparison itself. It is the branch
+that depends on it.
 
-This is the loop I want to talk about. It is the same pattern we keep
-hitting in [Ada][ada] when we classify URL characters: *is this entire
-input ASCII lowercase?*
+In this blog post, I want to walk through this pattern and show how we
+can eliminate the branching. We will start with bitwise operations, then
+use a precomputed lookup table, then do the same work with SWAR
+routines when SIMD is not available, and finally do it with ARM NEON.
+These are the same techniques we use in [Ada][ada] when we classify URL
+characters. The running example is simple: is this entire input ASCII
+lowercase?
 
 ```cpp title="The obvious validating loop"
 bool is_ascii_lowercase(std::string_view input) {
@@ -30,42 +36,46 @@ bool is_ascii_lowercase(std::string_view input) {
 }
 ```
 
-If any byte falls outside `a-z`, we return `false`. If the loop finishes,
-we return `true`. That early `return` *is* the branch. The rest of this
-post is about deleting it, then making the predicate itself cheaper, then
-doing eight or sixteen bytes of the same work at once.
+If any byte falls outside `a-z`, we return `false`. If the loop
+finishes, we return `true`. That early `return` is the branch we want
+to get rid of. The rest of this post is about deleting it, making the
+check itself cheaper, and then doing eight or sixteen bytes of the same
+work at once.
+
+One important detail before we start: always cast the byte to
+`unsigned char` before you classify it. A plain `char` may be signed,
+and a signed value above 127 can become a negative index or break the
+range check.
 
 ## Why the branch is expensive
 
-A compare on a register is cheap. A compare that steers the instruction
-stream is not. The CPU guesses which side of `if (c < 'a' || c > 'z')`
-will run, fetches that path, and pays a pipeline flush when it guessed
-wrong.
+A compare on a register is cheap. A compare that changes which
+instructions run next is not. The CPU guesses which side of
+`if (c < 'a' || c > 'z')` will run, fetches that path, and pays a
+pipeline flush when it guessed wrong.
 
-That cost is data-dependent:
+This cost depends on the data:
 
-- If almost every input is valid, the predictor learns *fall through* and
-  the naive loop is fine.
-- If invalid bytes appear at random offsets — or if valid and invalid
-  inputs are mixed — you pay a mispredict on every surprise.
+- If almost every input is valid, the predictor learns to fall through
+  and the naive loop is fine.
+- If invalid bytes appear at random offsets, or if valid and invalid
+  inputs are mixed, you pay a mispredict on every surprise.
 - An early `return` also blocks vectorization. The compiler cannot
   rewrite a loop that might exit on any iteration into a wide load.
 
-There is a second, quieter issue: `||` and `&&` short-circuit. The second
-compare only runs when the first one does not already decide the result.
-That is another branch, even before you `return`.
+There is a second issue that is easy to miss. `||` and `&&`
+short-circuit. The second compare only runs when the first one does not
+already decide the result. That is another branch, even before you
+`return`.
 
-Early exit is still the right call when the *common* case fails near the
-start of the string. The rest of this post assumes the opposite, which is
-the usual situation in a parser: you almost always scan the whole input.
-
-Always cast the byte to `unsigned char` before you classify it. A plain
-`char` may be signed, and a signed value above 127 turns into a negative
-index or a broken range check.
+Early exit is still the right call when the common case fails near the
+start of the string. The rest of this post assumes the opposite, which
+is the usual situation in a parser. You almost always scan the whole
+input.
 
 ## Accumulating the answer instead of returning early
 
-The first rewrite does not change what we compute. It changes *when* we
+The first rewrite does not change what we compute. It changes when we
 decide. Instead of leaving the function the moment a byte is bad, we
 keep a running flag and only look at it after the last iteration.
 
@@ -79,14 +89,15 @@ bool is_ascii_lowercase(std::string_view input) {
 }
 ```
 
-`&` is not `&&`. Bitwise AND always evaluates both sides, so there is no
-short-circuit branch. The loop body becomes *load, compare, compare,
-and, store* — a straight-line sequence the predictor does not have to
-guess. After the last byte we return the flag, which is `true` only if
-every iteration kept it set.
+`&` is not `&&`. Bitwise AND always evaluates both sides, so there is
+no short-circuit branch. The loop body becomes load, compare, compare,
+and, store. That is a straight-line sequence the predictor does not
+have to guess. After the last byte we return the flag, which is `true`
+only if every iteration kept it set.
 
-The dual form, which I prefer when I am hunting for problems rather than
-confirming they are absent, accumulates errors with OR:
+The other way to write this, which I prefer when I am looking for
+problems rather than confirming that everything is valid, is to
+accumulate errors with OR:
 
 ```cpp title="Branchless accumulation with bitwise OR"
 bool is_ascii_lowercase(std::string_view input) {
@@ -99,19 +110,19 @@ bool is_ascii_lowercase(std::string_view input) {
 }
 ```
 
-On x86 those compares compile to `setcc` (or a `cmp` plus an `adc`-style
-flag dance). That is a flag write, not a jump. The loop always runs to
-completion, which is exactly what you want when the happy path is *the
-whole string is fine*. It is also what the vectorizer wants to see.
+On x86 those compares compile to `setcc`, or a `cmp` plus something
+like `adc`. That is a flag write, not a jump. The loop always runs to
+completion, which is exactly what you want when the happy path is that
+the whole string is fine. It is also what the vectorizer wants to see.
 
-We still have two comparisons per byte. The next step is to collapse the
-predicate itself.
+We still have two comparisons per byte. The next step is to make the
+check itself cheaper.
 
 ## Bitwise operations: one compare, no short-circuit
 
-A byte is an ASCII lowercase letter if and only if it sits in the closed
-range `['a', 'z']`. Subtract `'a'` and that statement becomes *the result
-fits in 0..25*.
+A byte is an ASCII lowercase letter if and only if it sits in the
+closed range `['a', 'z']`. If we subtract `'a'`, that statement becomes
+"the result fits in 0 to 25".
 
 ```cpp title="Range check that wraps into a single unsigned compare"
 static inline bool is_lower(unsigned char c) {
@@ -119,7 +130,7 @@ static inline bool is_lower(unsigned char c) {
 }
 ```
 
-Walk through a few values:
+Let's walk through a few values:
 
 - `'a' - 'a'` is `0`, and `0 <= 25`.
 - `'m' - 'a'` is `12`, still in range.
@@ -128,12 +139,12 @@ Walk through a few values:
 - `'{' - 'a'` is `26`, just outside.
 - `'A' - 'a'` wraps well above 25, so uppercase is rejected.
 
-The wraparound is the trick. Bytes below `'a'` underflow modulo 256 and
-land in the high end of the `unsigned char` range, where they fail the
-same `<= 25` test as bytes above `'z'`. Two comparisons become one, and
-that one has no short-circuit.
+The wraparound is the trick. Bytes below `'a'` underflow modulo 256
+and land in the high end of the `unsigned char` range, where they fail
+the same `<= 25` test as bytes above `'z'`. Two comparisons become one,
+and that one has no short-circuit.
 
-Drop it into the accumulating loop:
+We can drop it into the accumulating loop:
 
 ```cpp title="Validating a string with a wraparound predicate"
 bool is_ascii_lowercase(std::string_view input) {
@@ -146,26 +157,27 @@ bool is_ascii_lowercase(std::string_view input) {
 }
 ```
 
-The body is now *subtract, compare, or*. No `if`. No `return` in the
-middle. No `||`. For a simple contiguous class like `a-z` this is
-usually as far as scalar code needs to go.
+The body is now subtract, compare, or. There is no `if`, no `return` in
+the middle, and no `||`. For a simple contiguous class like `a-z`, this
+is usually as far as scalar code needs to go.
 
-The wraparound test only works for a single closed interval. *Is this a
-hex digit? An unreserved URL character? A forbidden host character?*
-Those classes are unions of ranges and punctuations. Bitwise arithmetic
-gets ugly there. A table does not.
+The wraparound test only works for a single closed interval. If you
+want to know whether a character is a hex digit, an unreserved URL
+character, or a forbidden host character, those classes are unions of
+ranges and punctuation. Bitwise arithmetic gets ugly there. A table
+does not.
 
 ## A 256-byte lookup table
 
-You will sometimes hear *a table of size 255*. The last valid index of
-an 8-bit value is 255, but the length of the array is **256**. Byte
-values run from `0x00` through `0xFF` inclusive. A table of 255 entries
-leaves `0xFF` unmapped and invites an off-by-one the first time a
-non-ASCII byte shows up.
+You will sometimes hear people say "a table of size 255". The last
+valid index of an 8-bit value is 255, but the length of the array is
+**256**. Byte values run from `0x00` through `0xFF` inclusive. A table
+of 255 entries leaves `0xFF` unmapped and invites an off-by-one the
+first time a non-ASCII byte shows up.
 
-For ASCII classification that 256-byte table is the whole universe. Every
-input is a valid index, so the predicate cannot branch on the character
-itself. It can only load.
+For ASCII classification, that 256-byte table covers every possible
+input. Every byte is a valid index, so the check cannot branch on the
+character itself. It can only load.
 
 ```cpp title="Build a 256-entry lowercase table at compile time"
 consteval std::array<uint8_t, 256> make_lowercase_table() {
@@ -180,9 +192,9 @@ constexpr auto kIsLower = make_lowercase_table();
 ```
 
 `table{}` zero-initializes every slot. The loop turns on only `'a'`
-through `'z'`. Everything else — uppercase, digits, punctuation, bytes
-above 127 — stays `0`. The table is 256 bytes, which is four cache
-lines. It stays hot if this function is actually on the hot path.
+through `'z'`. Uppercase, digits, punctuation, and bytes above 127 stay
+`0`. The table is 256 bytes, which is four cache lines. It stays hot if
+this function is actually on the hot path.
 
 ```cpp title="Classify each byte with a load instead of a compare"
 bool is_ascii_lowercase(std::string_view input) {
@@ -196,10 +208,10 @@ bool is_ascii_lowercase(std::string_view input) {
 
 There is no `if (c >= 'a' && c <= 'z')`. There is a load from
 `kIsLower[c]` and an AND. The branch predictor has nothing to do. The
-same skeleton handles predicates that would be miserable as arithmetic.
+same skeleton handles checks that would be miserable as arithmetic.
 
-A hex-digit table is the example I reach for after lowercase, because
-hex is two ranges plus a gap:
+A hex-digit table is a good next example, because hex is two ranges
+plus a gap:
 
 ```cpp title="Hex digits are a messy range and a clean table"
 consteval std::array<uint8_t, 256> make_hex_table() {
@@ -223,34 +235,35 @@ bool is_ascii_hex(std::string_view input) {
 
 The scalar version of that check is
 `(c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')`.
-Six comparisons and a tree of short-circuit branches, or one load.
+That is six comparisons and a tree of short-circuit branches, or one
+load.
 
-This is how Ada classifies URL characters. Host, path, and percent-encoding
-rules are not a single interval. They are a pile of *allowed* and
-*forbidden* bytes. A 256-byte table per class is cheaper than explaining
-those rules to the branch predictor, and it is cheap enough that we keep
-one table per class rather than packing bits until the code is
-unreadable.
+This is how Ada classifies URL characters. Host, path, and
+percent-encoding rules are not a single interval. They are a pile of
+allowed and forbidden bytes. A 256-byte table per class is cheaper than
+explaining those rules to the branch predictor, and it is cheap enough
+that we keep one table per class rather than packing bits until the
+code is unreadable.
 
-Two caveats, both real:
+There are two caveats:
 
-- The table must be `unsigned char`-indexed. A signed `char` of `0xFF`
-  becomes `-1` and walks off the front of the array.
-- A table only wins if it stays in cache. 256 bytes is easy. A table per
-  call that you rebuild at runtime is not a table, it is a tax.
+- The table must be indexed with `unsigned char`. A signed `char` of
+  `0xFF` becomes `-1` and walks off the front of the array.
+- A table only wins if it stays in cache. 256 bytes is easy. Rebuilding
+  a table on every call is not a table. It is extra work.
 
-We are still doing one load per byte. The next two sections do eight and
-sixteen bytes per iteration.
+We are still doing one load per byte. The next two sections do eight
+and sixteen bytes per iteration.
 
 ## SWAR when SIMD is not available
 
-SWAR means *SIMD within a register*. You treat a `uint64_t` as eight
-packed bytes and use ordinary integer arithmetic — add, subtract, and,
-and not — to run the same test on all eight lanes at once. There is no
+SWAR means SIMD within a register. You treat a `uint64_t` as eight
+packed bytes and use ordinary integer arithmetic (add, subtract, and,
+and not) to run the same test on all eight lanes at once. There is no
 `#include <arm_neon.h>`, no AVX, and no runtime dispatch. The code is
 portable C++.
 
-The building block is *splat*: repeat a byte eight times so it lines up
+The building block is splat: repeat a byte eight times so it lines up
 with every lane.
 
 ```cpp title="Broadcast one byte across a 64-bit word"
@@ -263,8 +276,8 @@ constexpr uint64_t splat(uint8_t x) {
 ```
 
 `splat('a')` is `0x6161616161616161`. `kHigh` is a mask of the top bit
-of every byte. That high bit is our per-lane boolean: `0x80` means *this
-byte failed*, `0x00` means it did not.
+of every byte. That high bit is our per-lane boolean. `0x80` means this
+byte failed. `0x00` means it did not.
 
 Two tests from [Bit Twiddling Hacks][bithacks] tell us whether any lane
 is below or above a constant. They look like magic, so here is the
@@ -285,12 +298,12 @@ constexpr uint64_t bytes_greater_than(uint64_t x, uint8_t n) {
 ```
 
 `bytes_less_than` subtracts `n` from each byte. A lane that was already
-below `n` underflows and the `& ~x & kHigh` filter keeps only those
-underflows. `bytes_greater_than` adds `127 - n`. A lane above `n` crosses
-127 and lights the high bit; the `| x` term also catches bytes that
-already had their high bit set.
+below `n` underflows, and the `& ~x & kHigh` filter keeps only those
+underflows. `bytes_greater_than` adds `127 - n`. A lane above `n`
+crosses 127 and lights the high bit. The `| x` term also catches bytes
+that already had their high bit set.
 
-For ASCII input those additions and subtractions do not carry into the
+For ASCII input, those additions and subtractions do not carry into the
 next lane in a way that breaks the test, because every byte is below
 128. So we reject non-ASCII first, then apply both bounds:
 
@@ -303,15 +316,15 @@ bool eight_bytes_are_lowercase(uint64_t word) {
 }
 ```
 
-If `word` is `hhhhhzzz` (`h` is `'h'`, `z` is `'z'`), every lane sits in
-`['a', 'z']` and the three masks are zero. If one lane is `'A'` or `'{'`
-or `0xC3`, the corresponding high bit in the OR is set and the function
-returns `false`.
+If `word` is eight lowercase letters, every lane sits in `['a', 'z']`
+and the three masks are zero. If one lane is `'A'` or `'{'` or `0xC3`,
+the corresponding high bit in the OR is set and the function returns
+`false`.
 
-The string-level version loads eight bytes at a time with `memcpy` —
-that is the portable way to avoid alignment and strict-aliasing
-problems — ORs the failure masks into an accumulator, and finishes the
-tail with the scalar wraparound test.
+The string-level version loads eight bytes at a time with `memcpy`.
+That is the portable way to avoid alignment and strict-aliasing
+problems. It ORs the failure masks into an accumulator, and finishes
+the leftover bytes with the scalar wraparound test.
 
 ```cpp title="SWAR lowercase scan with a scalar tail"
 bool is_ascii_lowercase(std::string_view input) {
@@ -341,8 +354,8 @@ bool is_ascii_lowercase(std::string_view input) {
 The inner loop never branches on a character value. It always consumes
 eight bytes, always updates `bad`, and always continues. That is the
 same OR-accumulation idea as the scalar version, applied to a whole
-word. The leftover `n < 8` bytes are not worth the SWAR setup; the
-wraparound predicate is enough.
+word. The leftover `n < 8` bytes are not worth the SWAR setup. The
+wraparound check is enough.
 
 SWAR is the right tool when you do not have SIMD, when you do not want
 a runtime ISA dispatch, or when the leftover after a SIMD main loop is
@@ -354,7 +367,7 @@ real compare instructions.
 
 [ARM NEON][neon] gives you 128-bit vectors. One load brings in sixteen
 bytes. One compare produces sixteen lanes of `0xFF` or `0x00`. One OR
-accumulates failures. There is no SWAR carry dance, because the
+accumulates failures. There is no SWAR carry trick here, because the
 hardware already knows the lanes are independent.
 
 ```cpp title="NEON lowercase scan, 16 bytes per iteration"
@@ -389,28 +402,30 @@ bool is_ascii_lowercase(std::string_view input) {
 }
 ```
 
-What each intrinsic is doing:
+Here is what each intrinsic is doing:
 
 - `vdupq_n_u8('a')` is the NEON splat. Every lane holds `'a'`.
-- `vld1q_u8` loads 16 consecutive bytes. No `memcpy` dance; the
-  instruction accepts unaligned addresses.
+- `vld1q_u8` loads 16 consecutive bytes. You do not need `memcpy`
+  here. The instruction accepts unaligned addresses.
 - `vcgeq_u8` / `vcleq_u8` compare every lane against `'a'` and `'z'`.
-  A passing lane becomes `0xFF`, a failing lane becomes `0x00`.
+  A passing lane becomes `0xFF`. A failing lane becomes `0x00`.
 - `vandq_u8` of those two masks is the closed interval `['a', 'z']`.
 - `vmvnq_u8` flips it, so errors are `0xFF`.
 - `vorrq_u8` into `errors` is the same OR-accumulation as the scalar
   and SWAR loops.
-- `vmaxvq_u8` (AArch64) horizontally reduces the vector: if any lane
-  is non-zero, some byte was out of range.
+- `vmaxvq_u8` (AArch64) reduces the vector. If any lane is non-zero,
+  some byte was out of range.
 
-The tail is scalar on purpose. Sixteen-and-up is where NEON pays for
-the load. The leftover 0–15 bytes are cheaper as the wraparound test.
+The tail is scalar on purpose. Sixteen bytes and up is where NEON pays
+for the load. The leftover 0 to 15 bytes are cheaper as the wraparound
+test.
 
-For a single interval, vector compares beat a table. For the messy
-classes — hex, URL unreserved, JSON string-safe — NEON can still do
-the table lookup, just not as a 256-byte gather. The usual trick,
-which [simdjson][simdjson] popularized and which we use in Ada, is to
-split each byte into nibbles and look those up in two 16-byte tables.
+For a single interval, vector compares beat a table. For messier
+classes such as hex, URL unreserved characters, or JSON string-safe
+bytes, NEON can still do the table lookup. It just cannot do it as a
+256-byte gather. The usual trick, which [simdjson][simdjson]
+popularized and which we use in Ada, is to split each byte into
+nibbles and look those up in two 16-byte tables.
 
 ```cpp title="Nibble lookup: a 256-byte class table in two 16-byte vectors"
 uint8x16_t classify(uint8x16_t input,
@@ -429,41 +444,40 @@ have said yes. You are back to the lookup-table section, except the
 table now lives in registers and you classify 16 bytes per call.
 
 On x86 the same ideas map to SSE/AVX (`_mm_cmpeq_epi8`,
-`_mm_shuffle_epi8`). The NEON names change; the loop shape does not.
+`_mm_shuffle_epi8`). The NEON names change. The loop shape does not.
 
 ## Which one should you use?
 
-Use the technique that matches the predicate and the length of the
-input. I treat them as a ladder, not as competing religions.
+Use the technique that matches the check and the length of the input.
 
 1. **Early `return false`** when invalid input is common and usually
    fails in the first few bytes. Do not be clever if the branch is
    highly predictable and the function is not on a profiled hot path.
 2. **Bitwise accumulation** when you already scan the whole string and
-   the predicate is a single interval. The wraparound test
+   the check is a single interval. The wraparound test
    (`unsigned char(c - 'a') <= 25`) is the whole optimization.
-3. **A 256-byte table** when the predicate is a union of ranges or a
-   grab-bag of punctuation. One load replaces a tree of compares. Size
-   it at 256, not 255.
+3. **A 256-byte table** when the check is a union of ranges or a mix
+   of punctuation. One load replaces a tree of compares. Size it at
+   256, not 255.
 4. **SWAR** when the strings are long enough that eight bytes at a
    time matter and you cannot, or do not want to, ship SIMD. It is
    also the portable fallback behind a SIMD main loop.
 5. **NEON** (or SSE/AVX) when you are on a machine that has it and the
-   input is tens of bytes or more. Compare instructions for intervals,
-   nibble tables for everything else.
+   input is tens of bytes or more. Use compare instructions for
+   intervals, and nibble tables for everything else.
 
-Compilers at `-O3` already turn some of the scalar loops into
-`cmov` / `setcc` or even auto-vectorize them. They will not invent a
-256-byte character class for you, and they will not write the SWAR
+Compilers at `-O3` already turn some of the scalar loops into `cmov`
+or `setcc`, and they can even auto-vectorize them. They will not invent
+a 256-byte character class for you, and they will not write the SWAR
 masks. Measure the version you are about to delete. If the naive loop
 is already off the profile, leave it alone.
 
-The running example in this post is *is this string ASCII lowercase?*
-because the predicate is small enough to see every transformation. The
-reason I care is the other predicates: hex, unreserved, forbidden host
-bytes, whitespace. Those are the loops that show up in a URL parser,
-and those are the loops where a branchy `for` with an early `return`
-quietly becomes the whole function.
+I used "is this string ASCII lowercase?" as the running example
+because the check is small enough to see every transformation. In
+practice, the checks I care about are the other ones: hex,
+unreserved, forbidden host bytes, whitespace. Those are the loops
+that show up in a URL parser, and they are often where a simple
+`for` loop with an early `return` becomes the bottleneck.
 
 [ada]: https://github.com/ada-url/ada
 [bithacks]: https://graphics.stanford.edu/~seander/bithacks.html#HasLessInWord
