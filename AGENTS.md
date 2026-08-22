@@ -5,7 +5,7 @@ Project-specific rules and notes for AI agents working in this codebase.
 ## Commands
 
 ```sh
-node --run build          # wrangler types && isolated astro check && astro build
+node --run build          # wrangler types && astro check && astro build
 node --run dev            # wrangler types && astro dev --port 3000
 node --run preview        # wrangler dev (Cloudflare Workers local preview)
 node --run deploy         # build && wrangler deploy
@@ -51,14 +51,12 @@ must include the LLM surfaces: `/llms.txt`, `/llms-full.txt`, `Accept: text/mark
 
 ## TypeScript
 
-- The project declares TypeScript 7 (`^7.0.0`). TypeScript 7 is the native compiler
-  and does not yet ship the programmatic Language Service API that
-  `@astrojs/check` / Volar needs ([withastro/roadmap#1321](https://github.com/withastro/roadmap/discussions/1321)).
-- `tools/astro-check` is a tiny `file:` package (not a pnpm workspace) that
-  depends on TypeScript 6.0.3 and `@astrojs/check`. `scripts/astro-check.mjs`
-  runs that isolated checker. Do not add `pnpm-workspace.yaml` — Workers Builds
-  treats that as a monorepo. The `build` script uses the wrapper. Do not switch
-  `build` back to `astro check` until `@astrojs/check` supports TypeScript 7.
+- Use TypeScript 6 (`^6.0.0`). TypeScript 7 is available but breaks `@astrojs/check`
+  (no Language Service API; [withastro/roadmap#1321](https://github.com/withastro/roadmap/discussions/1321)).
+  Stay on TS 6 until Astro check supports TS 7. Peer warnings about `typescript@^5`
+  are cosmetic.
+- Stay on `@astrojs/compiler-rs` 0.3.2. Astro 7.2.4 still depends on `^0.3.2`;
+  forcing 0.4.0 via a pnpm override broke Workers Builds.
 
 ## Astro-specific
 
