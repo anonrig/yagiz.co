@@ -3,7 +3,8 @@ title: 'Eliminating branches in C++ loops'
 description: >-
   A for loop that returns false from a branch and true at the end is easy
   to read, but the branch can be expensive. In this post I show how to
-  remove it with bitwise operations, a 256-byte table, SWAR, and NEON.
+  remove it with bitwise operations, a 256-byte table, SWAR, and NEON,
+  and then apply the same ideas to UTF-16 validation.
 date: '2026-08-22'
 tag: performance
 status: published
@@ -545,6 +546,175 @@ unreserved, forbidden host bytes, whitespace. Those are the loops
 that show up in a URL parser, and they are often where a simple
 `for` loop with an early `return` becomes the bottleneck.
 
+The same tools also apply when the check is no longer independent
+per byte. UTF-16 is the example I reach for.
+
+## A harder problem: is this valid UTF-16?
+
+ASCII lowercase is a per-byte question. Each character stands on
+its own. UTF-16 does not work that way.
+
+A UTF-16 string is a sequence of 16-bit code units. Most of Unicode
+fits in one unit. That is the Basic Multilingual Plane: everything
+from `U+0000` to `U+D7FF` and from `U+E000` to `U+FFFF`. Characters
+above `U+FFFF` use two units, a surrogate pair. The first unit is a
+high surrogate (`U+D800` to `U+DBFF`). The second is a low surrogate
+(`U+DC00` to `U+DFFF`). A high surrogate must be followed by a low
+surrogate. A low surrogate must be preceded by a high surrogate.
+Anything else is invalid.
+
+Windows, Java, and JavaScript all store strings this way. [Daniel
+has a post][utf16-neon] on fixing broken UTF-16 in place with NEON.
+[simdutf][simdutf] is the production version of the same idea. The
+question I want is simpler: is this input valid UTF-16?
+
+A reasonable function looks a lot like the loop we started with.
+We return `false` from a branch, and `true` at the end.
+
+```cpp title="The obvious UTF-16 validator"
+static inline bool is_high_surrogate(char16_t c) {
+  return static_cast<uint16_t>(c - 0xD800) <= 0x03FF;
+}
+
+static inline bool is_low_surrogate(char16_t c) {
+  return static_cast<uint16_t>(c - 0xDC00) <= 0x03FF;
+}
+
+bool is_valid_utf16(std::u16string_view input) {
+  for (size_t i = 0; i < input.size();) {
+    const char16_t u = input[i];
+    if (static_cast<uint16_t>(u - 0xD800) > 0x07FF) {
+      ++i;
+      continue;
+    }
+    if (!is_high_surrogate(u) || i + 1 >= input.size() ||
+        !is_low_surrogate(input[i + 1])) {
+      return false;
+    }
+    i += 2;
+  }
+  return true;
+}
+```
+
+The wraparound test is back. `(u - 0xD800) > 0x07FF` means "not a
+surrogate at all". `(u - 0xD800) <= 0x03FF` means high.
+`(u - 0xDC00) <= 0x03FF` means low. You can also do it with a mask,
+which I like better here:
+
+```cpp title="Classify a code unit with a mask"
+static inline bool is_surrogate(char16_t c) {
+  return (c & 0xF800) == 0xD800;
+}
+
+static inline bool is_high_surrogate(char16_t c) {
+  return (c & 0xFC00) == 0xD800;
+}
+
+static inline bool is_low_surrogate(char16_t c) {
+  return (c & 0xFC00) == 0xDC00;
+}
+```
+
+`0xD800` to `0xDFFF` all have the top five bits `11011`. That is
+what `c & 0xF800` tests. High vs low is the next two bits.
+
+This is already harder than lowercase. The predicate looks at the
+next unit. You have state. A lone high at the end of the string is
+an error. A lone low in the middle is an error. Two highs in a row
+are an error. You cannot AND a per-unit flag and be done.
+
+A 256-byte table does not help much either. The input is 16-bit.
+A table of 65536 entries is 64 KiB. That is no longer four cache
+lines.
+
+What does help is the same observation we used for lowercase: most
+input is fine. Most UTF-16 text never leaves the BMP. There are no
+surrogates at all. If a block has no word in `0xD800..0xDFFF`, the
+whole block is valid and we can skip it.
+
+SWAR can do that for four code units in a `uint64_t`:
+
+```cpp title="Any surrogate in four UTF-16 code units?"
+constexpr uint64_t kSurrogateBits = 0xF800F800F800F800ULL;
+constexpr uint64_t kSurrogateWant = 0xD800D800D800D800ULL;
+constexpr uint64_t kLaneHigh = 0x8000800080008000ULL;
+constexpr uint64_t kLaneOne = 0x0001000100010001ULL;
+
+bool has_surrogate_word(uint64_t word) {
+  const uint64_t xor_lanes = (word & kSurrogateBits) ^ kSurrogateWant;
+  return ((xor_lanes - kLaneOne) & ~xor_lanes & kLaneHigh) != 0;
+}
+```
+
+Mask each 16-bit lane with `0xF800`, XOR with `0xD800`, and look
+for a zero lane. If there is none, those four units are valid. If
+there is one, we fall back to the scalar pairing loop for that
+block. That is the same OR-accumulation idea, except the cheap
+path is "no surrogates" and the expensive path is the state
+machine.
+
+On NEON you load eight code units and do the pairing in the
+vector. The trick is to build a high-surrogate mask and a
+low-surrogate mask, then shift one of them so each lane is
+checked against its neighbor. The last high-surrogate bit of the
+previous block has to come along. That carry is the whole
+difference from the lowercase scan.
+
+```cpp title="NEON UTF-16 block: pair surrogates across lanes"
+bool is_valid_utf16_block(uint16x8_t vec, bool& pending_high) {
+  const uint16x8_t high = vceqq_u16(
+      vandq_u16(vec, vdupq_n_u16(0xFC00)), vdupq_n_u16(0xD800));
+  const uint16x8_t low = vceqq_u16(
+      vandq_u16(vec, vdupq_n_u16(0xFC00)), vdupq_n_u16(0xDC00));
+
+  if (pending_high && vgetq_lane_u16(low, 0) == 0) {
+    return false;
+  }
+
+  const uint16x8_t prev = vdupq_n_u16(pending_high ? 0xFFFF : 0);
+  const uint16x8_t high_before = vextq_u16(prev, high, 7);
+  const uint16x8_t low_after = vextq_u16(low, vdupq_n_u16(0), 1);
+
+  const uint16x8_t lone_low = vbicq_u16(low, high_before);
+  uint16x8_t lone_high = vbicq_u16(high, low_after);
+  lone_high = vsetq_lane_u16(0, lone_high, 7);
+
+  pending_high = vgetq_lane_u16(high, 7) != 0;
+  return vmaxvq_u16(vorrq_u16(lone_low, lone_high)) == 0;
+}
+```
+
+`vextq_u16(prev, high, 7)` takes the last lane of the previous
+high-surrogate mask and puts it in front of the current one. Each
+low lane is then checked against the high that came before it.
+`vbicq` is AND-NOT: a low with no high in front of it, or a high
+with no low after it.
+
+The last lane is the carry. If this block ends on a high
+surrogate, we do not fail yet. We set `pending_high` and let the
+next block pair it. If the next block starts with anything other
+than a low surrogate, that is an error. If `pending_high` is still
+set after the last block, the string ended on a lone high
+surrogate and we return `false`. That is the one piece of state
+the lowercase scan never needed.
+
+You can go further the way a reader did on Daniel's post. NEON
+can deinterleave with `vld2q_u8`: even bytes in one register, odd
+bytes in the other. For little-endian UTF-16, the high byte of
+each code unit is enough to tell high surrogate, low surrogate,
+or neither. You throw away the low bytes and classify 16 units
+from one 16-byte register. [The follow-up paper][utf16-paper]
+pushes that idea to 64-unit blocks.
+
+The point is not to paste a production validator into a blog
+post. [simdutf][simdutf] already has one. The point is that the
+ladder did not change. You still want fewer branches. You still
+want a cheap test that rejects the common case without pairing.
+You still want SIMD when the strings are long. The new cost is
+the carry: one bit of state between blocks, because UTF-16 is a
+tiny state machine and lowercase is not.
+
 [ada]: https://github.com/ada-url/ada
 [lemire]: https://lemire.me
 [escaping]: https://lemire.me/blog/2024/05/31/quickly-checking-whether-a-string-needs-escaping/
@@ -554,3 +724,6 @@ that show up in a URL parser, and they are often where a simple
 [neon-ids]: https://lemire.me/blog/2023/09/04/locating-identifiers-quickly-arm-neon-edition/
 [pgjson]: https://arxiv.org/abs/1902.08318
 [neon]: https://developer.arm.com/architectures/instruction-sets/intrinsics/
+[utf16-neon]: https://lemire.me/blog/2024/12/29/efficient-in-place-utf-16-unicode-correction-with-arm-neon/
+[simdutf]: https://github.com/simdutf/simdutf
+[utf16-paper]: https://arxiv.org/abs/2601.06349
