@@ -41,6 +41,9 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.3.3
         version: 4.3.3(vite@8.1.5(@types/node@26.2.0)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0))
+      '@yagiz/astro-check':
+        specifier: file:tools/astro-check
+        version: file:tools/astro-check(prettier@3.9.6)
       astro:
         specifier: ^7.2.4
         version: 7.2.4(@astrojs/markdown-remark@7.2.4)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0)
@@ -1539,6 +1542,9 @@ packages:
   '@xmldom/xmldom@0.9.10':
     resolution: {integrity: sha512-A9gOqLdi6cV4ibazAjcQufGj0B1y/vDqYrcuP6d/6x8P27gRS8643Dj9o1dEKtB6O7fwxb2FgBmJS2mX7gpvdw==}
     engines: {node: '>=14.6'}
+
+  '@yagiz/astro-check@file:tools/astro-check':
+    resolution: {directory: tools/astro-check, type: directory}
 
   abbrev@2.0.0:
     resolution: {integrity: sha512-6/mh1E2u2YgEsCHdY0Yx5oW+61gZU+1vXaoiHHrpKeuRNNgFvS+/jrwHiQhB5apAf5oB7UB7E19ol2R2LKH8hQ==}
@@ -5702,6 +5708,14 @@ snapshots:
   '@vscode/l10n@0.0.18': {}
 
   '@xmldom/xmldom@0.9.10': {}
+
+  '@yagiz/astro-check@file:tools/astro-check(prettier@3.9.6)':
+    dependencies:
+      '@astrojs/check': 0.9.10(prettier@3.9.6)(typescript@6.0.3)
+      typescript: 6.0.3
+    transitivePeerDependencies:
+      - prettier
+      - prettier-plugin-astro
 
   abbrev@2.0.0: {}
 
