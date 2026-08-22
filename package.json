@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "wrangler types && astro dev --port 3000",
-    "build": "wrangler types && astro check && astro build",
+    "build": "wrangler types && node ./scripts/astro-check.mjs && astro build",
     "deploy": "pnpm run build && wrangler deploy",
     "preview": "wrangler dev",
     "astro": "astro",
@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.2.3",
-    "@astrojs/compiler-rs": "^0.3.2",
+    "@astrojs/compiler-rs": "^0.4.0",
     "@astrojs/markdown-remark": "^7.2.4",
     "@astrojs/markdown-satteri": "^0.3.7",
     "@astrojs/mdx": "^7.0.7",
@@ -45,7 +45,8 @@
     "@marp-team/marp-cli": "^4.5.0",
     "@types/node": "^26.2.0",
     "to-vfile": "^8.0.0",
-    "typescript": "^6.0.3",
+    "typescript": "^7.0.2",
+    "typescript6": "npm:typescript@6.0.3",
     "vfile-matter": "^5.0.1"
   },
   "packageManager": "pnpm@10.34.5",
@@ -57,6 +58,14 @@
       "puppeteer",
       "sharp",
       "workerd"
-    ]
+    ],
+    "overrides": {
+      "@astrojs/compiler-rs": "^0.4.0"
+    },
+    "peerDependencyRules": {
+      "allowedVersions": {
+        "typescript": "7"
+      }
+    }
   }
 }

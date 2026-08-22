@@ -51,9 +51,13 @@ must include the LLM surfaces: `/llms.txt`, `/llms-full.txt`, `Accept: text/mark
 
 ## TypeScript
 
-- Use TypeScript 6 (`^6.0.0`). TypeScript 7 is available but breaks `@astrojs/check`
-  (language-server incompatibility). Stay on TS 6 until Astro check supports TS 7.
-  Peer warnings about `typescript@^5` are cosmetic.
+- The project declares TypeScript 7 (`^7.0.0`). TypeScript 7 is the native compiler
+  and does not yet ship the programmatic Language Service API that
+  `@astrojs/check` / Volar needs ([withastro/roadmap#1321](https://github.com/withastro/roadmap/discussions/1321)).
+- `scripts/astro-check.mjs` runs the same checker as `astro check`, but points it
+  at the `typescript6` alias (`typescript@6.0.3`). The `build` script uses that
+  wrapper. Do not switch `build` back to `astro check` until `@astrojs/check`
+  supports TypeScript 7.
 
 ## Astro-specific
 
