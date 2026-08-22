@@ -31,11 +31,35 @@ type checking, and the full Astro build in one step.
 - Do not add Claude/AI as a git commit author
 - Keep commits small and focused
 
+## Pull requests (LLM-ready)
+
+Write PR bodies for humans and agents the same way `/llms.txt` is written for the site:
+structured facts first, then a checkbox test plan. Use `.github/PULL_REQUEST_TEMPLATE.md`.
+
+Required sections:
+
+1. YAML frontmatter — `type`, `intent`, `app-source-changed`, constraints, verify
+   commands, and a preview URL when CI produced one
+2. `## Summary` — what changed and why (see #209)
+3. `## Non-goals` — holds and things reviewers should not "fix"
+4. `## Test plan` — checkboxes with exact commands and expected status/headers
+
+When a change can touch markdown, MDX, the Worker, or the sitemap, the test plan
+must include the LLM surfaces: `/llms.txt`, `/llms-full.txt`, `Accept: text/markdown`,
+`.md` YAML frontmatter, `406` for unknown types, and sitemap exclusion of `.md` /
+`llms*.txt`.
+
 ## TypeScript
 
 - Use TypeScript 6 (`^6.0.0`). TypeScript 7 is available but breaks `@astrojs/check`
-  (language-server incompatibility). Stay on TS 6 until Astro check supports TS 7.
-  Peer warnings about `typescript@^5` are cosmetic.
+  (no Language Service API; [withastro/roadmap#1321](https://github.com/withastro/roadmap/discussions/1321)).
+  Stay on TS 6 until Astro check supports TS 7. Peer warnings about `typescript@^5`
+  are cosmetic.
+- Stay on `@astrojs/compiler-rs` 0.3.2. Astro 7.2.4 still depends on `^0.3.2`;
+  forcing 0.4.0 via a pnpm override broke Workers Builds.
+- Keep the `@cloudflare/vite-plugin` override at `^1.53.1` so `astro dev` and
+  `wrangler preview` share Wrangler 4.125's Miniflare 5 / workerd runtime.
+  `@astrojs/cloudflare` 14.2.3 otherwise resolves vite-plugin 1.47 (Miniflare 4).
 
 ## Astro-specific
 
