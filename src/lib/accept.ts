@@ -102,6 +102,12 @@ export function markdownPath(pathname: string): string {
 const STATIC_EXT =
   /\.(?:css|js|mjs|map|png|jpe?g|webp|gif|svg|avif|ico|woff2?|ttf|otf|eot|xml|txt|json|pdf|mp4|webm|mp3|wav|ogg|zip|md)$/i
 
+const IMMUTABLE_ASSET = /\.(?:css|js|mjs|map|png|jpe?g|webp|gif|svg|avif|ico|woff2?|ttf|otf|eot)$/i
+
+export function isImmutableAsset(pathname: string): boolean {
+  return pathname.startsWith('/_astro/') || IMMUTABLE_ASSET.test(pathname)
+}
+
 /** Paths that should skip HTML↔markdown negotiation. */
 export function shouldSkipNegotiation(pathname: string): boolean {
   return (

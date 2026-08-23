@@ -2,6 +2,7 @@ import { handle } from '@astrojs/cloudflare/handler'
 import {
   appendLink,
   appendVaryAccept,
+  isImmutableAsset,
   markdownPath,
   preferredType,
   shouldSkipNegotiation,
@@ -46,7 +47,7 @@ function applyCdnCache(request: Request, response: Response): Response {
     if (headers.has('Cloudflare-CDN-Cache-Control')) {
       return
     }
-    const isAsset = pathname.startsWith('/_astro/')
+    const isAsset = isImmutableAsset(pathname)
     headers.set('Cloudflare-CDN-Cache-Control', isAsset ? ASSET_CDN_CACHE : PAGE_CDN_CACHE)
     if (!headers.has('Cache-Tag')) {
       headers.set('Cache-Tag', isAsset ? 'asset' : 'page')
