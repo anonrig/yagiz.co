@@ -28,6 +28,17 @@ function hexClass(prefix: string, value: string): string | undefined {
   return hex ? `${prefix}-${hex[1].toLowerCase()}` : undefined
 }
 
+export function transformerEmptyLine(): ShikiTransformer {
+  return {
+    name: 'empty-line',
+    line(node) {
+      if (node.children.length === 0) {
+        node.children.push({ type: 'text', value: ' ' })
+      }
+    },
+  }
+}
+
 export function transformerInlineStylesToClasses(): ShikiTransformer {
   return {
     name: 'inline-styles-to-classes',
