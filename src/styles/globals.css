@@ -63,6 +63,9 @@ input[type="email"] {
   color: #abb2bf;
   overflow-x: auto;
 }
+.astro-code code {
+  @apply grid min-w-full;
+}
 .astro-code .line {
   @apply py-1;
 }
