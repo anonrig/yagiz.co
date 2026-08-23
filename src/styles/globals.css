@@ -74,37 +74,37 @@ input[type="email"] {
 .astro-code .highlighted-word {
   @apply rounded-md bg-slate-500/10 p-1;
 }
-.astro-code .s-italic {
+pre .s-italic {
   font-style: italic;
 }
-.astro-code .s-overflow-x {
+pre .s-overflow-x {
   overflow-x: auto;
 }
-.astro-code .s-abb2bf {
+pre .s-abb2bf {
   color: #abb2bf;
 }
-.astro-code .s-c678dd {
+pre .s-c678dd {
   color: #c678dd;
 }
-.astro-code .s-61afef {
+pre .s-61afef {
   color: #61afef;
 }
-.astro-code .s-e5c07b {
+pre .s-e5c07b {
   color: #e5c07b;
 }
-.astro-code .s-98c379 {
+pre .s-98c379 {
   color: #98c379;
 }
-.astro-code .s-e06c75 {
+pre .s-e06c75 {
   color: #e06c75;
 }
-.astro-code .s-d19a66 {
+pre .s-d19a66 {
   color: #d19a66;
 }
-.astro-code .s-56b6c2 {
+pre .s-56b6c2 {
   color: #56b6c2;
 }
-.astro-code .s-7f848e {
+pre .s-7f848e {
   color: #7f848e;
 }
 .astro-code-title {
