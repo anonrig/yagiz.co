@@ -13,6 +13,7 @@ import rehypeSlug from 'rehype-slug'
 import remarkGfm from 'remark-gfm'
 import { websiteUrl } from './src/lib/content.ts'
 import {
+  transformerEmptyLine,
   transformerInlineStylesToClasses,
   transformerMetaTitle,
 } from './src/lib/shiki-transformers.ts'
@@ -35,6 +36,7 @@ export default defineConfig({
         transformerMetaTitle(),
         transformerMetaHighlight(),
         transformerMetaWordHighlight(),
+        transformerEmptyLine(),
         transformerInlineStylesToClasses(),
       ],
     },
