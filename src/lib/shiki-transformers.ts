@@ -2,27 +2,26 @@ import type { ShikiTransformer } from '@shikijs/types'
 
 const TITLE_RE = /title="([^"]*)"/
 
-/**
- * Lift `title="…"` off the fence meta string (so `{1,3}` / `/word/` transformers
- * do not see it) and wrap the highlighted block in a titled figure.
- */
 export function transformerMetaTitle(): ShikiTransformer {
   return {
     name: 'meta-title',
     preprocess(_code, options) {
       const meta = options.meta
-      const raw = meta?.__raw
-      if (!meta || !raw) {
+      if (!meta?.__raw) {
         return
       }
 
+      let raw = meta.__raw
       const match = TITLE_RE.exec(raw)
-      if (!match) {
-        return
+      if (match) {
+        meta.title = match[1]
+        raw = raw.replace(match[0], '')
       }
 
-      meta.title = match[1]
-      meta.__raw = raw.replace(match[0], '').replace(/\s+/g, ' ').trim()
+      meta.__raw = raw
+        .replace(/\{([^}]+)\}/g, (_, inner: string) => `{${inner.replace(/\s+/g, '')}}`)
+        .replace(/\s+/g, ' ')
+        .trim()
     },
     root(hast) {
       const title = this.options.meta?.title

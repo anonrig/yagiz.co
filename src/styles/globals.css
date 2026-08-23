@@ -56,8 +56,6 @@ input[type="email"] {
   appearance: none;
 }
 
-/* Astro Shiki: pre.astro-code > code > span.line (+ .highlighted / .highlighted-word).
-   Fence titles become figure.astro-code-figure > figcaption.astro-code-title. */
 .astro-code {
   @apply text-xs font-mono leading-4;
 }
