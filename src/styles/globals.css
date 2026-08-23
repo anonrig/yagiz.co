@@ -58,7 +58,7 @@ input[type="email"] {
 }
 
 .astro-code {
-  @apply text-xs font-mono leading-4 p-4 rounded-md border border-solid border-[#333333];
+  @apply text-xs font-mono leading-4 px-3 py-2 rounded-md border border-solid border-[#333333];
   background-color: #2f333c;
   color: #abb2bf;
   overflow-x: auto;
@@ -67,7 +67,7 @@ input[type="email"] {
   @apply grid min-w-full;
 }
 .astro-code .line {
-  @apply py-1;
+  @apply py-0.5;
 }
 .astro-code .line.highlighted {
   @apply bg-slate-500/10;
@@ -88,7 +88,7 @@ pre .s-overflow-x {
   overflow-x: auto;
 }
 .astro-code-title {
-  @apply px-4 py-2 font-mono font-medium border rounded-t-lg text-neutral-200 border-[#333333] bg-[#1c1c1c] text-xs;
+  @apply px-3 py-1.5 font-mono font-medium border rounded-t-lg text-neutral-200 border-[#333333] bg-[#1c1c1c] text-xs;
 }
 .astro-code-title + pre {
   @apply mt-0 rounded-t-none border-t-0;
