@@ -58,7 +58,7 @@ input[type="email"] {
 }
 
 .astro-code {
-  @apply text-xs font-mono leading-4 p-4 rounded-md;
+  @apply text-xs font-mono leading-4 p-4 rounded-md border border-solid border-[#333333];
   background-color: #282c34;
   color: #abb2bf;
   overflow-x: auto;
