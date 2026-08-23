@@ -24,6 +24,7 @@
     "@clack/prompts": "^1.7.0",
     "@lucide/astro": "^1.33.0",
     "@shikijs/transformers": "^4.4.3",
+    "@shikijs/types": "^4.4.3",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.2.4",
