@@ -28,6 +28,15 @@ function hexClass(prefix: string, value: string): string | undefined {
   return hex ? `${prefix}-${hex[1].toLowerCase()}` : undefined
 }
 
+function isBoldWeight(value: string): boolean {
+  const weight = value.toLowerCase()
+  if (weight === 'bold' || weight === 'bolder') {
+    return true
+  }
+  const numeric = Number(weight)
+  return Number.isFinite(numeric) && numeric >= 600
+}
+
 export function transformerEmptyLine(): ShikiTransformer {
   return {
     name: 'empty-line',
@@ -83,6 +92,8 @@ function consumeInlineStyles(node: HastProps): void {
       if (token) extra.push(token)
     } else if (prop === 'font-style' && value === 'italic') {
       extra.push('s-italic')
+    } else if (prop === 'font-weight' && isBoldWeight(value)) {
+      extra.push('s-bold')
     } else if (prop === 'overflow-x') {
       extra.push('s-overflow-x')
     }

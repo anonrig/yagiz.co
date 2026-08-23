@@ -59,7 +59,6 @@ input[type="email"] {
 
 .astro-code {
   @apply text-xs font-mono leading-4 p-4 rounded-md border border-solid border-[#333333];
-  /* Slightly above page #282c35 so the fence reads as a surface. */
   background-color: #2f333c;
   color: #abb2bf;
   overflow-x: auto;
@@ -81,6 +80,9 @@ input[type="email"] {
 }
 pre .s-italic {
   font-style: italic;
+}
+pre .s-bold {
+  font-weight: 700;
 }
 pre .s-overflow-x {
   overflow-x: auto;
