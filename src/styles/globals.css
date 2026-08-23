@@ -88,7 +88,31 @@ pre .s-overflow-x {
   overflow-x: auto;
 }
 .astro-code-title {
-  @apply px-3 py-1.5 font-mono font-medium border rounded-t-lg text-neutral-200 border-[#333333] bg-[#1c1c1c] text-xs;
+  @apply flex items-center justify-between gap-2 px-3 py-1.5 font-mono font-medium border rounded-t-lg text-neutral-200 border-[#333333] bg-[#1c1c1c] text-xs;
+}
+.astro-code-title-label {
+  @apply min-w-0 truncate;
+}
+.astro-code-copy {
+  @apply -mr-1 inline-flex shrink-0 cursor-pointer rounded p-1 text-neutral-400;
+}
+.astro-code-copy:hover {
+  @apply bg-white/10 text-neutral-100;
+}
+.astro-code-copy:focus-visible {
+  @apply outline-none ring-2 ring-orange-400;
+}
+.astro-code-copy-check {
+  display: none;
+}
+.astro-code-copy.is-copied {
+  @apply text-orange-400;
+}
+.astro-code-copy.is-copied .astro-code-copy-icon {
+  display: none;
+}
+.astro-code-copy.is-copied .astro-code-copy-check {
+  display: block;
 }
 .astro-code-title + pre {
   @apply mt-0 rounded-t-none border-t-0;

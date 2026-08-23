@@ -1,5 +1,6 @@
 ---
 import { Font } from 'astro:assets'
+import CodeCopy from '@/components/CodeCopy.astro'
 import Footer from '@/components/layout/Footer.astro'
 import Header from '@/components/layout/Header.astro'
 import {
@@ -131,6 +132,7 @@ const jsonLdDocuments = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [
     <main id="main-content" class="py-14">
       <slot />
     </main>
+    <CodeCopy />
     <Footer />
   </body>
 </html>

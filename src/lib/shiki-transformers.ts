@@ -105,6 +105,74 @@ function consumeInlineStyles(node: HastProps): void {
   }
 }
 
+function svgIcon(
+  className: string,
+  children: Array<{
+    type: 'element'
+    tagName: string
+    properties: Record<string, string>
+    children: []
+  }>,
+) {
+  return {
+    type: 'element' as const,
+    tagName: 'svg',
+    properties: {
+      className: [className],
+      xmlns: 'http://www.w3.org/2000/svg',
+      width: '14',
+      height: '14',
+      viewBox: '0 0 24 24',
+      fill: 'none',
+      stroke: 'currentColor',
+      'stroke-width': '2',
+      'stroke-linecap': 'round',
+      'stroke-linejoin': 'round',
+      'aria-hidden': 'true',
+    },
+    children,
+  }
+}
+
+function copyButton() {
+  return {
+    type: 'element' as const,
+    tagName: 'button',
+    properties: {
+      type: 'button',
+      className: ['astro-code-copy'],
+      'aria-label': 'Copy code',
+      title: 'Copy code',
+    },
+    children: [
+      svgIcon('astro-code-copy-icon', [
+        {
+          type: 'element',
+          tagName: 'rect',
+          properties: { width: '14', height: '14', x: '8', y: '8', rx: '2', ry: '2' },
+          children: [],
+        },
+        {
+          type: 'element',
+          tagName: 'path',
+          properties: {
+            d: 'M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2',
+          },
+          children: [],
+        },
+      ]),
+      svgIcon('astro-code-copy-check', [
+        {
+          type: 'element',
+          tagName: 'path',
+          properties: { d: 'M20 6 9 17l-5-5' },
+          children: [],
+        },
+      ]),
+    ],
+  }
+}
+
 export function transformerMetaTitle(): ShikiTransformer {
   return {
     name: 'meta-title',
@@ -147,7 +215,15 @@ export function transformerMetaTitle(): ShikiTransformer {
               type: 'element',
               tagName: 'figcaption',
               properties: { className: ['astro-code-title'] },
-              children: [{ type: 'text', value: title }],
+              children: [
+                {
+                  type: 'element',
+                  tagName: 'span',
+                  properties: { className: ['astro-code-title-label'] },
+                  children: [{ type: 'text', value: title }],
+                },
+                copyButton(),
+              ],
             },
             pre,
           ],
