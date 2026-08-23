@@ -56,40 +56,26 @@ input[type="email"] {
   appearance: none;
 }
 
-/* rehype-pretty-code 0.14 wraps blocks in figure[data-rehype-pretty-code-figure]
-   and marks lines with [data-line] (not the old fragment / .line selectors). */
-[data-rehype-pretty-code-figure] code {
-  @apply grid min-w-full break-words rounded-none border-0 bg-transparent p-0 text-black leading-4 text-xs font-mono;
-  counter-reset: line;
-  box-decoration-break: clone;
+/* Astro Shiki: pre.astro-code > code > span.line (+ .highlighted / .highlighted-word).
+   Fence titles become figure.astro-code-figure > figcaption.astro-code-title. */
+.astro-code {
+  @apply text-xs font-mono leading-4;
 }
-[data-rehype-pretty-code-figure] [data-line] {
+.astro-code .line {
   @apply py-1;
 }
-[data-rehype-pretty-code-figure] [data-line-numbers] > [data-line]::before {
-  counter-increment: line;
-  content: counter(line);
-  display: inline-block;
-  width: 1rem;
-  margin-right: 1rem;
-  text-align: right;
-  color: gray;
-}
-[data-rehype-pretty-code-figure] .line--highlighted,
-[data-rehype-pretty-code-figure] [data-highlighted-line] {
+.astro-code .line.highlighted {
   @apply bg-slate-500/10;
 }
-[data-rehype-pretty-code-figure] .line--highlighted span,
-[data-rehype-pretty-code-figure] [data-highlighted-line] span {
+.astro-code .line.highlighted span {
   @apply relative;
 }
-[data-rehype-pretty-code-figure] .word--highlighted,
-[data-rehype-pretty-code-figure] [data-highlighted-chars] {
+.astro-code .highlighted-word {
   @apply rounded-md bg-slate-500/10 p-1;
 }
-[data-rehype-pretty-code-title] {
+.astro-code-title {
   @apply px-4 py-2 font-mono font-medium border rounded-t-lg text-neutral-200 border-[#333333] bg-[#1c1c1c] text-xs;
 }
-[data-rehype-pretty-code-title] + pre {
+.astro-code-title + pre {
   @apply mt-0 rounded-t-none border-t-0;
 }

@@ -69,7 +69,8 @@ must include the LLM surfaces: `/llms.txt`, `/llms-full.txt`, `Accept: text/mark
 - **Rust compiler**: default in Astro 7 — do not set `experimental.rustCompiler`.
 - **Markdown/MDX plugins**: use `markdown.processor: unified({...})` from
   `@astrojs/markdown-remark`. Plugins on `mdx({ remarkPlugins, rehypePlugins })` are
-  deprecated. This project stays on unified (not Sätteri) for rehype-pretty-code, etc.
+  deprecated. This project stays on unified (not Sätteri) for rehype-slug / autolink
+  headings. Code fences use Astro's built-in Shiki (`markdown.shikiConfig`).
 - **`compressHTML`**: Astro 7 defaults to `'jsx'` whitespace rules; this project sets
   `compressHTML: true` to keep previous HTML-aware spacing.
 
@@ -139,3 +140,4 @@ Do **not** use `fontProviders.fontsource()` — it requires outbound HTTPS to
 | `date-fns` | Native `Date.getTime()` / `toISOString().split('T')[0]` |
 | `reading-time` | Inline word-count: `Math.max(1, Math.round(words / 200)) + " min read"` |
 | `open` | Was unused |
+| `rehype-pretty-code` | Astro built-in Shiki + `@shikijs/transformers` |
