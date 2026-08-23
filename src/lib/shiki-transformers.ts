@@ -5,18 +5,22 @@ const TITLE_RE = /title="([^"]*)"/
 type HastProps = {
   properties?: {
     style?: unknown
+    class?: unknown
     className?: unknown
   }
 }
 
-function classList(value: unknown): string[] {
-  if (Array.isArray(value)) {
-    return value.map(String)
+function classList(properties: HastProps['properties']): string[] {
+  const values = [properties?.className, properties?.class]
+  const tokens: string[] = []
+  for (const value of values) {
+    if (Array.isArray(value)) {
+      tokens.push(...value.map(String))
+    } else if (typeof value === 'string' && value.length > 0) {
+      tokens.push(...value.split(/\s+/))
+    }
   }
-  if (typeof value === 'string' && value.length > 0) {
-    return value.split(/\s+/)
-  }
-  return []
+  return [...new Set(tokens.filter(Boolean))]
 }
 
 function hexClass(prefix: string, value: string): string | undefined {
@@ -30,7 +34,14 @@ export function transformerInlineStylesToClasses(): ShikiTransformer {
     pre(node) {
       consumeInlineStyles(node)
       if (node.properties) {
-        node.properties.className = [...classList(node.properties.className), 'not-prose']
+        const classes = classList(node.properties)
+        if (!classes.includes('astro-code')) {
+          classes.unshift('astro-code')
+        }
+        if (!classes.includes('not-prose')) {
+          classes.push('not-prose')
+        }
+        node.properties.className = classes
       }
     },
     span(node) {
@@ -67,7 +78,7 @@ function consumeInlineStyles(node: HastProps): void {
   }
 
   if (node.properties) {
-    node.properties.className = [...classList(node.properties.className), ...extra]
+    node.properties.className = [...classList(node.properties), ...extra]
     delete node.properties.style
   }
 }
