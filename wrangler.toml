@@ -6,6 +6,9 @@ preview_urls = true
 # Custom worker wraps Astro's handler for Accept negotiation + Link headers.
 main = "./src/worker.ts"
 
+[cache]
+enabled = true
+
 [placement]
 mode = "smart"
 

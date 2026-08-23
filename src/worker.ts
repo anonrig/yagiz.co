@@ -26,6 +26,33 @@ function withHeaders(response: Response, mutate: (headers: Headers) => void): Re
   })
 }
 
+const PAGE_CDN_CACHE = 'public, max-age=3600, stale-while-revalidate=86400'
+const ASSET_CDN_CACHE = 'public, max-age=31536000, immutable'
+
+function applyCdnCache(request: Request, response: Response): Response {
+  if (request.method !== 'GET' && request.method !== 'HEAD') {
+    return response
+  }
+  if (response.status !== 200) {
+    return response
+  }
+
+  const pathname = new URL(request.url).pathname
+  if (pathname.startsWith('/api/')) {
+    return response
+  }
+
+  return withHeaders(response, (headers) => {
+    if (headers.has('Cloudflare-CDN-Cache-Control')) {
+      return
+    }
+    headers.set(
+      'Cloudflare-CDN-Cache-Control',
+      pathname.startsWith('/_astro/') ? ASSET_CDN_CACHE : PAGE_CDN_CACHE,
+    )
+  })
+}
+
 async function assetsFetch(env: Env, request: Request, pathname: string): Promise<Response> {
   const url = new URL(request.url)
   url.pathname = pathname
@@ -37,7 +64,7 @@ export default {
     const url = new URL(request.url)
 
     if (shouldSkipNegotiation(url.pathname)) {
-      return handle(request, env, ctx)
+      return applyCdnCache(request, await handle(request, env, ctx))
     }
 
     const accept = request.headers.get('accept')
@@ -52,14 +79,17 @@ export default {
     if (chosen === 'text/markdown') {
       const mdResponse = await assetsFetch(env, request, mdPath)
       if (mdResponse.status === 200) {
-        return withHeaders(mdResponse, (headers) => {
-          headers.set('Content-Type', 'text/markdown; charset=utf-8')
-          appendVaryAccept(headers)
-          appendLink(
-            headers,
-            `<${url.pathname === '/' ? '/' : url.pathname.replace(/\/+$/, '') || '/'}>; rel="canonical"`,
-          )
-        })
+        return applyCdnCache(
+          request,
+          withHeaders(mdResponse, (headers) => {
+            headers.set('Content-Type', 'text/markdown; charset=utf-8')
+            appendVaryAccept(headers)
+            appendLink(
+              headers,
+              `<${url.pathname === '/' ? '/' : url.pathname.replace(/\/+$/, '') || '/'}>; rel="canonical"`,
+            )
+          }),
+        )
       }
 
       if (!preferredType(accept, ['text/html'])) {
@@ -70,11 +100,14 @@ export default {
     }
 
     const response = await handle(request, env, ctx)
-    return withHeaders(response, (headers) => {
-      appendVaryAccept(headers)
-      if (headers.get('content-type')?.includes('text/html')) {
-        appendLink(headers, `<${mdPath}>; rel="alternate"; type="text/markdown"`)
-      }
-    })
+    return applyCdnCache(
+      request,
+      withHeaders(response, (headers) => {
+        appendVaryAccept(headers)
+        if (headers.get('content-type')?.includes('text/html')) {
+          appendLink(headers, `<${mdPath}>; rel="alternate"; type="text/markdown"`)
+        }
+      }),
+    )
   },
 } satisfies ExportedHandler<Env>

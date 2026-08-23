@@ -1,4 +1,5 @@
 import cloudflare from '@astrojs/cloudflare'
+import { cacheCloudflare } from '@astrojs/cloudflare/cache'
 import { unified } from '@astrojs/markdown-remark'
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
@@ -17,12 +18,12 @@ function isMarkdownOrLlmsAsset(page: string): boolean {
   return page.endsWith('.md') || page.endsWith('/llms.txt') || page.endsWith('/llms-full.txt')
 }
 
+const pageCache = { maxAge: 3600, swr: 86400, tags: ['page'] } as const
+
 // https://astro.build/config
 export default defineConfig({
   // Keep previous HTML-aware whitespace handling (v7 defaults to JSX rules).
   compressHTML: true,
-  // Stay on unified/remark/rehype for heading plugins. Code fences use Astro's
-  // built-in Shiki (markdown.shikiConfig); MDX inherits those options.
   markdown: {
     syntaxHighlight: 'shiki',
     shikiConfig: {
@@ -70,6 +71,19 @@ export default defineConfig({
   ],
   site: websiteUrl,
   output: 'static',
+  cache: {
+    provider: cacheCloudflare(),
+  },
+  routeRules: {
+    '/': pageCache,
+    '/about': pageCache,
+    '/contact': pageCache,
+    '/newsletter': pageCache,
+    '/press': pageCache,
+    '/[id]': pageCache,
+    '/tag/[id]': pageCache,
+    '/rss.xml': pageCache,
+  },
   adapter: cloudflare({
     // Optimize images at build time (sharp). Cloudflare Image Resizing
     // (`/cdn-cgi/image/...`) 404s on workers.dev preview URLs; compile emits
