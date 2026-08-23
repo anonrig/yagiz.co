@@ -1,0 +1,76 @@
+<script>
+  const copiedTimeouts = new WeakMap<HTMLButtonElement, number>()
+
+  function fenceText(pre: Element): string {
+    const lines = pre.querySelectorAll('.line')
+    if (lines.length === 0) {
+      return pre.textContent ?? ''
+    }
+
+    return Array.from(lines, (line) => {
+      const text = line.textContent ?? ''
+      return text === ' ' ? '' : text
+    }).join('\n')
+  }
+
+  async function writeClipboard(text: string): Promise<boolean> {
+    try {
+      await navigator.clipboard.writeText(text)
+      return true
+    } catch {
+      const textarea = document.createElement('textarea')
+      textarea.value = text
+      textarea.setAttribute('readonly', '')
+      textarea.style.position = 'fixed'
+      textarea.style.left = '-9999px'
+      document.body.append(textarea)
+      textarea.select()
+      const ok = document.execCommand('copy')
+      textarea.remove()
+      return ok
+    }
+  }
+
+  function markCopied(button: HTMLButtonElement): void {
+    const previous = copiedTimeouts.get(button)
+    if (previous !== undefined) {
+      window.clearTimeout(previous)
+    }
+
+    button.classList.add('is-copied')
+    button.setAttribute('aria-label', 'Copied')
+    button.title = 'Copied'
+
+    const timeout = window.setTimeout(() => {
+      button.classList.remove('is-copied')
+      button.setAttribute('aria-label', 'Copy code')
+      button.title = 'Copy code'
+      copiedTimeouts.delete(button)
+    }, 2000)
+    copiedTimeouts.set(button, timeout)
+  }
+
+  document.addEventListener('click', (event) => {
+    const target = event.target
+    if (!(target instanceof Element)) {
+      return
+    }
+
+    const button = target.closest('.astro-code-copy')
+    if (!(button instanceof HTMLButtonElement)) {
+      return
+    }
+
+    const figure = button.closest('.astro-code-figure')
+    const pre = figure?.querySelector('pre')
+    if (!pre) {
+      return
+    }
+
+    void writeClipboard(fenceText(pre)).then((ok) => {
+      if (ok) {
+        markCopied(button)
+      }
+    })
+  })
+</script>
