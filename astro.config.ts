@@ -1,5 +1,3 @@
-import { createRequire } from 'node:module'
-import { pathToFileURL } from 'node:url'
 import cloudflare from '@astrojs/cloudflare'
 import { cacheCloudflare } from '@astrojs/cloudflare/cache'
 import { unified } from '@astrojs/markdown-remark'
@@ -14,31 +12,10 @@ import rehypeAutolinkHeadings, {
 import rehypeSlug from 'rehype-slug'
 import remarkGfm from 'remark-gfm'
 import { websiteUrl } from './src/lib/content.ts'
-import { shikiTokenCss } from './src/lib/shiki-token-css.ts'
 import {
   transformerInlineStylesToClasses,
   transformerMetaTitle,
 } from './src/lib/shiki-transformers.ts'
-
-const require = createRequire(import.meta.url)
-
-function shikiTokenCssPlugin() {
-  const virtualId = 'virtual:shiki-tokens.css'
-  const resolvedId = `\0${virtualId}`
-  return {
-    name: 'shiki-token-css',
-    resolveId(id: string) {
-      if (id === virtualId) return resolvedId
-    },
-    async load(id: string) {
-      if (id !== resolvedId) return
-      const astroRequire = createRequire(require.resolve('astro/package.json'))
-      const themeUrl = pathToFileURL(astroRequire.resolve('shiki/themes/one-dark-pro.mjs')).href
-      const theme = (await import(themeUrl)).default
-      return shikiTokenCss(theme)
-    },
-  }
-}
 
 function isMarkdownOrLlmsAsset(page: string): boolean {
   return page.endsWith('.md') || page.endsWith('/llms.txt') || page.endsWith('/llms-full.txt')
@@ -140,7 +117,7 @@ export default defineConfig({
     }),
   ],
   vite: {
-    plugins: [tailwindcss(), shikiTokenCssPlugin()],
+    plugins: [tailwindcss()],
     ssr: {
       external: ['node:fs/promises', 'node:path', 'node:url', 'node:crypto'],
     },

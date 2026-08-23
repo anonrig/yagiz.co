@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./shiki-tokens.css";
 @config "../../tailwind.config.mjs";
 
 :root {
