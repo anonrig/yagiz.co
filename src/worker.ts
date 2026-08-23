@@ -46,10 +46,11 @@ function applyCdnCache(request: Request, response: Response): Response {
     if (headers.has('Cloudflare-CDN-Cache-Control')) {
       return
     }
-    headers.set(
-      'Cloudflare-CDN-Cache-Control',
-      pathname.startsWith('/_astro/') ? ASSET_CDN_CACHE : PAGE_CDN_CACHE,
-    )
+    const isAsset = pathname.startsWith('/_astro/')
+    headers.set('Cloudflare-CDN-Cache-Control', isAsset ? ASSET_CDN_CACHE : PAGE_CDN_CACHE)
+    if (!headers.has('Cache-Tag')) {
+      headers.set('Cache-Tag', isAsset ? 'asset' : 'page')
+    }
   })
 }
 

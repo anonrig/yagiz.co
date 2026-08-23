@@ -18,7 +18,7 @@ function isMarkdownOrLlmsAsset(page: string): boolean {
   return page.endsWith('.md') || page.endsWith('/llms.txt') || page.endsWith('/llms-full.txt')
 }
 
-const pageCache = { maxAge: 3600, swr: 86400, tags: ['page'] } as const
+const pageCache = { maxAge: 3600, swr: 86400, tags: ['page'] }
 
 // https://astro.build/config
 export default defineConfig({
@@ -50,7 +50,13 @@ export default defineConfig({
       ],
     }),
   },
-  security: { csp: true },
+  security: {
+    csp: {
+      styleDirective: {
+        resources: [{ resource: "'unsafe-inline'", kind: 'attribute' }],
+      },
+    },
+  },
   fonts: [
     {
       provider: fontProviders.local(),
