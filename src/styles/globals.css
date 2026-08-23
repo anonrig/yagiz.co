@@ -80,33 +80,6 @@ pre .s-italic {
 pre .s-overflow-x {
   overflow-x: auto;
 }
-pre .s-abb2bf {
-  color: #abb2bf;
-}
-pre .s-c678dd {
-  color: #c678dd;
-}
-pre .s-61afef {
-  color: #61afef;
-}
-pre .s-e5c07b {
-  color: #e5c07b;
-}
-pre .s-98c379 {
-  color: #98c379;
-}
-pre .s-e06c75 {
-  color: #e06c75;
-}
-pre .s-d19a66 {
-  color: #d19a66;
-}
-pre .s-56b6c2 {
-  color: #56b6c2;
-}
-pre .s-7f848e {
-  color: #7f848e;
-}
 .astro-code-title {
   @apply px-4 py-2 font-mono font-medium border rounded-t-lg text-neutral-200 border-[#333333] bg-[#1c1c1c] text-xs;
 }
