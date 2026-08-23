@@ -57,7 +57,10 @@ input[type="email"] {
 }
 
 .astro-code {
-  @apply text-xs font-mono leading-4;
+  @apply text-xs font-mono leading-4 p-4 rounded-md;
+  background-color: #282c34;
+  color: #abb2bf;
+  overflow-x: auto;
 }
 .astro-code .line {
   @apply py-1;
@@ -70,6 +73,39 @@ input[type="email"] {
 }
 .astro-code .highlighted-word {
   @apply rounded-md bg-slate-500/10 p-1;
+}
+.astro-code .s-italic {
+  font-style: italic;
+}
+.astro-code .s-overflow-x {
+  overflow-x: auto;
+}
+.astro-code .s-abb2bf {
+  color: #abb2bf;
+}
+.astro-code .s-c678dd {
+  color: #c678dd;
+}
+.astro-code .s-61afef {
+  color: #61afef;
+}
+.astro-code .s-e5c07b {
+  color: #e5c07b;
+}
+.astro-code .s-98c379 {
+  color: #98c379;
+}
+.astro-code .s-e06c75 {
+  color: #e06c75;
+}
+.astro-code .s-d19a66 {
+  color: #d19a66;
+}
+.astro-code .s-56b6c2 {
+  color: #56b6c2;
+}
+.astro-code .s-7f848e {
+  color: #7f848e;
 }
 .astro-code-title {
   @apply px-4 py-2 font-mono font-medium border rounded-t-lg text-neutral-200 border-[#333333] bg-[#1c1c1c] text-xs;

@@ -12,7 +12,10 @@ import rehypeAutolinkHeadings, {
 import rehypeSlug from 'rehype-slug'
 import remarkGfm from 'remark-gfm'
 import { websiteUrl } from './src/lib/content.ts'
-import { transformerMetaTitle } from './src/lib/shiki-transformers.ts'
+import {
+  transformerInlineStylesToClasses,
+  transformerMetaTitle,
+} from './src/lib/shiki-transformers.ts'
 
 function isMarkdownOrLlmsAsset(page: string): boolean {
   return page.endsWith('.md') || page.endsWith('/llms.txt') || page.endsWith('/llms-full.txt')
@@ -32,6 +35,7 @@ export default defineConfig({
         transformerMetaTitle(),
         transformerMetaHighlight(),
         transformerMetaWordHighlight(),
+        transformerInlineStylesToClasses(),
       ],
     },
     processor: unified({
