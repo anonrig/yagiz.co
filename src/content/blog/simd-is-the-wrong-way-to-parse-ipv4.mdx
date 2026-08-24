@@ -1,0 +1,572 @@
+---
+title: '192.168.1.1 is too short for SIMD'
+description: >-
+  An IPv4 host is 7 to 16 bytes, so it never fills a SIMD register. I
+  unroll the scalar parse, try a SWAR fold that loses, put SSE2 in
+  front of it, and only then reach for AVX-512.
+date: '2026-08-24'
+tag: performance
+status: published
+---
+
+Suppose you want to parse `192.168.1.1` as a URL host. In [Ada][ada]
+that string is not a domain name. It is an IPv4 address, and the
+[WHATWG URL Standard][whatwg-ipv4] has a whole parser for it.
+
+A reasonable function might look as follows.
+
+```cpp title="The obvious IPv4 parser"
+uint64_t parse_ipv4(std::string_view s) {
+  const char* p = s.data();
+  const char* end = p + s.size();
+  uint32_t addr = 0;
+  for (int i = 0; i < 4; ++i) {
+    if (p == end || *p < '0' || *p > '9') {
+      return fail;
+    }
+    uint32_t val = uint32_t(*p++ - '0');
+    while (p < end && *p >= '0' && *p <= '9') {
+      val = val * 10 + uint32_t(*p++ - '0');
+      if (val > 255) {
+        return fail;
+      }
+    }
+    addr = (addr << 8) | val;
+    if (i < 3) {
+      if (p == end || *p != '.') {
+        return fail;
+      }
+      ++p;
+    }
+  }
+  return (p == end) ? addr : fail;
+}
+```
+
+Four octets, a dot between them. Out of range or out of place
+returns `fail`. Consume the whole string and you get a packed
+`uint32_t` in host order, first octet in the high byte.
+`192.168.1.1` becomes `0xC0A80101`.
+
+This version also treats `01.2.3.4` as `1.2.3.4`. WHATWG does
+not. A leading zero starts an octal number. I will come back to
+that.
+
+`0.0.0.0` is 7 bytes. `255.255.255.255` is 15. WHATWG also
+allows one trailing dot (`1.2.3.4.`). Ada's fast path accepts
+that trailing dot, not a second one.
+
+I generated 10,000 random addresses with each octet uniform in 0
+to 255. Average length 13.3 bytes. Shortest 9, longest 15. A
+128-bit register holds 16 bytes, so you are always leaving lanes
+unused.
+
+In my [last post][branches] the input was a megabyte and SIMD
+was the right tool. Here I am not sure the setup is cheaper than
+four short decimal conversions.
+
+[Daniel Lemire][lemire] has a [post][lemire-ipv4] on doing this
+with SIMD, and a [follow-up][lemire-csharp] that revisits it
+with AVX-512. Wojciech Muła has an [article][mula] on the same
+problem. I care about the 12-byte case, and about still having a
+general parser for the weird forms.
+
+## Hex, octal, and `127.1`
+
+WHATWG IPv4 is not just `ddd.ddd.ddd.ddd`. Browsers also accept
+`127.1`, `127.0.1`, `0x7f.0.0.1`, `0177.0.0.1`, and
+`3232235777`. Ada has to accept them too. That parser has to
+detect `0x`, reject `08` as a bad octal, and shift the last part
+by 8, 16, or 24 bits depending on how many dots it saw.
+
+glibc `inet_pton` is a different grammar. It wants a
+nul-terminated C string, writes an `in_addr`, and does not
+implement WHATWG. I use it as a baseline.
+
+The common case is still `192.168.0.1` or `12.121.244.111`. Four
+decimal numbers, no leading zeros, optional trailing dot.
+Everything else can fall through.
+
+```cpp title="Fast path, then the general parser"
+if (uint64_t ip = try_parse_ipv4_fast(s); ip < (1ull << 32)) {
+  return ip;
+}
+return parse_ipv4_general(s);
+```
+
+Daniel uses the same split in the [C# post][lemire-csharp]. One
+rule the fast path must get right: a leading zero is not decimal.
+`01.2.3.4` is octal in WHATWG. If the first digit of a group is
+`0` and a second digit follows, we return `fail` and let the
+general parser decide. `0.0.0.0` is fine. The zero is the whole
+group.
+
+## Unroll the four octets
+
+The obvious parser has a `while` inside the `for`. Each octet may
+be 1, 2, or 3 digits, and the inner loop branches on a value the
+CPU has just loaded. We know there are exactly four groups, and
+each group is at most three digits. We can write that down.
+
+```cpp title="Unrolled pure-decimal IPv4"
+uint64_t parse_ipv4_unrolled(const char* p, const char* end) {
+  uint32_t addr = 0;
+  for (int i = 0; i < 4; ++i) {
+    if (p == end || *p < '0' || *p > '9') {
+      return fail;
+    }
+    uint32_t val = uint32_t(*p++ - '0');
+    if (p < end && *p >= '0' && *p <= '9') {
+      if (val == 0) {
+        return fail;  // leading zero: not our problem
+      }
+      val = val * 10 + uint32_t(*p++ - '0');
+      if (p < end && *p >= '0' && *p <= '9') {
+        val = val * 10 + uint32_t(*p++ - '0');
+        if (val > 255) {
+          return fail;
+        }
+      }
+    }
+    addr = (addr << 8) | val;
+    if (i < 3) {
+      if (p == end || *p != '.') {
+        return fail;
+      }
+      ++p;
+    }
+  }
+  if (p == end) {
+    return addr;
+  }
+  if (p + 1 == end && *p == '.') {
+    return addr;  // WHATWG trailing dot
+  }
+  return fail;
+}
+```
+
+Let's walk through `192.168.1.1`:
+
+- First group: `'1'`, then `'9'`, then `'2'`. `val` becomes 192.
+  Next byte is `'.'`. Shift 192 into the address.
+- Second group: 168. Same shape.
+- Third group: `'1'`. The next byte is `'.'`, so we stop at one
+  digit. No leading-zero check, because there is no second digit.
+- Fourth group: `'1'`. `p == end`. Done.
+
+`10.0.0.1` is the same, with more one-digit groups. `01.2.3.4`
+hits `val == 0` on the second digit of the first group and
+returns `fail`. The general parser then reads it as octal.
+
+There is no inner `while`. Each extra digit is a predicted
+forward branch. This is the portable path in Ada,
+`parse_ipv4_decimal_scalar` in [`checkers-inl.h`][checkers], and
+what we ship when the machine does not have AVX-512.
+
+Can we do better?
+
+## A SWAR fold that loses
+
+In the last post, a 256-byte table lost to a wraparound compare.
+I tried the same kind of trick here. Once you know a group is
+three digits, you can load them as a `uint32_t`, subtract `'0'`
+from each byte, reverse the digits so the ones place sits in the
+low byte, and fold with the weights `1, 10, 100`. Those weights
+are the constant `0x0000640a01`.
+
+```cpp title="Ones-first fold of one octet"
+// "192" reversed is bytes 2, 9, 1, 0.
+// 0x640a01 is the weights {1, 10, 100, 0}.
+uint32_t fold(uint32_t ones_first) {
+  return (ones_first & 0xff)
+       + 10u * ((ones_first >> 8) & 0xff)
+       + 100u * ((ones_first >> 16) & 0xff);
+}
+```
+
+`255` becomes the bytes `5, 5, 2, 0`. That dword is
+`0x00020505`. `256` becomes `6, 5, 2, 0`, which is `0x00020506`.
+The unsigned compare `dword > 0x00020505` is the range check.
+We will use that layout again in a minute.
+
+I wired this fold into the unrolled parser. It was twice as slow
+as multiplying by ten as you go. The load, the reverse, and the
+three-term add are extra work on a group that is already two or
+three bytes long. SWAR wants eight bytes in a register. An IPv4
+octet is not eight bytes.
+
+Keep the incremental `* 10`. The ones-first dword is still a
+good way to compare against 255. It is a bad way to convert a
+single octet in scalar code.
+
+## Why SSE2 pre-validation does not help
+
+The first SIMD version I would write is not a parser. It is a
+pre-check. Load 16 bytes, ask whether every live byte is a digit
+or a dot, ask whether there are exactly three dots, then run the
+unrolled scalar parser.
+
+```cpp title="SSE2 pre-validation, then the scalar parse"
+uint64_t parse_ipv4_sse2(const char* padded16, const char* exact,
+                         size_t len) {
+  const __m128i v =
+      _mm_loadu_si128(reinterpret_cast<const __m128i*>(padded16));
+  const __m128i digits = _mm_sub_epi8(v, _mm_set1_epi8('0'));
+  const __m128i is_digit = _mm_cmpeq_epi8(
+      _mm_min_epu8(digits, _mm_set1_epi8(9)), digits);
+  const __m128i is_dot = _mm_cmpeq_epi8(v, _mm_set1_epi8('.'));
+  const int live = int((1u << len) - 1u);
+  const int ok = _mm_movemask_epi8(_mm_or_si128(is_digit, is_dot));
+  if ((ok & live) != live) {
+    return fail;
+  }
+  const int dots = _mm_movemask_epi8(is_dot) & live;
+  if (__builtin_popcount(unsigned(dots)) != 3) {
+    return fail;
+  }
+  return parse_ipv4_unrolled(exact, exact + len);
+}
+```
+
+`padded16` is the annoying part. `_mm_loadu_si128` reads 16
+bytes. A 12-byte host in the middle of a URL is not 16 bytes
+long. Load past the end of the allocation and you have
+undefined behavior. On the last page of a buffer it can fault.
+
+Daniel [ran into this in 2023][lemire-ipv4]. His `sse_inet_aton`
+always reads sixteen bytes. The input must be part of a larger
+string, or you must overallocate. [Wojciech's article][mula] has
+the same constraint.
+
+You can pad. You can copy the host into a 16-byte stack buffer.
+You can prove the URL buffer has slack. All of those cost
+something. The unrolled scalar path reads exactly `len` bytes.
+
+Even if you pad for free, the pre-check does not replace the
+parse. It adds a 16-byte load, three compares, a movemask, and a
+popcount in front of the function you were going to run anyway.
+On this machine that pair is a tie.
+
+[Wojciech's actual insight][mula] is better than a pre-check.
+There are only 81 ways to place three dots in a 16-byte window,
+plus a virtual dot at the end. You build a mask of the dot
+positions, map that mask through a table, and get a `pshufb`
+pattern that lays the digits out for a SIMD convert. His earlier
+version stops after locating the dots and converts each group in
+scalar code. I ran both. The production SSE convert I timed is
+the one in [simdzone][simdzone].
+
+## Masked loads and `vpcompressb`
+
+AVX-512 changes the setup cost. A masked load takes a 16-bit
+mask and reads only those bytes. If the host is 12 bytes long,
+you load 12 bytes. You do not read past the string. You do not
+pad. Daniel has a [post][masked] on this, and the [C# IPv4
+parser][lemire-csharp] uses it to pull UTF-16 characters without
+over-reading.
+
+Once the bytes are in a register, VBMI2 gives you `vpcompressb`.
+That is the instruction that makes the 81-entry table
+unnecessary. You take the positions of the dots, compress them
+into a tight vector, and compute the digit shuffle from those
+positions. No lookup.
+
+The Ada kernel is the table-free AVX-512 path from
+[simdip][simdip] (`parse_ipv4_avx512vl_notab5`). It lives in
+[`try_parse_ipv4_fast`][checkers].
+
+```cpp title="Masked load of exactly len bytes"
+const uint32_t len_mask = _bzhi_u32(~0u, unsigned(len));
+const __m128i v = _mm_mask_loadu_epi8(
+    _mm_set1_epi8('.'), __mmask16(len_mask), data);
+```
+
+`_bzhi_u32` keeps the low `len` bits. The masked load fills
+lanes outside the mask with `'.'`. A padding dot cannot look
+like a digit, and the first padding dot sits at index `len`. It
+is the virtual fourth delimiter.
+
+Subtract `'0'` from every lane. Lanes that were digits become 0
+to 9. A compare gives you a digit mask. Anything inside `len`
+that is neither a digit nor a dot is junk, and we fail.
+
+```cpp title="Compress the dot positions"
+const __mmask16 delim = _mm_cmpeq_epi8_mask(v, _mm_set1_epi8('.'));
+const __m128i iota = _mm_setr_epi8(
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
+const __m128i c = _mm_maskz_compress_epi8(delim, iota);
+```
+
+Take `192.168.1.1`. The string is 11 bytes. The dots sit at 3,
+7, and 9. The first padding dot sits at 11. After the compress,
+`c` begins `{3, 7, 9, 11, ...}`.
+
+From each delimiter, walk backward one, two, and three bytes.
+That is the ones, tens, and hundreds digits. Broadcast each
+delimiter into four lanes and subtract `{1, 2, 3, 4}`:
+
+```cpp title="idx = max(qi + offr, prev)"
+const __m128i k_rep = _mm_setr_epi8(
+    0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3);
+const __m128i qi = _mm_shuffle_epi8(c, k_rep);
+const __m128i prev = _mm_shuffle_epi8(
+    _mm_alignr_epi8(c, _mm_set1_epi8(-1), 15), k_rep);
+const __m128i offr = _mm_setr_epi8(
+    -1, -2, -3, -4, -1, -2, -3, -4,
+    -1, -2, -3, -4, -1, -2, -3, -4);
+const __m128i idx = _mm_max_epi8(_mm_add_epi8(qi, offr), prev);
+```
+
+`qi` is the end of each group, repeated four times:
+`{3,3,3,3, 7,7,7,7, 9,9,9,9, 11,11,11,11}`. `prev` is the start
+of each group: `{-1,-1,-1,-1, 3,3,3,3, 7,7,7,7, 9,9,9,9}`. The
+`-1` is "before the first byte."
+
+`qi + offr` walks backward from the delimiter: ones, tens,
+hundreds, and an unused lane. `max(..., prev)` clamps that walk
+so a short group cannot steal a byte from the previous group. A
+missing tens or hundreds digit lands on `prev`, which is a dot,
+which we have already zeroed in the digit vector. `pshufb` of
+`-1` is also zero.
+
+For the first group of `192.168.1.1`:
+
+- ones: `max(3 - 1, -1) = 2`, the `'2'`
+- tens: `max(3 - 2, -1) = 1`, the `'9'`
+- hundreds: `max(3 - 3, -1) = 0`, the `'1'`
+
+For the third group, the single `'1'` at index 8:
+
+- ones: `max(9 - 1, 7) = 8`
+- tens: `max(9 - 2, 7) = 7`, the previous dot, so zero
+- hundreds: `max(9 - 3, 7) = 7`, zero again
+
+One `pshufb` gathers all four groups. Each group is stored as
+`ones | (tens << 8) | (hundreds << 16)`. `255` is the bytes
+`5, 5, 2, 0`, the dword `0x00020505`. `256` is `6, 5, 2, 0`.
+`192` is `2, 9, 1, 0`, the dword `0x00010902`.
+
+```cpp title="Octet > 255 is one unsigned dword compare"
+const __m128i lim = _mm_setr_epi8(
+    5, 5, 2, 0, 5, 5, 2, 0, 5, 5, 2, 0, 5, 5, 2, 0);
+const __mmask8 over = _mm_cmpgt_epu32_mask(padded, lim);
+```
+
+Four groups, four dwords, one compare. We range-check the
+digits before converting them. The two can run in parallel.
+
+The convert itself is a 4-wide dot product of those bytes with
+`1, 10, 100, 0`. Same fold as `0x640a01`, four times, in one
+instruction. On Ice Lake and later that is `vpdpbusd`. Without
+VNNI it is `pmaddubsw` plus `pmaddwd`. Same answer.
+
+```cpp title="1*ones + 10*tens + 100*hundreds, four groups at once"
+const __m128i wts = _mm_setr_epi8(
+    1, 10, 100, 0, 1, 10, 100, 0,
+    1, 10, 100, 0, 1, 10, 100, 0);
+const __m128i res = _mm_dpbusd_epi32(_mm_setzero_si128(), padded, wts);
+```
+
+A few more masks finish the validation. Exactly three live dots:
+`popcnt(dots) ^ 3` is zero only then, and padding dots do not
+count. Each group is 1 to 3 digits, which is a gap check on the
+compressed positions. No leading zeros: a `'0'` at the start of
+a group, with a digit after it, is a fail. `0.0.0.0` has no
+digit after those zeros, so it passes.
+
+If every mask is clean, we pack the four bytes and `bswap` into
+host order. If anything is off, including hex, octal, two-part
+addresses, or `256.0.0.1`, we return `fail` and the general
+parser runs.
+
+## Numbers
+
+I ran these on an Intel Xeon with GCC 13.3 (`-O3
+-march=native`). The machine is 2.4 GHz and has AVX-512BW, VL,
+VBMI2, and VNNI. I generated 10,000 random dotted-decimal
+addresses and parsed the set 2,000 times. Every input is valid.
+
+The 81-mask and Muła functions read 16 bytes. I zero-padded the
+corpus up front, so those numbers do not include a `memcpy`. The
+scalar paths and the AVX-512 path read exactly the live bytes.
+
+| Approach | ns/addr | million addr/s |
+| --- | ---: | ---: |
+| `inet_pton` | 30 | 34 |
+| Unrolled + SWAR fold | 35 | 29 |
+| Naive loop | 17 | 59 |
+| Unrolled scalar | 16 | 62 |
+| SSE2 pre-check + unrolled | 16 | 61 |
+| Muła SSE (locate + scalar) | 15 | 66 |
+| AVX-512 VBMI2 | 4.5 | 220 |
+| simdzone 81-mask SSE | 3.1 | 320 |
+
+`inet_pton` is doing more work than we need: a nul-terminated
+string, an `in_addr` write, and a grammar that is not WHATWG.
+
+The naive loop is already twice `inet_pton`. Unrolling the
+digit counts shaves a little more. The SWAR fold loses to that
+unrolled loop by about 2x.
+
+SSE2 in front of the unrolled loop is a tie. Sometimes it loses
+by a nanosecond, sometimes it matches. I would not take a
+16-byte over-read for that.
+
+Muła's locate-then-scalar SSE is a small win over unrolled,
+when the pad is free. It still converts each group in scalar
+code. The convert, not the locate, is the expensive part.
+
+The [simdzone][simdzone] 81-mask parser is the real SIMD
+convert. On this machine it is the fastest happy-path function I
+ran, faster than the AVX-512 kernel. Not a surprise: the input
+is already 16-byte padded, every address is valid, the table
+lookup is branchless, and there is no masked-load tax. Do not
+line that 320 up against [Daniel's 2023 Ice Lake number][lemire-ipv4].
+Different machine, different compiler, different padding
+contract.
+
+AVX-512 is four times the unrolled scalar path, and it does not
+need the pad. That is why Ada ships it. A URL host is a slice of
+a larger string. I do not want to promise 16 readable bytes at
+the end of a buffer.
+
+This sits under `parse_host`. Faster IPv4 helps when the host
+is IPv4. It does nothing for `https://example.com/`. A host
+that starts with a letter never reaches this function.
+
+I also timed the miss path. On a corpus of only the unusual
+WHATWG forms (`0x7f.0.0.1`, `0177.0.0.1`, `127.1`, `01.2.3.4`,
+a 32-bit decimal, and so on):
+
+| Approach | ns/addr |
+| --- | ---: |
+| Unrolled scalar (rejects) | 2.6 |
+| General parser only | 10 |
+| AVX-512, then general | 11 |
+
+The fast path is cheap to fail. Running it before the general
+parser costs about a nanosecond on a corpus where every address
+misses. On a mixed set, 19 dotted-decimal addresses for every
+unusual one, AVX-512-then-general stays at 4.6 ns. The general
+parser alone is 22 ns, because it is now doing the common case
+the hard way.
+
+## Which one should you use?
+
+It depends on the machine and on how much IPv4 you actually
+see.
+
+1. **Unrolled scalar** as the default. Four groups, at most
+   three digits each, leading zeros rejected. No over-read. No
+   table. This is what Ada uses when AVX-512 VBMI2 is not
+   available.
+2. **Do not put SSE2 or NEON in front of that loop** to
+   "pre-validate" a 7-16 byte host. You still have to parse,
+   and you have now promised to read 16 bytes. On this machine
+   that pair is a tie.
+3. **Do not SWAR-fold a three-digit octet.** The ones-first
+   dword is a compare trick, not a convert trick. Incremental
+   `* 10` won.
+4. **The 81-mask SSE tables** if IPv4 is the whole program and
+   you can overallocate. [Daniel][lemire-ipv4] and
+   [Wojciech][mula] already wrote this. It was the fastest
+   happy-path function on this Xeon. I would not rebuild it for
+   a URL parser.
+5. **AVX-512 VBMI2** when you have it and IPv4 shows up in the
+   profile. Masked load, compress the dots, dword-compare
+   against 255. Keep the general parser for everything the
+   kernel refuses.
+6. **Always keep the fallback.** Hex, octal, and `127.1` are
+   not worth teaching to a SIMD kernel. A trailing dot is not
+   one of those cases. The fast path already accepts it.
+
+Compilers will unroll a four-iteration loop. They will not
+invent a masked load, and they will not notice that `255` is
+the dword `5, 5, 2, 0`.
+
+So far every address was four decimal groups. Suppose you want
+a harder problem.
+
+## A harder problem: IPv6
+
+IPv6 is the 128-bit form, written as eight hex groups with
+colons: `2001:db8::1`. The `::` may appear once and means "fill
+the rest with zeros." You can also embed an IPv4 address at the
+end (`::ffff:192.168.1.1`). The string can be 2 bytes (`::`) or
+39 (`2001:0db8:0000:0000:0000:0000:0000:0001`), or 45 if you
+write the embedded IPv4 in decimal.
+
+This is a different shape. The dots in IPv4 tell you where
+every group starts. The colons in IPv6 do not, because of `::`.
+A table of 81 masks does not exist here. You first have to
+decide whether the input is even plausible: how many colons,
+whether `::` appears twice, whether a dot means an embedded
+IPv4.
+
+Ada has an AVX-512 helper that only answers that question. One
+masked 512-bit load, a compare against `:` and `.`, a few
+popcounts. Impossible strings never reach the piece parser.
+Possible strings still go through the scalar walk.
+
+```cpp title="IPv6 shape check, one masked 512-bit load"
+bool ipv6_structure_plausible(const char* data, size_t len) {
+  if (len < 2 || len > 45) {
+    return false;
+  }
+  const __mmask64 live = __mmask64((1ULL << len) - 1ULL);
+  const __m512i input =
+      _mm512_maskz_loadu_epi8(live, data);
+  const __mmask64 is_colon =
+      _mm512_mask_cmpeq_epi8_mask(live, input, _mm512_set1_epi8(':'));
+  const __mmask64 is_dot =
+      _mm512_mask_cmpeq_epi8_mask(live, input, _mm512_set1_epi8('.'));
+  const int colons = int(_mm_popcnt_u64(uint64_t(is_colon)));
+  if (colons > 8) {
+    return false;
+  }
+  const uint64_t doubles =
+      uint64_t(is_colon) & (uint64_t(is_colon) << 1);
+  if (doubles != 0 && (doubles & (doubles - 1)) != 0) {
+    return false;  // more than one "::"
+  }
+  if (doubles == 0 && is_dot == 0 && colons != 7) {
+    return false;
+  }
+  return true;
+}
+```
+
+`doubles` is the colon mask AND-shifted onto itself. Adjacent
+colons light a bit. If more than one bit is set, you have two
+`::` (or `:::`), and the string is impossible. A full form
+without `::` and without an embedded IPv4 must have exactly
+seven colons. Everything else, including `::1` and
+`::ffff:192.168.1.1`, is plausible and goes to the scalar piece
+parser.
+
+On a mix of valid addresses, two-`::` junk, an over-long form,
+and a domain name, the scalar scan is about 10 ns. The masked
+load is about 1.4 ns.
+
+Daniel has a [post][lemire-ipv6] on a full AVX-512 convert
+(Shreesh Adiga's kernel): one 512-bit load, expand on the
+colons, permute the hex. He gets about 70 million addresses per
+second on an Emerald Rapids Xeon, against `inet_pton`. That is
+a different job. In a URL parser the common host is still a
+domain name, and the cheapest parse is the one you do not run.
+In Ada, a host that starts with a letter never calls either IP
+parser.
+
+[ada]: https://github.com/ada-url/ada
+[checkers]: https://github.com/ada-url/ada/blob/main/include/ada/checkers-inl.h
+[whatwg-ipv4]: https://url.spec.whatwg.org/#concept-ipv4-parser
+[lemire]: https://lemire.me
+[lemire-ipv4]: https://lemire.me/blog/2023/06/08/parsing-ip-addresses-crazily-fast/
+[lemire-csharp]: https://lemire.me/blog/2026/08/19/parsing-ip-addresses-in-c-at-crazy-speeds/
+[lemire-ipv6]: https://lemire.me/blog/2026/05/23/parsing-ipv6-addresses-crazily-fast-with-avx-512/
+[mula]: http://0x80.pl/notesen/2023-04-09-faster-parse-ipv4.html
+[masked]: https://lemire.me/blog/2022/11/08/modern-vector-programming-with-masked-loads-and-stores/
+[simdip]: https://github.com/lemire/simdip
+[simdzone]: https://github.com/NLnetLabs/simdzone
+[branches]: https://www.yagiz.co/eliminating-branches-in-cpp-loops
