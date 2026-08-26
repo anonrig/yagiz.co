@@ -31,8 +31,13 @@ body {
   content: '#';
 }
 
-.prose *:hover > .anchor {
+.prose *:hover > .anchor,
+.prose .anchor:focus-visible {
   @apply visible;
+}
+
+:is(a, button, input, textarea, select):focus-visible {
+  @apply ring-2 ring-orange-400 ring-offset-2 outline-none;
 }
 
 .prose img {

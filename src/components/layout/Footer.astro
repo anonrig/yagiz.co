@@ -6,14 +6,14 @@ export interface Item {
   href: string
 }
 
-const footerItems: Item[] = [
+const footerItems: (Item & { label?: string })[] = [
   { title: 'About', href: '/about' },
   { title: 'URL parsing', href: '/url-parsing' },
   { title: 'Press', href: '/press' },
   { title: 'Newsletter', href: '/newsletter' },
   { title: 'Contact', href: '/contact' },
-  { title: 'X', href: xUrl },
-  { title: 'RSS', href: rssUrl },
+  { title: 'X', href: xUrl, label: 'Yagiz Nizipli on X' },
+  { title: 'RSS', href: rssUrl, label: 'RSS feed' },
 ]
 ---
 <footer class="flex flex-col items-center pb-20 pt-12 mx-auto w-full max-w-6xl gap-y-4">
@@ -27,6 +27,7 @@ const footerItems: Item[] = [
       footerItems.map((item, index) => (
         <a
           href={item.href}
+          aria-label={item.label}
           class="flex items-center text-xs font-normal text-slate-500 dark:text-neutral-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2 rounded"
         >
           {index !== 0 && (
