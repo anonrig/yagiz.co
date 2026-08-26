@@ -1,26 +1,36 @@
 ---
 import type { CollectionEntry } from 'astro:content'
 import { ChevronRight } from '@lucide/astro'
+import { readingTimeLabel } from '@/lib/reading-time'
+import { absoluteUrl } from '@/lib/schema'
 
 interface Props {
   post: CollectionEntry<'blog'>
+  itemprop?: string
 }
 
-const { post } = Astro.props
-const words = (post.body ?? '').trim().split(/\s+/).length
-const minute_to_read = `${Math.max(1, Math.round(words / 200))} min read`
+const { post, itemprop } = Astro.props
+const minute_to_read = readingTimeLabel(post.body)
 const formattedDate = new Intl.DateTimeFormat('en-US', {
   month: 'short',
   day: 'numeric',
 }).format(post.data.date)
+const url = absoluteUrl(`/${post.id}`)
 ---
 
 <a
   href={`/${post.id}`}
   class="group relative flex items-center overflow-hidden py-3"
+  itemscope
+  itemtype="https://schema.org/BlogPosting"
+  itemid={`${url}#blogposting`}
+  itemprop={itemprop}
 >
+  <link itemprop="url" href={url} />
+  <meta itemprop="description" content={post.data.description} />
   <time
     datetime={post.data.date.toISOString()}
+    itemprop="datePublished"
     class="mr-6 flex min-w-[45px] whitespace-nowrap text-xs font-extrabold uppercase text-orange-400"
   >
     {formattedDate}
@@ -30,6 +40,7 @@ const formattedDate = new Intl.DateTimeFormat('en-US', {
   >
     <h2
       class="truncate font-normal dark:text-white dark:group-hover:text-neutral-300 group-hover:text-slate-600"
+      itemprop="headline"
     >
       {post.data.title}
     </h2>

@@ -1,0 +1,52 @@
+---
+import { absoluteUrl, type BreadcrumbItem } from '@/lib/schema'
+
+interface Props {
+  items: BreadcrumbItem[]
+}
+
+const { items } = Astro.props
+---
+
+<nav aria-label="Breadcrumb" class="text-xs font-bold">
+  <ol
+    class="flex flex-wrap items-center justify-center gap-y-1 text-neutral-500 dark:text-neutral-400"
+    itemscope
+    itemtype="https://schema.org/BreadcrumbList"
+  >
+    {
+      items.map((item, index) => {
+        const isLast = index === items.length - 1
+        return (
+          <li
+            class="flex max-w-full items-center"
+            itemscope
+            itemprop="itemListElement"
+            itemtype="https://schema.org/ListItem"
+          >
+            {index > 0 && (
+              <span aria-hidden="true" class="px-2 font-serif leading-[1] text-neutral-400">
+                /
+              </span>
+            )}
+            {isLast ? (
+              <span class="truncate" itemprop="name" aria-current="page">
+                {item.name}
+              </span>
+            ) : (
+              <a
+                class="text-orange-400 hover:text-orange-300"
+                href={item.path}
+                itemprop="item"
+              >
+                <span itemprop="name">{item.name}</span>
+              </a>
+            )}
+            {isLast && <link itemprop="item" href={absoluteUrl(item.path)} />}
+            <meta itemprop="position" content={String(index + 1)} />
+          </li>
+        )
+      })
+    }
+  </ol>
+</nav>

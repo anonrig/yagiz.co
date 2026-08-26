@@ -25,7 +25,12 @@ const isActive = (href: string) => (href === '/' ? pathname === '/' : pathname.s
     </a>
   </div>
 
-  <nav aria-label="Main navigation" class="items-center md:flex">
+  <nav
+    aria-label="Main navigation"
+    class="items-center md:flex"
+    itemscope
+    itemtype="https://schema.org/SiteNavigationElement"
+  >
     {
       headerItems.map((item) => (
         <a

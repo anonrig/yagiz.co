@@ -3,8 +3,8 @@ import { getEntry } from 'astro:content'
 import MarkdownLink from '@/components/MarkdownLink.astro'
 import Page from '@/components/Page.astro'
 import Layout from '@/layouts/Layout.astro'
-import { websiteUrl } from '@/lib/content'
-import { webPageJsonLd } from '@/lib/schema'
+import { authorFullName, websiteUrl } from '@/lib/content'
+import { aboutPageJsonLd, absoluteUrl, pageBreadcrumbs, schemaIds } from '@/lib/schema'
 
 const page = await getEntry('pages', 'about')
 if (!page) {
@@ -12,19 +12,30 @@ if (!page) {
 }
 
 const markdownUrl = `${websiteUrl}/about.md`
+const breadcrumbs = pageBreadcrumbs(page.data.title, '/about')
 ---
 <Layout
   title={page.data.title}
   description={page.data.description}
   markdownUrl={markdownUrl}
-  jsonLd={webPageJsonLd({
-    path: '/about',
-    title: page.data.title,
-    description: page.data.description,
-    type: 'AboutPage',
-  })}
+  jsonLd={aboutPageJsonLd(page.data.title, page.data.description)}
 >
-  <Page {page} />
+  <Page
+    {page}
+    itemtype="https://schema.org/ProfilePage"
+    itemid={absoluteUrl('/about')}
+    breadcrumbs={breadcrumbs}
+  >
+    <div
+      itemprop="mainEntity"
+      itemscope
+      itemtype="https://schema.org/Person"
+      itemid={schemaIds.person}
+    >
+      <meta itemprop="name" content={authorFullName} />
+      <link itemprop="url" href={websiteUrl} />
+    </div>
+  </Page>
   <div class="mx-auto mt-8 max-w-[calc(750px+8vw)] px-[4vw] text-center">
     <MarkdownLink href={markdownUrl} />
   </div>

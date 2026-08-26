@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight } from '@lucide/astro'
 import authorImg from '@/assets/author-image.png'
 import Container from '@/components/ui/Container.astro'
 import { authorFullName } from '@/lib/content'
+import { schemaIds } from '@/lib/schema'
 
 interface Props {
   index: number
@@ -33,13 +34,20 @@ const previous = index !== posts.length - 1 ? posts.at(index + 1) : undefined
     }
   </div>
 
-  <div class="flex flex-col">
+  <div
+    class="flex flex-col"
+    itemprop="author"
+    itemscope
+    itemtype="https://schema.org/Person"
+    itemid={schemaIds.person}
+  >
     <div class="flex flex-col items-center gap-y-4">
       <p class="mb-4 font-extrabold tracking-wide text-slate-800 dark:text-white">
         Published by:
       </p>
       <a
         href="/about"
+        itemprop="url"
         aria-label={`About ${authorFullName}`}
         class="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2 rounded-full"
       >
@@ -49,8 +57,10 @@ const previous = index !== posts.length - 1 ? posts.at(index + 1) : undefined
           width={50}
           height={50}
           class="rounded-full"
+          itemprop="image"
         />
       </a>
+      <meta itemprop="name" content={authorFullName} />
     </div>
   </div>
 

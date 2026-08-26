@@ -1,4 +1,14 @@
-<article
+---
+interface Props {
+  itemprop?: string
+  as?: 'article' | 'div'
+}
+
+const { itemprop, as: Tag = 'article' } = Astro.props
+---
+
+<Tag
+  itemprop={itemprop}
   class:list={[
     "grid grid-cols-canvas [&>*]:col-main",
     "max-w-none [&_p:has(img.col-wide)]:col-wide",
@@ -12,4 +22,4 @@
   ]}
 >
   <slot />
-</article>
+</Tag>

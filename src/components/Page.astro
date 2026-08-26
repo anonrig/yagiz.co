@@ -1,21 +1,33 @@
 ---
 import { type CollectionEntry, render } from 'astro:content'
+import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import { components } from '@/components/mdx'
 import Figure from '@/components/ui/Figure.astro'
 import Heading from '@/components/ui/Heading.astro'
 import Prose from '@/components/ui/Prose.astro'
+import type { BreadcrumbItem } from '@/lib/schema'
 
 interface Props {
   page: CollectionEntry<'pages'>
+  itemtype?: string
+  itemid?: string
+  breadcrumbs?: BreadcrumbItem[]
 }
 
-const { page } = Astro.props
+const { page, itemtype, itemid, breadcrumbs } = Astro.props
 const { Content } = await render(page)
 ---
 
-<section>
+<section {...(itemtype ? { itemscope: true, itemtype, itemid } : {})}>
   <header class="mb-[4.5rem] grid grid-cols-canvas text-center">
-    <Heading>{page.data.title}</Heading>
+    {
+      breadcrumbs && (
+        <div class="col-main mb-4">
+          <Breadcrumbs items={breadcrumbs} />
+        </div>
+      )
+    }
+    <Heading itemprop={itemtype ? 'name' : undefined}>{page.data.title}</Heading>
 
     {
       page.data.image && (
@@ -23,12 +35,13 @@ const { Content } = await render(page)
           alt={page.data.image.alt}
           src={page.data.image.src}
           caption={page.data.image.caption}
+          itemprop={itemtype ? 'image' : undefined}
         />
       )
     }
   </header>
 
-  <Prose>
+  <Prose itemprop={itemtype ? 'text' : undefined}>
     <Content {components} />
   </Prose>
 

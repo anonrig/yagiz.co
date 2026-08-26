@@ -6,21 +6,29 @@ interface Props {
   caption?: string | undefined
   src: ImageMetadata
   alt: string
+  itemprop?: string
 }
 
 const props = Astro.props
 ---
-<figure class="mt-6 col-wide">
+<figure
+  class="mt-6 col-wide"
+  itemscope
+  itemtype="https://schema.org/ImageObject"
+  itemprop={props.itemprop}
+>
   <Image
     src={props.src}
     alt={props.alt}
     width={920}
     loading="eager"
     class="duration-300 ease-in-out bg-gray-100 dark:bg-gray-900 aspect-[2/1] w-full object-cover object-center"
+    itemprop="contentUrl"
   />
+  <meta itemprop="name" content={props.alt} />
   {
     props.caption && (
-      <figcaption class="mt-4 text-sm text-neutral-400">
+      <figcaption class="mt-4 text-sm text-neutral-400" itemprop="caption">
         {props.caption}
       </figcaption>
     )

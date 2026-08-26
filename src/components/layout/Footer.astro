@@ -7,14 +7,21 @@ export interface Item {
 }
 
 const footerItems: Item[] = [
+  { title: 'About', href: '/about' },
   { title: 'Press', href: '/press' },
+  { title: 'Newsletter', href: '/newsletter' },
   { title: 'Contact', href: '/contact' },
   { title: 'X', href: xUrl },
   { title: 'RSS', href: rssUrl },
 ]
 ---
 <footer class="flex flex-col items-center pb-20 pt-12 mx-auto w-full max-w-6xl gap-y-4">
-  <nav aria-label="Footer navigation" class="flex flex-wrap items-center justify-center">
+  <nav
+    aria-label="Footer navigation"
+    class="flex flex-wrap items-center justify-center"
+    itemscope
+    itemtype="https://schema.org/SiteNavigationElement"
+  >
     {
       footerItems.map((item, index) => (
         <a

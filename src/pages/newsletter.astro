@@ -5,7 +5,7 @@ import NewsletterForm from '@/components/NewsletterForm.astro'
 import Page from '@/components/Page.astro'
 import Layout from '@/layouts/Layout.astro'
 import { websiteUrl } from '@/lib/content'
-import { webPageJsonLd } from '@/lib/schema'
+import { absoluteUrl, newsletterPageJsonLd, pageBreadcrumbs } from '@/lib/schema'
 
 const page = await getEntry('pages', 'newsletter')
 if (!page) {
@@ -13,19 +13,21 @@ if (!page) {
 }
 
 const markdownUrl = `${websiteUrl}/newsletter.md`
+const breadcrumbs = pageBreadcrumbs(page.data.title, '/newsletter')
 ---
 
 <Layout
   title={page.data.title}
   description={page.data.description}
   markdownUrl={markdownUrl}
-  jsonLd={webPageJsonLd({
-    path: '/newsletter',
-    title: page.data.title,
-    description: page.data.description,
-  })}
+  jsonLd={newsletterPageJsonLd(page.data.title, page.data.description)}
 >
-  <Page {page}>
+  <Page
+    {page}
+    itemtype="https://schema.org/WebPage"
+    itemid={absoluteUrl('/newsletter')}
+    breadcrumbs={breadcrumbs}
+  >
     <NewsletterForm />
   </Page>
   <div class="mx-auto mt-8 max-w-[calc(750px+8vw)] px-[4vw] text-center">

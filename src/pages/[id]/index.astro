@@ -5,6 +5,7 @@ import type { GetStaticPaths } from 'astro'
 import BlogFooter from '@/components/BlogFooter.astro'
 import BlogRow from '@/components/BlogRow.astro'
 import BlogStickyHeader from '@/components/BlogStickyHeader.astro'
+import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import MarkdownLink from '@/components/MarkdownLink.astro'
 import { components } from '@/components/mdx'
 import Container from '@/components/ui/Container.astro'
@@ -13,7 +14,8 @@ import Heading from '@/components/ui/Heading.astro'
 import Prose from '@/components/ui/Prose.astro'
 import Layout from '@/layouts/Layout.astro'
 import { authorFullName, websiteUrl } from '@/lib/content'
-import { blogPostingJsonLd } from '@/lib/schema'
+import { countWords, readingTimeLabel } from '@/lib/reading-time'
+import { absoluteUrl, blogBreadcrumbs, blogPostingJsonLd, isoDate } from '@/lib/schema'
 
 interface Props {
   post: CollectionEntry<'blog'>
@@ -35,8 +37,8 @@ const tag = await getEntry(post.data.tag.collection, post.data.tag.id)
 if (!tag) {
   throw new Error('Tag not found')
 }
-const words = (post.body ?? '').trim().split(/\s+/).length
-const minute_to_read = `${Math.max(1, Math.round(words / 200))} min read`
+const words = countWords(post.body)
+const minute_to_read = readingTimeLabel(post.body)
 
 const posts = await getCollection('blog', ({ data }) => data.status === 'published')
 posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
@@ -44,16 +46,20 @@ const index = posts.findIndex((p) => p.id === post.id)
 const suggestions = [posts.at(index - 2), posts.at(index - 1)].filter(
   Boolean,
 ) as CollectionEntry<'blog'>[]
-const publishedTime = post.data.date.toISOString().split('T')[0]
+const publishedTime = isoDate(post.data.date)
 const markdownUrl = `${websiteUrl}/${post.id}.md`
+const url = absoluteUrl(`/${post.id}`)
+const crumbs = blogBreadcrumbs(post, tag)
 ---
 
 <Layout
   title={post.data.title}
   description={post.data.description}
   image={`${Astro.url.origin}/${post.id}/opengraph-image.png`}
+  imageAlt={post.data.title}
   markdownUrl={markdownUrl}
   jsonLd={blogPostingJsonLd(post, tag)}
+  canonical={post.data.canonical_url}
   article={{
     authors: [authorFullName],
     publishedTime,
@@ -61,13 +67,25 @@ const markdownUrl = `${websiteUrl}/${post.id}.md`
     tags: [tag.data.title],
   }}
 >
-  <article>
+  <article
+    itemscope
+    itemtype="https://schema.org/BlogPosting"
+    itemid={`${url}#blogposting`}
+  >
+    <link itemprop="url" href={url} />
+    <meta itemprop="description" content={post.data.description} />
+    <meta itemprop="inLanguage" content="en-US" />
+    <meta itemprop="wordCount" content={String(words)} />
+    <meta itemprop="isAccessibleForFree" content="true" />
     <header class="mb-6 grid grid-cols-canvas text-center">
+      <div class="col-main mb-4">
+        <Breadcrumbs items={crumbs} />
+      </div>
       <div
         class="col-main mb-4 text-xs font-extrabold uppercase text-slate-500"
       >
         <span>
-          <time datetime={post.data.date.toISOString()}>
+          <time datetime={post.data.date.toISOString()} itemprop="datePublished">
             {
               new Intl.DateTimeFormat("en-US", {
                 month: "short",
@@ -76,6 +94,7 @@ const markdownUrl = `${websiteUrl}/${post.id}.md`
               }).format(post.data.date)
             }
           </time>
+          <meta itemprop="dateModified" content={post.data.date.toISOString()} />
         </span>
         <span class="before:px-2 before:font-serif before:leading-[1] before:content-['·']">
           {minute_to_read}
@@ -84,6 +103,7 @@ const markdownUrl = `${websiteUrl}/${post.id}.md`
           <a
             href={`/tag/${post.data.tag.id}`}
             class="text-orange-400 hover:text-orange-300"
+            itemprop="articleSection"
           >
             {tag.data.title}
           </a>
@@ -93,7 +113,7 @@ const markdownUrl = `${websiteUrl}/${post.id}.md`
         <MarkdownLink href={markdownUrl} />
       </div>
 
-      <Heading>{post.data.title}</Heading>
+      <Heading itemprop="headline">{post.data.title}</Heading>
 
       {
         post.data.image && (
@@ -101,12 +121,13 @@ const markdownUrl = `${websiteUrl}/${post.id}.md`
             alt={post.data.image.alt}
             src={post.data.image.src}
             caption={post.data.title}
+            itemprop="image"
           />
         )
       }
     </header>
     <BlogStickyHeader {post} />
-    <Prose>
+    <Prose as="div" itemprop="articleBody">
       <Content {components} />
     </Prose>
     <BlogFooter {index} />

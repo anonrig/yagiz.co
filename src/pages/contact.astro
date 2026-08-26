@@ -5,7 +5,7 @@ import MarkdownLink from '@/components/MarkdownLink.astro'
 import Page from '@/components/Page.astro'
 import Layout from '@/layouts/Layout.astro'
 import { websiteUrl } from '@/lib/content'
-import { webPageJsonLd } from '@/lib/schema'
+import { absoluteUrl, contactPageJsonLd, pageBreadcrumbs } from '@/lib/schema'
 
 const page = await getEntry('pages', 'contact')
 if (!page) {
@@ -13,20 +13,21 @@ if (!page) {
 }
 
 const markdownUrl = `${websiteUrl}/contact.md`
+const breadcrumbs = pageBreadcrumbs(page.data.title, '/contact')
 ---
 
 <Layout
   title={page.data.title}
   description={page.data.description}
   markdownUrl={markdownUrl}
-  jsonLd={webPageJsonLd({
-    path: '/contact',
-    title: page.data.title,
-    description: page.data.description,
-    type: 'ContactPage',
-  })}
+  jsonLd={contactPageJsonLd(page.data.title, page.data.description)}
 >
-  <Page {page}>
+  <Page
+    {page}
+    itemtype="https://schema.org/ContactPage"
+    itemid={absoluteUrl('/contact')}
+    breadcrumbs={breadcrumbs}
+  >
     <ContactForm />
   </Page>
   <div class="mx-auto mt-8 max-w-[calc(750px+8vw)] px-[4vw] text-center">
