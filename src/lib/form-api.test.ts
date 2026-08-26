@@ -42,7 +42,7 @@ test('field validators match the public form minimums', () => {
   assert.equal(validateMessage('too short'), false)
 })
 
-test('isHoneypot treats any filled company field as a bot', () => {
+test('isHoneypot treats any filled website_url field as a bot', () => {
   assert.equal(isHoneypot('https://spam.example'), true)
   assert.equal(isHoneypot(''), false)
 })

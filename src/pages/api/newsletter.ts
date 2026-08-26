@@ -17,7 +17,7 @@ export const POST: APIRoute = async ({ request }) => {
     return jsonResponse(400, 'Invalid JSON body.')
   }
 
-  if (isHoneypot(readString(body, 'company'))) {
+  if (isHoneypot(readString(body, 'website_url'))) {
     return jsonResponse(200, 'Added you to the newsletter. Thank you for signing up.')
   }
 
