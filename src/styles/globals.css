@@ -3,7 +3,7 @@
 @config "../../tailwind.config.mjs";
 
 :root {
-  color-scheme: dark;
+  color-scheme: light dark;
 }
 
 body {

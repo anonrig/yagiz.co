@@ -9,28 +9,30 @@ interface Props {
   itemprop?: string
 }
 
-const {props} = Astro
+const { caption, src, alt, itemprop }: Props = Astro.props
 ---
 <figure
   class="mt-6 col-wide"
   itemscope
   itemtype="https://schema.org/ImageObject"
-  itemprop={props.itemprop}
+  itemprop={itemprop}
 >
   <Image
-    src={props.src}
-    alt={props.alt}
+    src={src}
+    alt={alt}
     width={920}
+    layout="constrained"
+    fit="cover"
     loading="eager"
     fetchpriority="high"
     class="duration-300 ease-in-out bg-gray-100 dark:bg-gray-900 aspect-[2/1] w-full object-cover object-center"
     itemprop="contentUrl"
   />
-  <meta itemprop="name" content={props.alt} />
+  <meta itemprop="name" content={alt} />
   {
-    props.caption && (
+    caption && (
       <figcaption class="mt-4 text-sm text-neutral-400" itemprop="caption">
-        {props.caption}
+        {caption}
       </figcaption>
     )
   }

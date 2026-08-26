@@ -8,7 +8,7 @@ interface Props {
   class?: string
 }
 
-const { src, class: className, alt } = Astro.props
+const { src, class: className, alt }: Props = Astro.props
 
 const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/**/*')
 
@@ -34,6 +34,7 @@ const imageClass = [
       {alt}
       width={asset.width}
       height={asset.height}
+      layout="constrained"
       class:list={imageClass}
     />
   ) : (

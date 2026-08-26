@@ -8,7 +8,6 @@ const intention = await select({
   options: [
     { label: 'Create a blog post', value: 'blog' },
     { label: 'Send an email', value: 'email' },
-    { label: 'Update sponsorships', value: 'sponsorship' },
   ],
 })
 
