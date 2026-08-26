@@ -1,5 +1,4 @@
 import type { APIRoute } from 'astro'
-
 import { env } from 'cloudflare:workers'
 
 import {
@@ -34,10 +33,7 @@ export const POST: APIRoute = async ({ request }) => {
   const message = readString(body, 'message')
 
   if (!isEmail(email) || !validateSubject(subject) || !validateMessage(message)) {
-    return jsonResponse(
-      400,
-      'Input validation failed. Email, subject, and message are required.',
-    )
+    return jsonResponse(400, 'Input validation failed. Email, subject, and message are required.')
   }
 
   const safeEmail = escapeHtml(email)
