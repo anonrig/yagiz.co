@@ -51,8 +51,17 @@
   </div>
 
   <div class="absolute -left-[10000px] top-auto h-px w-px overflow-hidden" aria-hidden="true">
-    <label for="company">Company</label>
-    <input id="company" name="company" type="text" tabindex="-1" autocomplete="off" />
+    <label for="website-url">Website</label>
+    <input
+      id="website-url"
+      name="website_url"
+      type="text"
+      tabindex="-1"
+      autocomplete="off"
+      data-1p-ignore
+      data-lpignore="true"
+      data-form-type="other"
+    />
   </div>
 
   <div>
@@ -79,7 +88,7 @@
   const submit = requireEl('#submit', HTMLButtonElement)
   const name = requireEl('#name', HTMLInputElement)
   const email = requireEl('#email', HTMLInputElement)
-  const company = requireEl('#company', HTMLInputElement)
+  const websiteUrl = requireEl('#website-url', HTMLInputElement)
   const successMessage = requireEl('#success-message', HTMLDivElement)
   const errorMessage = requireEl('#error-message', HTMLDivElement)
 
@@ -93,7 +102,11 @@
       const res = await fetch('/api/newsletter', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ email: email.value, name: name.value, company: company.value }),
+        body: JSON.stringify({
+          email: email.value,
+          name: name.value,
+          website_url: websiteUrl.value,
+        }),
       })
 
       if (!res.ok) {

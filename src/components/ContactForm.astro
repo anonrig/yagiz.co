@@ -58,8 +58,17 @@
   </div>
 
   <div class="absolute -left-[10000px] top-auto h-px w-px overflow-hidden" aria-hidden="true">
-    <label for="company">Company</label>
-    <input id="company" name="company" type="text" tabindex="-1" autocomplete="off" />
+    <label for="website-url">Website</label>
+    <input
+      id="website-url"
+      name="website_url"
+      type="text"
+      tabindex="-1"
+      autocomplete="off"
+      data-1p-ignore
+      data-lpignore="true"
+      data-form-type="other"
+    />
   </div>
 
   <div>
@@ -87,7 +96,7 @@
   const subject = requireEl('#subject', HTMLInputElement)
   const email = requireEl('#email', HTMLInputElement)
   const message = requireEl('#message', HTMLTextAreaElement)
-  const company = requireEl('#company', HTMLInputElement)
+  const websiteUrl = requireEl('#website-url', HTMLInputElement)
   const successMessage = requireEl('#success-message', HTMLDivElement)
   const errorMessage = requireEl('#error-message', HTMLDivElement)
 
@@ -105,7 +114,7 @@
           email: email.value,
           subject: subject.value,
           message: message.value,
-          company: company.value,
+          website_url: websiteUrl.value,
         }),
       })
 

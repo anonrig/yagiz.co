@@ -153,10 +153,11 @@ Add new schema changes as `migrations/0002_*.sql`, `migrations/0003_*.sql`, etc.
 Never edit existing migration files.
 
 `/api/contact` and `/api/newsletter` share helpers in `src/lib/form-api.ts` and
-`src/lib/rate-limit.ts`. Invalid JSON is `400`. A filled `company` honeypot is a
-fake `200` and does not increment the limiter. Real email / length checks run
-before D1 or email send. Contact HTML escapes `email` / `message` and strips
-CR/LF from `subject`. Rate limit is 5 requests / 10 minutes / IP via
+`src/lib/rate-limit.ts`. Invalid JSON is `400`. A filled `website_url` honeypot
+is a fake `200` and does not increment the limiter (do not name it `company` —
+password managers autofill that). Real email / length checks run before D1 or
+email send. Contact HTML escapes `email` / `message` and strips CR/LF from
+`subject`. Rate limit is a fixed 5 requests / 10 minutes / IP via
 `caches.default` (fail open). Do not add Turnstile or Vitest.
 
 ## Fonts
