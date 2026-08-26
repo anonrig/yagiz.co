@@ -99,7 +99,9 @@ export default {
           request,
           withHeaders(mdResponse, (headers) => {
             headers.set('Content-Type', 'text/markdown; charset=utf-8')
-            headers.set('X-Robots-Tag', 'noindex, nofollow')
+            // Robots tags apply to the request URL, not the representation.
+            // The .md asset is noindex; do not copy that onto /about.
+            headers.delete('X-Robots-Tag')
             appendVaryAccept(headers)
             appendLink(
               headers,
