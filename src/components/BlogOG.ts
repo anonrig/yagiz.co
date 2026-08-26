@@ -9,7 +9,7 @@ interface OgNode {
     style?: Record<string, string>
     src?: string
     alt?: string
-    children?: (OgNode | string)[]
+    children?: OgNode | string | (OgNode | string)[]
   }
 }
 

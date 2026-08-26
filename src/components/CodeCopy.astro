@@ -1,5 +1,5 @@
 <script>
-  const copiedTimeouts = new WeakMap<HTMLButtonElement, number>()
+  const copiedTimeouts = new WeakMap<HTMLButtonElement, ReturnType<typeof setTimeout>>()
 
   function fenceText(pre: Element): string {
     const lines = pre.querySelectorAll('.line')
