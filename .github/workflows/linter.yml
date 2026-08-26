@@ -16,4 +16,6 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      # Type-aware oxlint needs generated Astro content types and Worker Env
+      # bindings. Both files are gitignored; lint generates them first.
       - run: pnpm run lint

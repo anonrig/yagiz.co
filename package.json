@@ -9,8 +9,8 @@
     "deploy": "pnpm run build && wrangler deploy",
     "preview": "wrangler dev",
     "astro": "astro",
-    "lint": "oxlint . && oxfmt --check",
-    "lint-fix": "oxlint --fix . && oxfmt",
+    "lint": "wrangler types && astro sync && oxlint . && oxfmt --check",
+    "lint-fix": "wrangler types && astro sync && oxlint --fix . && oxfmt",
     "cli": "node --no-warnings ./cli.mjs",
     "presentation": "marp --allow-local-files -s ./presentations"
   },
