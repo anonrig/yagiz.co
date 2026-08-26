@@ -14,11 +14,13 @@ export function escapeHtml(value: string): string {
 }
 
 export function oneLine(value: string): string {
-  return value.replaceAll(/[\r\n\0]/gu, ' ').trim()
+  return value.replaceAll(/[\r\n\0\s]+/gu, ' ').trim()
 }
 
 export function isEmail(value: string): boolean {
-  return value.length >= 6 && value.length <= EMAIL_MAX && EMAIL_RE.test(value) && !value.includes('..')
+  return (
+    value.length >= 6 && value.length <= EMAIL_MAX && EMAIL_RE.test(value) && !value.includes('..')
+  )
 }
 
 export function isHoneypot(value: string): boolean {

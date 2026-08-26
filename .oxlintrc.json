@@ -391,7 +391,8 @@
       "files": ["**/*.test.ts"],
       "rules": {
         "typescript/explicit-function-return-type": "off",
-        "typescript/explicit-module-boundary-types": "off"
+        "typescript/explicit-module-boundary-types": "off",
+        "typescript/no-floating-promises": "off"
       }
     }
   ]
