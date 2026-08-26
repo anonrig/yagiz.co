@@ -87,12 +87,22 @@ must include the LLM surfaces: `/llms.txt`, `/llms-full.txt`, `Accept: text/mark
   that was the Astro v4 location). All collections must use loaders (e.g. `glob()`).
 - **`z` (Zod)**: import from `astro/zod`, not from `astro:content`.
 - **Rust compiler**: default in Astro 7 — do not set `experimental.rustCompiler`.
-- **Markdown/MDX plugins**: use `markdown.processor: unified({...})` from
-  `@astrojs/markdown-remark`. Plugins on `mdx({ remarkPlugins, rehypePlugins })` are
-  deprecated. This project stays on unified (not Sätteri) for rehype-slug / autolink
-  headings. Code fences use Astro's built-in Shiki (`markdown.shikiConfig`).
+- **Markdown/MDX**: Astro 7's default Sätteri processor (`markdown.processor: satteri()`).
+  Heading permalinks are a Sätteri hast plugin (`src/lib/satteri-autolink.ts`) after
+  `satteriHeadingIdsPlugin()`. Do not re-add `@astrojs/markdown-remark` / remark /
+  rehype plugins unless a plugin has no Sätteri equivalent. Code fences use Astro's
+  built-in Shiki (`markdown.shikiConfig`). Plugins on `mdx({ remarkPlugins })` are
+  deprecated.
+- **Sessions**: `session: false`. This site does not use `Astro.session`. Leave it
+  off so the Cloudflare adapter does not wire the `SESSION` KV binding as a driver.
 - **`compressHTML`**: Astro 7 defaults to `'jsx'` whitespace rules; this project sets
   `compressHTML: true` to keep previous HTML-aware spacing.
+- **Advanced Routing (`src/fetch.ts`)**: do not add. Accept negotiation and SEO
+  headers stay in `src/worker.ts` via `@astrojs/cloudflare/handler`, which also
+  handles the prerender protocol that `cf()` + `astro()` does not.
+- **Incremental static builds**: do not enable `experimental.incrementalBuild`.
+  Post pages also render related posts / series neighbors, so `cacheKey: entry.digest`
+  would serve stale sidebars.
 
 ## Cloudflare adapter (v14)
 
@@ -163,3 +173,7 @@ Do **not** use `fontProviders.fontsource()` — it requires outbound HTTPS to
 | `open`                        | Was unused                                                              |
 | `rehype-pretty-code`          | Astro built-in Shiki + `@shikijs/transformers`                          |
 | `@biomejs/biome`              | Oxlint + Oxfmt                                                          |
+| `@astrojs/markdown-remark`    | Sätteri (`@astrojs/markdown-satteri`)                                   |
+| `rehype-slug`                 | `satteriHeadingIdsPlugin()`                                             |
+| `rehype-autolink-headings`    | `src/lib/satteri-autolink.ts`                                           |
+| `remark-gfm`                  | Sätteri built-in GFM                                                    |
