@@ -24,8 +24,13 @@ type checking, and the full Astro build in one step.
 - **Fonts**: Mulish variable font via `fontProviders.local()` — file lives at `src/assets/fonts/mulish-variable.woff2`
 - **Linter/formatter**: Oxlint + Oxfmt (not Biome). Configs are `.oxlintrc.json` and
   `.oxfmtrc.json`. Oxfmt cannot format `.astro` yet, and does not touch `src/content/**`.
-  Type-aware oxlint (`oxlint-tsgolint`) stays off: it requires TypeScript 7, which
-  breaks `@astrojs/check`. Native TypeScript plugin rules are all enabled. All
+  Type-aware oxlint (`oxlint-tsgolint`) is on. The project's `typescript`
+  package stays on 6 so `@astrojs/check` keeps working; tsgolint bundles
+  TypeScript 7 itself. `tsconfig.json` must not set `baseUrl` (removed in TS 7;
+  `paths` resolve relative to the config file). Do not enable
+  `options.typeCheck` — `astro check` remains the typechecker.
+  `prefer-readonly-parameter-types` stays off (Astro / Workers types are not
+  readonly). Untyped `.mjs` CLI scripts skip the `no-unsafe-*` family. All
   `jsx-a11y` rules are on, including `anchor-ambiguous-text` (SEO / Lighthouse
   link text). Mutating `Array#sort` / `Array#reverse` as statements is forbidden
   (`toSorted` / `toReversed`). Implicit browser globals (`event`, `name`,
@@ -61,10 +66,12 @@ must include the LLM surfaces: `/llms.txt`, `/llms-full.txt`, `Accept: text/mark
 
 ## TypeScript
 
-- Use TypeScript 6 (`^6.0.0`). TypeScript 7 is available but breaks `@astrojs/check`
-  (no Language Service API; [withastro/roadmap#1321](https://github.com/withastro/roadmap/discussions/1321)).
+- Use TypeScript 6 (`^6.0.0`) for the project compiler. TypeScript 7 is available
+  but breaks `@astrojs/check` (no Language Service API;
+  [withastro/roadmap#1321](https://github.com/withastro/roadmap/discussions/1321)).
   Stay on TS 6 until Astro check supports TS 7. Peer warnings about `typescript@^5`
-  are cosmetic.
+  are cosmetic. Oxlint type-aware rules use `oxlint-tsgolint`, which bundles
+  TypeScript 7 separately — do not upgrade the `typescript` package for that.
 - Stay on `@astrojs/compiler-rs` 0.3.2. Astro 7.2.4 still depends on `^0.3.2`;
   forcing 0.4.0 via a pnpm override broke Workers Builds.
 - Keep the `@cloudflare/vite-plugin` override at `^1.53.1` so `astro dev` and

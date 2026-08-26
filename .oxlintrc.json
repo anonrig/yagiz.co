@@ -21,7 +21,7 @@
     "nursery": "error"
   },
   "options": {
-    "typeAware": false,
+    "typeAware": true,
     "reportUnusedDisableDirectives": "error"
   },
   "env": {
@@ -292,7 +292,7 @@
     "typescript/prefer-optional-chain": "error",
     "typescript/prefer-promise-reject-errors": "error",
     "typescript/prefer-readonly": "error",
-    "typescript/prefer-readonly-parameter-types": "error",
+    "typescript/prefer-readonly-parameter-types": "off",
     "typescript/prefer-reduce-type-parameter": "error",
     "typescript/prefer-regexp-exec": "error",
     "typescript/prefer-return-this-type": "error",
@@ -302,9 +302,21 @@
     "typescript/require-array-sort-compare": "error",
     "typescript/require-await": "error",
     "typescript/restrict-plus-operands": "error",
-    "typescript/restrict-template-expressions": "error",
+    "typescript/restrict-template-expressions": [
+      "error",
+      { "allowNumber": true, "allowBoolean": true }
+    ],
     "typescript/return-await": "error",
-    "typescript/strict-boolean-expressions": "error",
+    "typescript/strict-boolean-expressions": [
+      "error",
+      {
+        "allowNullableObject": true,
+        "allowNullableBoolean": true,
+        "allowNullableString": true,
+        "allowNullableNumber": true,
+        "allowAny": false
+      }
+    ],
     "typescript/strict-void-return": "error",
     "typescript/switch-exhaustiveness-check": "error",
     "typescript/unbound-method": "error",
@@ -327,13 +339,34 @@
         "node/no-process-env": "off",
         "node/no-sync": "off",
         "eslint/no-console": "off",
-        "unicorn/no-process-exit": "off"
+        "unicorn/no-process-exit": "off",
+        "typescript/no-unsafe-assignment": "off",
+        "typescript/no-unsafe-member-access": "off",
+        "typescript/no-unsafe-call": "off",
+        "typescript/no-unsafe-argument": "off",
+        "typescript/no-unsafe-return": "off",
+        "typescript/promise-function-async": "off",
+        "typescript/consistent-return": "off",
+        "typescript/strict-boolean-expressions": "off",
+        "typescript/switch-exhaustiveness-check": "off"
+      }
+    },
+    {
+      "files": ["src/components/mdx/index.ts"],
+      "rules": {
+        "typescript/no-unsafe-assignment": "off"
       }
     },
     {
       "files": ["src/pages/api/**"],
       "rules": {
         "eslint/no-console": "off"
+      }
+    },
+    {
+      "files": ["src/worker.ts"],
+      "rules": {
+        "typescript/promise-function-async": "off"
       }
     },
     {

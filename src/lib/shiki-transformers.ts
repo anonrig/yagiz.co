@@ -24,8 +24,9 @@ function classList(properties: HastProps['properties']): string[] {
 }
 
 function hexClass(prefix: string, value: string): string | undefined {
-  const hex = value.trim().match(/^#(?<hex>[0-9a-f]{3,8})$/iu)
-  return hex?.groups?.hex ? `${prefix}-${hex.groups.hex.toLowerCase()}` : undefined
+  const hex = /^#(?<hex>[0-9a-f]{3,8})$/iu.exec(value.trim())
+  const digits = hex?.groups?.hex
+  return digits === undefined ? undefined : `${prefix}-${digits.toLowerCase()}`
 }
 
 function isBoldWeight(value: string): boolean {
@@ -53,16 +54,14 @@ export function transformerInlineStylesToClasses(): ShikiTransformer {
     name: 'inline-styles-to-classes',
     pre(node) {
       consumeInlineStyles(node)
-      if (node.properties) {
-        const classes = classList(node.properties)
-        if (!classes.includes('astro-code')) {
-          classes.unshift('astro-code')
-        }
-        if (!classes.includes('not-prose')) {
-          classes.push('not-prose')
-        }
-        node.properties.className = classes
+      const classes = classList(node.properties)
+      if (!classes.includes('astro-code')) {
+        classes.unshift('astro-code')
       }
+      if (!classes.includes('not-prose')) {
+        classes.push('not-prose')
+      }
+      node.properties.className = classes
     },
     span(node) {
       consumeInlineStyles(node)
@@ -213,13 +212,13 @@ export function transformerMetaTitle(): ShikiTransformer {
         .trim()
     },
     root(hast) {
-      const title = this.options.meta?.title
+      const title: unknown = this.options.meta?.title
       if (typeof title !== 'string') {
         return
       }
 
       const [pre] = hast.children
-      if (pre?.type !== 'element') {
+      if (pre.type !== 'element') {
         return
       }
 
