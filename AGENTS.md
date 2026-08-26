@@ -9,8 +9,8 @@ node --run build          # wrangler types && astro check && astro build
 node --run dev            # wrangler types && astro dev --port 3000
 node --run preview        # wrangler dev (Cloudflare Workers local preview)
 node --run deploy         # build && wrangler deploy
-node --run lint           # biome check .
-node --run lint-fix       # biome check . --write
+node --run lint           # oxlint . && oxfmt --check
+node --run lint-fix       # oxlint --fix . && oxfmt
 node --run cli            # interactive CLI for blog/newsletter tasks
 ```
 
@@ -22,7 +22,10 @@ type checking, and the full Astro build in one step.
 - **Framework**: Astro 7 — static output, deployed to Cloudflare Workers via `@astrojs/cloudflare` v14
 - **Styling**: Tailwind CSS v4 via `@tailwindcss/vite` (no `tailwind.config` file needed for basic use)
 - **Fonts**: Mulish variable font via `fontProviders.local()` — file lives at `src/assets/fonts/mulish-variable.woff2`
-- **Linter/formatter**: Biome v2
+- **Linter/formatter**: Oxlint + Oxfmt (not Biome). Configs are `.oxlintrc.json` and
+  `.oxfmtrc.json`. Oxfmt cannot format `.astro` yet, and does not touch `src/content/**`.
+  Type-aware oxlint (`oxlint-tsgolint`) stays off: it requires TypeScript 7, which
+  breaks `@astrojs/check`. Native TypeScript plugin rules are all enabled.
 - **Package manager**: pnpm
 
 ## Git
@@ -141,3 +144,4 @@ Do **not** use `fontProviders.fontsource()` — it requires outbound HTTPS to
 | `reading-time` | Inline word-count: `Math.max(1, Math.round(words / 200)) + " min read"` |
 | `open` | Was unused |
 | `rehype-pretty-code` | Astro built-in Shiki + `@shikijs/transformers` |
+| `@biomejs/biome` | Oxlint + Oxfmt |

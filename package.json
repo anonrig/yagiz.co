@@ -9,8 +9,8 @@
     "deploy": "pnpm run build && wrangler deploy",
     "preview": "wrangler dev",
     "astro": "astro",
-    "lint": "biome check .",
-    "lint-fix": "biome check . --write",
+    "lint": "oxlint . && oxfmt --check",
+    "lint-fix": "oxlint --fix . && oxfmt",
     "cli": "node --no-warnings ./cli.mjs",
     "presentation": "marp --allow-local-files -s ./presentations"
   },
@@ -42,9 +42,10 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@astrojs/rss": "^4.0.19",
-    "@biomejs/biome": "^2.5.10",
     "@marp-team/marp-cli": "^4.5.0",
     "@types/node": "^26.2.0",
+    "oxfmt": "^0.65.0",
+    "oxlint": "^1.80.0",
     "to-vfile": "^8.0.0",
     "typescript": "^6.0.3",
     "vfile-matter": "^5.0.1"
@@ -52,7 +53,6 @@
   "packageManager": "pnpm@10.34.5",
   "pnpm": {
     "onlyBuiltDependencies": [
-      "@biomejs/biome",
       "@tailwindcss/oxide",
       "esbuild",
       "puppeteer",
