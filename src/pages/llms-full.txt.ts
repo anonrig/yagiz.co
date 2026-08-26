@@ -12,7 +12,7 @@ export const GET: APIRoute = async () => {
     getCollection('blog', ({ data }) => data.status === 'published'),
     getCollection('pages'),
   ])
-  posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  const orderedPosts = posts.toSorted((a, b) => b.data.date.getTime() - a.data.date.getTime())
 
   const sections = [
     `# ${websiteTitle}`,
@@ -41,7 +41,7 @@ export const GET: APIRoute = async () => {
     '',
   )
 
-  for (const post of posts) {
+  for (const post of orderedPosts) {
     sections.push('', `<!-- ${websiteUrl}/${post.id} -->`, '', postToMarkdown(post), '')
   }
 

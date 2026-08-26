@@ -21,13 +21,15 @@
     "nursery": "error"
   },
   "options": {
-    "typeAware": false
+    "typeAware": false,
+    "reportUnusedDisableDirectives": "error"
   },
   "env": {
     "builtin": true,
     "es2024": true,
     "browser": true,
-    "node": true
+    "node": true,
+    "astro": true
   },
   "globals": {
     "Astro": "readonly",
@@ -120,6 +122,42 @@
     "eslint/new-cap": ["error", { "capIsNewExceptions": ["BlogOG"] }],
     "eslint/no-underscore-dangle": ["error", { "allow": ["__raw"] }],
     "eslint/no-use-before-define": ["error", { "functions": false }],
+    "eslint/eqeqeq": ["error", "always"],
+    "eslint/no-restricted-globals": [
+      "error",
+      {
+        "name": "event",
+        "message": "Use the listener parameter, not the implicit global event object."
+      },
+      {
+        "name": "name",
+        "message": "window.name is a string; declare a local instead."
+      },
+      {
+        "name": "status",
+        "message": "window.status is a browser global; declare a local instead."
+      },
+      {
+        "name": "length",
+        "message": "window.length is a browser global; declare a local instead."
+      }
+    ],
+    "eslint/no-restricted-properties": [
+      "error",
+      {
+        "object": "document",
+        "property": "write",
+        "message": "document.write blocks HTML parsing and hurts Lighthouse."
+      },
+      {
+        "object": "document",
+        "property": "writeln",
+        "message": "document.writeln blocks HTML parsing and hurts Lighthouse."
+      }
+    ],
+    "import/consistent-type-specifier-style": ["error", "prefer-top-level"],
+    "unicorn/no-array-sort": ["error", { "allowExpressionStatement": false }],
+    "unicorn/no-array-reverse": ["error", { "allowExpressionStatement": false }],
 
     "jsx-a11y/alt-text": ["error", { "img": ["Image", "AstroImage"] }],
     "jsx-a11y/anchor-has-content": "error",
@@ -156,7 +194,10 @@
     "jsx-a11y/role-supports-aria-props": "error",
     "jsx-a11y/scope": "error",
     "jsx-a11y/tabindex-no-positive": "error",
-    "jsx-a11y/anchor-ambiguous-text": "off",
+    "jsx-a11y/anchor-ambiguous-text": [
+      "error",
+      { "words": ["click here", "here", "link", "a link", "learn more", "read more"] }
+    ],
 
     "typescript/adjacent-overload-signatures": "error",
     "typescript/array-type": "error",

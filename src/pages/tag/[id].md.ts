@@ -14,11 +14,11 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export async function GET({ props, params }: APIContext): Promise<Response> {
   const tag = props.tag as CollectionEntry<'tags'>
-  const posts = await getCollection(
+  const collected = await getCollection(
     'blog',
     ({ data }) => data.status === 'published' && data.tag.id === params.id,
   )
-  posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  const posts = collected.toSorted((a, b) => b.data.date.getTime() - a.data.date.getTime())
 
   return markdownResponse(tagToMarkdown(tag, posts), `${websiteUrl}/tag/${tag.id}`)
 }

@@ -33,8 +33,8 @@ interface Props {
 }
 
 export async function getStaticPaths(): Promise<ReturnType<GetStaticPaths>> {
-  const posts = await getCollection('blog', ({ data }) => data.status === 'published')
-  posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  const collected = await getCollection('blog', ({ data }) => data.status === 'published')
+  const posts = collected.toSorted((a, b) => b.data.date.getTime() - a.data.date.getTime())
 
   return posts.map((post) => ({
     params: { id: post.id },
@@ -51,8 +51,8 @@ if (!tag) {
 const words = countWords(post.body)
 const minute_to_read = readingTimeLabel(post.body)
 
-const posts = await getCollection('blog', ({ data }) => data.status === 'published')
-posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+const collected = await getCollection('blog', ({ data }) => data.status === 'published')
+const posts = collected.toSorted((a, b) => b.data.date.getTime() - a.data.date.getTime())
 const index = posts.findIndex((p) => p.id === post.id)
 const suggestions = relatedPosts(post, posts)
 const relatedAreSameSeries = Boolean(

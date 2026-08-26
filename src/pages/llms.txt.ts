@@ -10,17 +10,17 @@ export const GET: APIRoute = async () => {
     getCollection('blog', ({ data }) => data.status === 'published'),
     getCollection('tags'),
   ])
-  posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
-  tags.sort((a, b) => a.id.localeCompare(b.id))
+  const orderedPosts = posts.toSorted((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  const orderedTags = tags.toSorted((a, b) => a.id.localeCompare(b.id))
 
-  const postLinks = posts
+  const postLinks = orderedPosts
     .map((post) => {
       const date = post.data.date.toISOString().slice(0, 10)
       return `- [${post.data.title}](${websiteUrl}/${post.id}.md): ${post.data.description} (${date})`
     })
     .join('\n')
 
-  const tagLinks = tags
+  const tagLinks = orderedTags
     .map((tag) => `- [#${tag.data.title}](${websiteUrl}/tag/${tag.id}.md): ${tag.data.description}`)
     .join('\n')
 

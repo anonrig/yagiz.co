@@ -10,8 +10,8 @@ import Layout from '@/layouts/Layout.astro'
 import { websiteDescription, websiteTitle, websiteUrl } from '@/lib/content'
 import { homeJsonLd, schemaIds } from '@/lib/schema'
 
-const posts = await getCollection('blog', ({ data }) => data.status === 'published')
-posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+const collected = await getCollection('blog', ({ data }) => data.status === 'published')
+const posts = collected.toSorted((a, b) => b.data.date.getTime() - a.data.date.getTime())
 
 const postsByYear = new Map<number, typeof posts>()
 for (const post of posts) {
