@@ -13,7 +13,12 @@ export async function GET(): Promise<ReturnType<APIRoute>> {
     title: websiteTitle,
     description: websiteDescription,
     site: new URL(websiteUrl),
+    xmlns: {
+      atom: 'http://www.w3.org/2005/Atom',
+    },
+    trailingSlash: false,
     customData: `
+<atom:link href="${websiteUrl}/rss.xml" rel="self" type="application/rss+xml"/>
 <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
 <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
 <language>en-us</language>
@@ -23,10 +28,10 @@ export async function GET(): Promise<ReturnType<APIRoute>> {
       return {
         title: post.data.title,
         description: post.data.description,
-        customData: `<guid>${`/${post.id}`}</guid>`,
         link: `/${post.id}`,
         pubDate: post.data.date,
         author: authorFullName,
+        categories: [post.data.tag.id],
       }
     }),
   })

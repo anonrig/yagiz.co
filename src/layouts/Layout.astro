@@ -22,7 +22,7 @@ interface Props {
   imageAlt?: string
   markdownUrl?: string
   jsonLd?: JsonLd | JsonLd[]
-  canonical?: string
+  canonical?: string | false
   robots?: string
   article?: {
     authors?: string[]
@@ -44,10 +44,10 @@ const {
   article,
 } = Astro.props
 
-const pageTitle = title ? `${title} - ${websiteTitle}` : websiteTitle
+const pageTitle = title ? `${title} · ${authorFullName}` : websiteTitle
 const jsonLdDocuments = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : []
 const selfUrl = pageCanonical(Astro.url.pathname)
-const canonicalUrl = pageCanonical(Astro.url.pathname, canonical)
+const canonicalUrl = canonical === false ? undefined : pageCanonical(Astro.url.pathname, canonical)
 const socialTitle = title ?? websiteTitle
 const socialImageAlt = imageAlt ?? socialTitle
 const noindex = robots.includes('noindex')
@@ -61,9 +61,15 @@ const googlebot = noindex
     <meta charset="utf-8" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonicalUrl} />
-    <link rel="alternate" hreflang="en" href={selfUrl} />
-    <link rel="alternate" hreflang="x-default" href={selfUrl} />
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+    {
+      canonical !== false && (
+        <>
+          <link rel="alternate" hreflang="en" href={selfUrl} />
+          <link rel="alternate" hreflang="x-default" href={selfUrl} />
+        </>
+      )
+    }
     <link rel="author" href={absoluteUrl('/about')} />
     <link rel="me" href="https://github.com/anonrig" />
     <link rel="me" href={xUrl} />

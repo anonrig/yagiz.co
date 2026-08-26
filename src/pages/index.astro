@@ -30,17 +30,21 @@ const markdownUrl = `${websiteUrl}/index.md`
     <div class="-mt-8 mx-auto mb-4 flex max-w-lg flex-col items-center text-center">
       <div class="relative mb-8" itemscope itemtype="https://schema.org/ImageObject">
         <Image
-          alt="Engineering with Yagiz"
+          alt="Yagiz Nizipli"
           src={familyImg}
           width={150}
           height={150}
           loading="eager"
+          fetchpriority="high"
           class="rounded-full"
           itemprop="contentUrl"
         />
-        <meta itemprop="caption" content="Engineering with Yagiz" />
+        <meta itemprop="caption" content="Yagiz Nizipli" />
       </div>
-      <h1 class="sr-only" itemprop="name">{websiteTitle}</h1>
+      <h1 class="mb-3 text-2xl font-extrabold text-slate-800 dark:text-white">
+        Yagiz Nizipli
+      </h1>
+      <meta itemprop="name" content={websiteTitle} />
       <meta itemprop="description" content={websiteDescription} />
       <div class="text-lg dark:text-zinc-200">
         Here's a collection of posts about my thoughts, stories, ideas and

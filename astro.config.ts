@@ -17,10 +17,13 @@ import {
   transformerInlineStylesToClasses,
   transformerMetaTitle,
 } from './src/lib/shiki-transformers.ts'
+import { loadSitemapLastmods } from './src/lib/sitemap-dates.ts'
 
 function isMarkdownOrLlmsAsset(page: string): boolean {
   return page.endsWith('.md') || page.endsWith('/llms.txt') || page.endsWith('/llms-full.txt')
 }
+
+const sitemapLastmods = loadSitemapLastmods()
 
 const pageCache = { maxAge: 3600, swr: 86400, tags: ['page'] }
 
@@ -114,8 +117,12 @@ export default defineConfig({
     mdx(),
     sitemap({
       // Markdown / llms endpoints are for agents; keep them out of the HTML sitemap.
-      // Do not stamp every URL with the build clock — Google treats that lastmod as noise.
+      // lastmod comes from each post's frontmatter date, not the build clock.
       filter: (page) => !isMarkdownOrLlmsAsset(page),
+      serialize(item) {
+        const lastmod = sitemapLastmods.get(item.url.replace(/\/+$/, ''))
+        return lastmod ? { ...item, lastmod } : item
+      },
     }),
   ],
   vite: {
