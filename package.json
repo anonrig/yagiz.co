@@ -11,6 +11,7 @@
     "astro": "astro",
     "lint": "wrangler types && astro sync && oxlint . && oxfmt --check",
     "lint-fix": "wrangler types && astro sync && oxlint --fix . && oxfmt",
+    "test": "node --experimental-strip-types --test src/lib/*.test.ts",
     "cli": "node --no-warnings ./cli.mjs",
     "presentation": "marp --allow-local-files -s ./presentations"
   },

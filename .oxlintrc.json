@@ -386,6 +386,13 @@
       "rules": {
         "typescript/triple-slash-reference": "off"
       }
+    },
+    {
+      "files": ["**/*.test.ts"],
+      "rules": {
+        "typescript/explicit-function-return-type": "off",
+        "typescript/explicit-module-boundary-types": "off"
+      }
     }
   ]
 }
