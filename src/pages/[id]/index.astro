@@ -7,7 +7,6 @@ import BlogFooter from '@/components/BlogFooter.astro'
 import BlogRow from '@/components/BlogRow.astro'
 import BlogStickyHeader from '@/components/BlogStickyHeader.astro'
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
-import MarkdownLink from '@/components/MarkdownLink.astro'
 import { components } from '@/components/mdx'
 import SeriesNav from '@/components/SeriesNav.astro'
 import TableOfContents from '@/components/TableOfContents.astro'
@@ -141,9 +140,6 @@ const neighbors = seriesNeighbors(post, posts)
             {tag.data.title}
           </a>
         </span>
-      </div>
-      <div class="col-main mb-4">
-        <MarkdownLink href={markdownUrl} />
       </div>
 
       <Heading itemprop="headline">{post.data.title}</Heading>

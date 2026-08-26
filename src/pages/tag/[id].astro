@@ -4,7 +4,6 @@ import type { CollectionEntry } from 'astro:content'
 import type { GetStaticPaths } from 'astro'
 import BlogRow from '@/components/BlogRow.astro'
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
-import MarkdownLink from '@/components/MarkdownLink.astro'
 import Container from '@/components/ui/Container.astro'
 import Layout from '@/layouts/Layout.astro'
 import { websiteUrl } from '@/lib/content'
@@ -61,8 +60,6 @@ const crumbs = tagBreadcrumbs(tag)
           ))
         }
       </div>
-
-      <MarkdownLink href={markdownUrl} />
     </Container>
 
     <div
