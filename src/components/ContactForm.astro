@@ -1,4 +1,4 @@
-<form class="grid grid-cols-canvas [&>*]:col-main gap-y-4 mt-6">
+<form class="relative grid grid-cols-canvas [&>*]:col-main gap-y-4 mt-6">
   <div
     id='success-message'
     role="status"
@@ -57,6 +57,11 @@
     />
   </div>
 
+  <div class="absolute -left-[10000px] top-auto h-px w-px overflow-hidden" aria-hidden="true">
+    <label for="company">Company</label>
+    <input id="company" name="company" type="text" tabindex="-1" autocomplete="off" />
+  </div>
+
   <div>
     <button
       id='submit'
@@ -82,6 +87,7 @@
   const subject = requireEl('#subject', HTMLInputElement)
   const email = requireEl('#email', HTMLInputElement)
   const message = requireEl('#message', HTMLTextAreaElement)
+  const company = requireEl('#company', HTMLInputElement)
   const successMessage = requireEl('#success-message', HTMLDivElement)
   const errorMessage = requireEl('#error-message', HTMLDivElement)
 
@@ -95,7 +101,12 @@
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.value, subject: subject.value, message: message.value }),
+        body: JSON.stringify({
+          email: email.value,
+          subject: subject.value,
+          message: message.value,
+          company: company.value,
+        }),
       })
 
       if (!res.ok) {
