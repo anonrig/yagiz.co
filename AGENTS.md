@@ -25,7 +25,9 @@ type checking, and the full Astro build in one step.
 - **Linter/formatter**: Oxlint + Oxfmt (not Biome). Configs are `.oxlintrc.json` and
   `.oxfmtrc.json`. Oxfmt cannot format `.astro` yet, and does not touch `src/content/**`.
   Type-aware oxlint (`oxlint-tsgolint`) stays off: it requires TypeScript 7, which
-  breaks `@astrojs/check`. Native TypeScript plugin rules are all enabled.
+  breaks `@astrojs/check`. Native TypeScript plugin rules are all enabled. All
+  important `jsx-a11y` rules are on (`anchor-ambiguous-text` stays off). Oxlint
+  still only lints Astro frontmatter, not templates.
 - **Package manager**: pnpm
 
 ## Git

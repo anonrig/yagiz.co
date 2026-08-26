@@ -53,6 +53,7 @@ export default defineConfig({
           {
             properties: {
               className: ['anchor'],
+              ariaLabel: 'Link to this heading',
             },
           } satisfies RehypeAutolinkHeadingsOptions,
         ],

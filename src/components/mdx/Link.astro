@@ -11,8 +11,9 @@ const isInternalLink = href && (href.startsWith('/') || href.startsWith('#'))
 
 <a
   href={href}
-  {...isInternalLink ? {} : { target: "_blank", rel: "noopener noreferrer" }}
+  {...isInternalLink ? {} : { target: '_blank', rel: 'noopener noreferrer' }}
   {...rest}
 >
   <slot />
+  {!isInternalLink && <span class="sr-only"> (opens in a new tab)</span>}
 </a>
