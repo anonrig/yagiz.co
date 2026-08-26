@@ -40,13 +40,14 @@ export function jsonResponse(status: number, message: string): Response {
   )
 }
 
+function isJsonObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
 export async function readJsonObject(request: Request): Promise<Record<string, unknown> | null> {
   try {
     const body: unknown = await request.json()
-    if (typeof body !== 'object' || body === null || Array.isArray(body)) {
-      return null
-    }
-    return body
+    return isJsonObject(body) ? body : null
   } catch {
     return null
   }
