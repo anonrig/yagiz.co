@@ -9,8 +9,8 @@ node --run build          # wrangler types && astro check && astro build
 node --run dev            # wrangler types && astro dev --port 3000
 node --run preview        # wrangler dev (Cloudflare Workers local preview)
 node --run deploy         # build && wrangler deploy
-node --run lint           # oxlint . && oxfmt --check
-node --run lint-fix       # oxlint --fix . && oxfmt
+node --run lint           # wrangler types && astro sync && oxlint . && oxfmt --check
+node --run lint-fix       # wrangler types && astro sync && oxlint --fix . && oxfmt
 node --run cli            # interactive CLI for blog/newsletter tasks
 ```
 
@@ -28,7 +28,10 @@ type checking, and the full Astro build in one step.
   package stays on 6 so `@astrojs/check` keeps working; tsgolint bundles
   TypeScript 7 itself. `tsconfig.json` must not set `baseUrl` (removed in TS 7;
   `paths` resolve relative to the config file). Do not enable
-  `options.typeCheck` — `astro check` remains the typechecker.
+  `options.typeCheck` — `astro check` remains the typechecker. Lint runs
+  `wrangler types` and `astro sync` first because those generated files are
+  gitignored and type-aware rules treat missing collection / Env types as
+  `any`.
   `prefer-readonly-parameter-types` stays off (Astro / Workers types are not
   readonly). Untyped `.mjs` CLI scripts skip the `no-unsafe-*` family. All
   `jsx-a11y` rules are on, including `anchor-ambiguous-text` (SEO / Lighthouse
