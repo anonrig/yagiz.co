@@ -62,7 +62,7 @@ const crumbs = blogBreadcrumbs(post, tag)
   jsonLd={blogPostingJsonLd(post, tag)}
   canonical={post.data.canonical_url}
   article={{
-    authors: [authorFullName, absoluteUrl('/about')],
+    authors: [authorFullName],
     publishedTime,
     modifiedTime: publishedTime,
     tags: [tag.data.title],
