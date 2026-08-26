@@ -8,8 +8,8 @@ import { getCollection } from 'astro:content'
 import { authorFullName, websiteDescription, websiteTitle, websiteUrl } from '@/lib/content'
 
 export async function GET(): Promise<ReturnType<APIRoute>> {
-  const posts = await getCollection('blog', (post) => post.data.status === 'published')
-  posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  const collected = await getCollection('blog', (post) => post.data.status === 'published')
+  const posts = collected.toSorted((a, b) => b.data.date.getTime() - a.data.date.getTime())
 
   return rss({
     title: websiteTitle,

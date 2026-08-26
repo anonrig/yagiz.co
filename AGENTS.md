@@ -26,8 +26,13 @@ type checking, and the full Astro build in one step.
   `.oxfmtrc.json`. Oxfmt cannot format `.astro` yet, and does not touch `src/content/**`.
   Type-aware oxlint (`oxlint-tsgolint`) stays off: it requires TypeScript 7, which
   breaks `@astrojs/check`. Native TypeScript plugin rules are all enabled. All
-  important `jsx-a11y` rules are on (`anchor-ambiguous-text` stays off). Oxlint
-  still only lints Astro frontmatter, not templates.
+  `jsx-a11y` rules are on, including `anchor-ambiguous-text` (SEO / Lighthouse
+  link text). Mutating `Array#sort` / `Array#reverse` as statements is forbidden
+  (`toSorted` / `toReversed`). Implicit browser globals (`event`, `name`,
+  `status`, `length`) and `document.write` / `document.writeln` are restricted.
+  Unused disable comments are errors. Oxlint still only lints Astro frontmatter,
+  not templates, so in-markup SEO / Lighthouse (meta, headings, template links)
+  is not linted.
 - **Package manager**: pnpm
 
 ## Git

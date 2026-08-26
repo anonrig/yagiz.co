@@ -18,8 +18,8 @@ const fontData = fs.readFile(path.resolve('./public/fonts/mulish.ttf'))
 const boldFontData = fs.readFile(path.resolve('./public/fonts/mulish-bold.ttf'))
 
 export async function getStaticPaths(): Promise<ReturnType<GetStaticPaths>> {
-  const posts = await getCollection('blog', ({ data }) => data.status === 'published')
-  posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  const collected = await getCollection('blog', ({ data }) => data.status === 'published')
+  const posts = collected.toSorted((a, b) => b.data.date.getTime() - a.data.date.getTime())
 
   return posts.map((post) => ({
     params: { id: post.id },

@@ -22,13 +22,13 @@ export async function getStaticPaths(): Promise<ReturnType<GetStaticPaths>> {
 
 const { tag } = Astro.props
 
-const otherTags = await getCollection('tags', (entry) => entry.id !== tag.id)
-otherTags.sort((a, b) => a.id.localeCompare(b.id))
-const posts = await getCollection(
+const collectedTags = await getCollection('tags', (entry) => entry.id !== tag.id)
+const otherTags = collectedTags.toSorted((a, b) => a.id.localeCompare(b.id))
+const collectedPosts = await getCollection(
   'blog',
   ({ data }) => data.status === 'published' && data.tag.id === tag.id,
 )
-posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+const posts = collectedPosts.toSorted((a, b) => b.data.date.getTime() - a.data.date.getTime())
 const markdownUrl = `${websiteUrl}/tag/${tag.id}.md`
 const url = absoluteUrl(`/tag/${tag.id}`)
 const crumbs = tagBreadcrumbs(tag)
