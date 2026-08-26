@@ -4,7 +4,7 @@ interface Props {
   as?: 'article' | 'div'
 }
 
-const { itemprop, as: Tag = 'article' } = Astro.props
+const { itemprop, as: Tag = 'article' }: Props = Astro.props
 ---
 
 <Tag

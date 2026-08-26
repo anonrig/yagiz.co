@@ -104,6 +104,9 @@ export default defineConfig({
     // that are not compatible with Cloudflare's workerd runtime.
     prerenderEnvironment: 'node',
   }),
+  image: {
+    responsiveStyles: true,
+  },
   trailingSlash: 'never',
   prefetch: true,
   redirects: {

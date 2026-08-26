@@ -5,7 +5,7 @@ interface Props {
   size?: 'wide' | 'tight'
 }
 
-const { size = 'wide', as = 'div', class: className } = Astro.props
+const { size = 'wide', as = 'div', class: className }: Props = Astro.props
 const Component = as
 ---
 

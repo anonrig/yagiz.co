@@ -11,11 +11,13 @@ node --run preview        # wrangler dev (Cloudflare Workers local preview)
 node --run deploy         # build && wrangler deploy
 node --run lint           # wrangler types && astro sync && oxlint . && oxfmt --check
 node --run lint-fix       # wrangler types && astro sync && oxlint --fix . && oxfmt
+node --run test           # node:test for src/lib/*.test.ts (no Vitest)
 node --run cli            # interactive CLI for blog/newsletter tasks
 ```
 
 Always run `node --run build` before marking a task complete. It runs type generation,
-type checking, and the full Astro build in one step.
+type checking, and the full Astro build in one step. CI runs `pnpm run test` then
+`pnpm run build` in `.github/workflows/build.yml`.
 
 ## Stack
 
@@ -150,6 +152,13 @@ wrangler d1 migrations apply newsletter --local    # local dev
 Add new schema changes as `migrations/0002_*.sql`, `migrations/0003_*.sql`, etc.
 Never edit existing migration files.
 
+`/api/contact` and `/api/newsletter` share helpers in `src/lib/form-api.ts` and
+`src/lib/rate-limit.ts`. Invalid JSON is `400`. A filled `company` honeypot is a
+fake `200` and does not increment the limiter. Real email / length checks run
+before D1 or email send. Contact HTML escapes `email` / `message` and strips
+CR/LF from `subject`. Rate limit is 5 requests / 10 minutes / IP via
+`caches.default` (fail open). Do not add Turnstile or Vitest.
+
 ## Fonts
 
 The site uses the Mulish variable font. It is self-hosted via Astro's built-in fonts API
@@ -177,3 +186,4 @@ Do **not** use `fontProviders.fontsource()` — it requires outbound HTTPS to
 | `rehype-slug`                 | `satteriHeadingIdsPlugin()`                                             |
 | `rehype-autolink-headings`    | `src/lib/satteri-autolink.ts`                                           |
 | `remark-gfm`                  | Sätteri built-in GFM                                                    |
+| `vitest`                      | `node:test` (`src/lib/*.test.ts`)                                       |

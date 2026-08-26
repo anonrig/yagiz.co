@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets'
-import { getCollection } from 'astro:content'
+import type { CollectionEntry } from 'astro:content'
 
 import { ArrowLeft, ArrowRight } from '@lucide/astro'
 import authorImg from '@/assets/author-image.png'
@@ -10,11 +10,10 @@ import { schemaIds } from '@/lib/schema'
 
 interface Props {
   index: number
+  posts: CollectionEntry<'blog'>[]
 }
 
-const { index } = Astro.props
-const collected = await getCollection('blog', ({ data }) => data.status === 'published')
-const posts = collected.toSorted((a, b) => b.data.date.getTime() - a.data.date.getTime())
+const { index, posts }: Props = Astro.props
 const next = index === 0 ? undefined : posts.at(index - 1)
 const previous = index === posts.length - 1 ? undefined : posts.at(index + 1)
 ---
@@ -56,6 +55,7 @@ const previous = index === posts.length - 1 ? undefined : posts.at(index + 1)
           alt={authorFullName}
           width={50}
           height={50}
+          layout="fixed"
           class="rounded-full"
           itemprop="image"
         />

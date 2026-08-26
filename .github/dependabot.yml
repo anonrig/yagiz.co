@@ -13,3 +13,7 @@ updates:
       interval: monthly
     commit-message:
       prefix: pnpm
+    ignore:
+      - dependency-name: '@biomejs/biome'
+      - dependency-name: '@astrojs/compiler-rs'
+        versions: ['>=0.4.0']

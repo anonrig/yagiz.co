@@ -30,6 +30,7 @@ import { seriesNeighbors } from '@/lib/series'
 
 interface Props {
   post: CollectionEntry<'blog'>
+  posts: CollectionEntry<'blog'>[]
 }
 
 export async function getStaticPaths(): Promise<ReturnType<GetStaticPaths>> {
@@ -38,11 +39,11 @@ export async function getStaticPaths(): Promise<ReturnType<GetStaticPaths>> {
 
   return posts.map((post) => ({
     params: { id: post.id },
-    props: { post },
+    props: { post, posts },
   }))
 }
 
-const { post } = Astro.props
+const { post, posts }: Props = Astro.props
 const { Content, headings } = await render(post)
 const tag = await getEntry(post.data.tag.collection, post.data.tag.id)
 if (!tag) {
@@ -51,8 +52,6 @@ if (!tag) {
 const words = countWords(post.body)
 const minute_to_read = readingTimeLabel(post.body)
 
-const collected = await getCollection('blog', ({ data }) => data.status === 'published')
-const posts = collected.toSorted((a, b) => b.data.date.getTime() - a.data.date.getTime())
 const index = posts.findIndex((p) => p.id === post.id)
 const suggestions = relatedPosts(post, posts)
 const relatedAreSameSeries = Boolean(
@@ -176,7 +175,7 @@ const neighbors = seriesNeighbors(post, posts)
     <Prose as="div" itemprop="articleBody">
       <Content {components} />
     </Prose>
-    <BlogFooter {index} />
+    <BlogFooter {index} {posts} />
   </article>
 
   {
