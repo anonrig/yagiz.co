@@ -35,7 +35,7 @@ interface Props {
 const {
   title,
   description = websiteDescription,
-  image = `${Astro.url.origin}/opengraph-image.png`,
+  image = absoluteUrl('/opengraph-image.png'),
   imageAlt,
   markdownUrl,
   jsonLd,
@@ -114,8 +114,8 @@ const googlebot = noindex
     <meta name="twitter:site:id" content={twitterId} />
     <meta name="twitter:creator:id" content={twitterId} />
     <meta name="twitter:image:type" content="image/png" />
-    <meta name="twitter:image:width" content="1920" />
-    <meta name="twitter:image:height" content="1080" />
+    <meta name="twitter:image:width" content={String(openGraphImage.width)} />
+    <meta name="twitter:image:height" content={String(openGraphImage.height)} />
     <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="48x48" />
     <link
       rel="apple-touch-icon"

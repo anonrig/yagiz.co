@@ -35,6 +35,7 @@ export const GET: APIRoute = async () => {
     '## Pages',
     '',
     `- [About](${websiteUrl}/about.md): Background, work history, and open source contributions by ${authorFullName}`,
+    `- [URL parsing](${websiteUrl}/url-parsing.md): Series on WHATWG URL parsing, Ada, Node.js, and SIMD`,
     `- [Press](${websiteUrl}/press.md): Articles, interviews, presentations, and podcast appearances featuring ${authorFullName}`,
     `- [Newsletter](${websiteUrl}/newsletter.md): Subscribe to get new posts delivered by email`,
     `- [Home index](${websiteUrl}/index.md): Full list of published posts in markdown`,

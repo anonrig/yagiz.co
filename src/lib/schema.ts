@@ -10,6 +10,7 @@ import {
   websiteUrl,
 } from '@/lib/content'
 import { countWords, readingTimeIso } from '@/lib/reading-time'
+import { SERIES } from '@/lib/series'
 
 export type JsonLd = Record<string, unknown>
 
@@ -64,6 +65,10 @@ export function imageObject(
 
 export function isoDate(date: Date): string {
   return date.toISOString().split('T')[0]
+}
+
+export function postModifiedDate(post: CollectionEntry<'blog'>): Date {
+  return post.data.updated ?? post.data.date
 }
 
 export function personJsonLd(): JsonLd {
@@ -185,6 +190,10 @@ export function tagBreadcrumbs(tag: CollectionEntry<'tags'>): BreadcrumbItem[] {
   ]
 }
 
+export function seriesBreadcrumbs(name: string, path: string): BreadcrumbItem[] {
+  return pageBreadcrumbs(name, path)
+}
+
 function blogPostPreview(post: CollectionEntry<'blog'>): JsonLd {
   const url = absoluteUrl(`/${post.id}`)
   return {
@@ -193,6 +202,7 @@ function blogPostPreview(post: CollectionEntry<'blog'>): JsonLd {
     headline: post.data.title,
     url,
     datePublished: isoDate(post.data.date),
+    dateModified: isoDate(postModifiedDate(post)),
     description: post.data.description,
     author: { '@id': schemaIds.person },
     image: absoluteUrl(`/${post.id}/opengraph-image.png`),
@@ -244,7 +254,8 @@ export function blogPostingJsonLd(
   tag: CollectionEntry<'tags'>,
 ): JsonLd {
   const url = absoluteUrl(`/${post.id}`)
-  const date = isoDate(post.data.date)
+  const published = isoDate(post.data.date)
+  const modified = isoDate(postModifiedDate(post))
   const words = countWords(post.body)
   const crumbs = blogBreadcrumbs(post, tag)
   const image = imageObject(absoluteUrl(`/${post.id}/opengraph-image.png`), post.data.title)
@@ -273,8 +284,8 @@ export function blogPostingJsonLd(
         url,
         image,
         thumbnailUrl: absoluteUrl(`/${post.id}/opengraph-image.png`),
-        datePublished: date,
-        dateModified: date,
+        datePublished: published,
+        dateModified: modified,
         inLanguage: 'en-US',
         author: { '@id': schemaIds.person },
         publisher: { '@id': schemaIds.person },
@@ -285,7 +296,9 @@ export function blogPostingJsonLd(
         wordCount: words,
         timeRequired: readingTimeIso(post.body),
         isAccessibleForFree: true,
-        isPartOf: { '@id': schemaIds.blog },
+        isPartOf: post.data.series
+          ? [{ '@id': schemaIds.blog }, { '@id': absoluteUrl(SERIES[post.data.series].path) }]
+          : { '@id': schemaIds.blog },
         about: {
           '@type': 'Thing',
           name: tag.data.title,
@@ -464,6 +477,54 @@ export function newsletterPageJsonLd(title: string, description: string): JsonLd
       },
     },
   })
+}
+
+export function seriesCollectionJsonLd(
+  path: string,
+  title: string,
+  description: string,
+  posts: CollectionEntry<'blog'>[],
+): JsonLd {
+  const url = absoluteUrl(path)
+  const crumbs = seriesBreadcrumbs(title, path)
+
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      personJsonLd(),
+      websiteJsonLd(),
+      breadcrumbsJsonLd(url, crumbs),
+      {
+        '@type': 'CollectionPage',
+        '@id': url,
+        url,
+        name: title,
+        description,
+        inLanguage: 'en-US',
+        isPartOf: { '@id': schemaIds.blog },
+        breadcrumb: { '@id': `${url}#breadcrumb` },
+        about: {
+          '@type': 'Thing',
+          name: title,
+          url,
+        },
+        author: { '@id': schemaIds.person },
+        publisher: { '@id': schemaIds.person },
+        mainEntity: {
+          '@type': 'ItemList',
+          numberOfItems: posts.length,
+          itemListOrder: 'https://schema.org/ItemListOrderAscending',
+          itemListElement: posts.map((post, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            url: absoluteUrl(`/${post.id}`),
+            name: post.data.title,
+            item: blogPostPreview(post),
+          })),
+        },
+      },
+    ],
+  }
 }
 
 export function pressPageJsonLd(title: string, description: string): JsonLd {

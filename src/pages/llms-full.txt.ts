@@ -3,7 +3,8 @@ export const prerender = true
 import { getCollection } from 'astro:content'
 import type { APIRoute } from 'astro'
 import { authorFullName, websiteDescription, websiteTitle, websiteUrl } from '@/lib/content'
-import { pageToMarkdown, postToMarkdown } from '@/lib/to-markdown'
+import { postsInSeries, SERIES } from '@/lib/series'
+import { pageToMarkdown, postToMarkdown, seriesToMarkdown } from '@/lib/to-markdown'
 
 export const GET: APIRoute = async () => {
   const [posts, pages] = await Promise.all([
@@ -28,6 +29,16 @@ export const GET: APIRoute = async () => {
   for (const page of pages) {
     sections.push('', `<!-- ${websiteUrl}/${page.id} -->`, '', pageToMarkdown(page), '')
   }
+
+  const urlParsing = SERIES['url-parsing']
+  const seriesPosts = postsInSeries(posts, urlParsing.id)
+  sections.push(
+    '',
+    `<!-- ${websiteUrl}${urlParsing.path} -->`,
+    '',
+    seriesToMarkdown(urlParsing.title, urlParsing.description, urlParsing.path, seriesPosts),
+    '',
+  )
 
   for (const post of posts) {
     sections.push('', `<!-- ${websiteUrl}/${post.id} -->`, '', postToMarkdown(post), '')

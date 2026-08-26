@@ -1,0 +1,50 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import { SERIES, type SeriesId } from '@/lib/series'
+
+interface Props {
+  seriesId: SeriesId
+  previous?: CollectionEntry<'blog'>
+  next?: CollectionEntry<'blog'>
+}
+
+const { seriesId, previous, next } = Astro.props
+const series = SERIES[seriesId]
+---
+
+<aside class="col-main mb-8 rounded-lg border border-slate-200 px-4 py-3 text-left dark:border-neutral-700">
+  <p class="text-sm text-slate-600 dark:text-neutral-300">
+    Part of{' '}
+    <a href={series.path} class="font-bold text-orange-400 hover:text-orange-300">
+      {series.title}
+    </a>
+  </p>
+  {
+    (previous || next) && (
+      <nav aria-label={`${series.title} series`} class="mt-2 flex justify-between gap-4 text-sm">
+        {previous ? (
+          <a
+            href={`/${previous.id}`}
+            class="min-w-0 text-slate-700 hover:text-slate-500 dark:text-zinc-200 dark:hover:text-zinc-400"
+          >
+            <span aria-hidden="true">← </span>
+            <span class="font-medium">{previous.data.title}</span>
+          </a>
+        ) : (
+          <span />
+        )}
+        {next ? (
+          <a
+            href={`/${next.id}`}
+            class="min-w-0 text-right text-slate-700 hover:text-slate-500 dark:text-zinc-200 dark:hover:text-zinc-400"
+          >
+            <span class="font-medium">{next.data.title}</span>
+            <span aria-hidden="true"> →</span>
+          </a>
+        ) : (
+          <span />
+        )}
+      </nav>
+    )
+  }
+</aside>

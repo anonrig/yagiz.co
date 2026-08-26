@@ -40,15 +40,21 @@ export function absolutizeMarkdownUrls(body: string): string {
 
 export function postToMarkdown(post: CollectionEntry<'blog'>): string {
   const date = post.data.date.toISOString().split('T')[0]
+  const updated = post.data.updated?.toISOString().split('T')[0]
   const canonical = `${websiteUrl}/${post.id}`
   const markdownUrl = `${canonical}.md`
+  const publishedLine = updated
+    ? `*Published: ${date} · Updated: ${updated} · Tag: ${post.data.tag.id}*`
+    : `*Published: ${date} · Tag: ${post.data.tag.id}*`
 
   return [
     yamlFrontmatter({
       title: post.data.title,
       description: post.data.description,
       date,
+      updated,
       tag: post.data.tag.id,
+      series: post.data.series,
       author: authorFullName,
       canonical,
       markdown: markdownUrl,
@@ -58,7 +64,7 @@ export function postToMarkdown(post: CollectionEntry<'blog'>): string {
     '',
     `> ${post.data.description}`,
     '',
-    `*Published: ${date} · Tag: ${post.data.tag.id}*`,
+    publishedLine,
     '',
     '---',
     '',
@@ -117,6 +123,42 @@ export function tagToMarkdown(
     `# #${tag.data.title}`,
     '',
     `> ${tag.data.description}`,
+    '',
+    '---',
+    '',
+    postList,
+    ATTRIBUTION.replace(`Canonical: ${websiteUrl}`, `Canonical: ${canonical}`),
+  ].join('\n')
+}
+
+export function seriesToMarkdown(
+  title: string,
+  description: string,
+  path: string,
+  posts: CollectionEntry<'blog'>[],
+): string {
+  const canonical = `${websiteUrl}${path}`
+  const markdownUrl = `${canonical}.md`
+
+  const postList = posts
+    .map((post) => {
+      const date = post.data.date.toISOString().split('T')[0]
+      return `- [${post.data.title}](${websiteUrl}/${post.id}.md) — ${date}`
+    })
+    .join('\n')
+
+  return [
+    yamlFrontmatter({
+      title,
+      description,
+      author: authorFullName,
+      canonical,
+      markdown: markdownUrl,
+    }),
+    '',
+    `# ${title}`,
+    '',
+    `> ${description}`,
     '',
     '---',
     '',

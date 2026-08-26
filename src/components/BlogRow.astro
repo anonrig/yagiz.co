@@ -7,9 +7,10 @@ import { absoluteUrl } from '@/lib/schema'
 interface Props {
   post: CollectionEntry<'blog'>
   itemprop?: string
+  heading?: 'h2' | 'h3'
 }
 
-const { post, itemprop } = Astro.props
+const { post, itemprop, heading: HeadingTag = 'h2' } = Astro.props
 const minute_to_read = readingTimeLabel(post.body)
 const formattedDate = new Intl.DateTimeFormat('en-US', {
   month: 'short',
@@ -38,12 +39,12 @@ const url = absoluteUrl(`/${post.id}`)
   <div
     class="overflow-hidden whitespace-nowrap text-ellipsis w-full pr-4 leading-6"
   >
-    <h2
+    <HeadingTag
       class="truncate font-normal dark:text-white dark:group-hover:text-neutral-300 group-hover:text-slate-600"
       itemprop="headline"
     >
       {post.data.title}
-    </h2>
+    </HeadingTag>
   </div>
   <div
     class="items-center transition-margin delay-0 duration-200 ease-in-out group-hover:mr-2 hidden sm:flex"

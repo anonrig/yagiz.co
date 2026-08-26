@@ -1,0 +1,56 @@
+---
+import { getCollection } from 'astro:content'
+import BlogRow from '@/components/BlogRow.astro'
+import Breadcrumbs from '@/components/Breadcrumbs.astro'
+import MarkdownLink from '@/components/MarkdownLink.astro'
+import Container from '@/components/ui/Container.astro'
+import Layout from '@/layouts/Layout.astro'
+import { websiteUrl } from '@/lib/content'
+import { seriesBreadcrumbs, seriesCollectionJsonLd } from '@/lib/schema'
+import { postsInSeries, SERIES } from '@/lib/series'
+
+const series = SERIES['url-parsing']
+const allPosts = await getCollection('blog', ({ data }) => data.status === 'published')
+const posts = postsInSeries(allPosts, series.id)
+const markdownUrl = `${websiteUrl}${series.path}.md`
+const crumbs = seriesBreadcrumbs(series.title, series.path)
+---
+
+<Layout
+  title={series.title}
+  description={series.description}
+  markdownUrl={markdownUrl}
+  jsonLd={seriesCollectionJsonLd(series.path, series.title, series.description, posts)}
+>
+  <section itemscope itemtype="https://schema.org/CollectionPage" itemid={`${websiteUrl}${series.path}`}>
+    <link itemprop="url" href={`${websiteUrl}${series.path}`} />
+    <Container size="tight" class="mx-auto -mt-6 flex flex-col gap-8 px-[4vw] text-center">
+      <Breadcrumbs items={crumbs} />
+      <h1 class="text-2xl font-extrabold text-orange-400" itemprop="name">{series.title}</h1>
+      <div class="leading-6 dark:text-white" itemprop="description">{series.description}</div>
+      <MarkdownLink href={markdownUrl} />
+    </Container>
+
+    <div
+      class="py-14"
+      itemprop="mainEntity"
+      itemscope
+      itemtype="https://schema.org/ItemList"
+    >
+      <meta itemprop="numberOfItems" content={String(posts.length)} />
+      <Container
+        size="tight"
+        class="mx-auto divide-y divide-slate-200 px-[4vw] dark:divide-neutral-700"
+      >
+        {
+          posts.map((post, index) => (
+            <div itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+              <meta itemprop="position" content={String(index + 1)} />
+              <BlogRow {post} heading="h2" itemprop="item" />
+            </div>
+          ))
+        }
+      </Container>
+    </div>
+  </section>
+</Layout>

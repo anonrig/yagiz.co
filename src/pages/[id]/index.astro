@@ -8,6 +8,7 @@ import BlogStickyHeader from '@/components/BlogStickyHeader.astro'
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import MarkdownLink from '@/components/MarkdownLink.astro'
 import { components } from '@/components/mdx'
+import SeriesNav from '@/components/SeriesNav.astro'
 import TableOfContents from '@/components/TableOfContents.astro'
 import Container from '@/components/ui/Container.astro'
 import Figure from '@/components/ui/Figure.astro'
@@ -17,7 +18,8 @@ import Layout from '@/layouts/Layout.astro'
 import { authorFullName, websiteUrl } from '@/lib/content'
 import { countWords, readingTimeLabel } from '@/lib/reading-time'
 import { relatedPosts } from '@/lib/related-posts'
-import { absoluteUrl, blogBreadcrumbs, blogPostingJsonLd, isoDate } from '@/lib/schema'
+import { absoluteUrl, blogBreadcrumbs, blogPostingJsonLd, isoDate, postModifiedDate } from '@/lib/schema'
+import { seriesNeighbors } from '@/lib/series'
 
 interface Props {
   post: CollectionEntry<'blog'>
@@ -46,17 +48,24 @@ const posts = await getCollection('blog', ({ data }) => data.status === 'publish
 posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
 const index = posts.findIndex((p) => p.id === post.id)
 const suggestions = relatedPosts(post, posts)
+const relatedAreSameSeries = Boolean(
+  post.data.series && suggestions.every((item) => item.data.series === post.data.series),
+)
 const relatedAreSameTag = suggestions.every((item) => item.data.tag.id === post.data.tag.id)
 const publishedTime = isoDate(post.data.date)
+const modifiedDate = postModifiedDate(post)
+const modifiedTime = isoDate(modifiedDate)
+const showUpdated = modifiedTime !== publishedTime
 const markdownUrl = `${websiteUrl}/${post.id}.md`
 const url = absoluteUrl(`/${post.id}`)
 const crumbs = blogBreadcrumbs(post, tag)
+const neighbors = seriesNeighbors(post, posts)
 ---
 
 <Layout
   title={post.data.title}
   description={post.data.description}
-  image={`${Astro.url.origin}/${post.id}/opengraph-image.png`}
+  image={`${websiteUrl}/${post.id}/opengraph-image.png`}
   imageAlt={post.data.title}
   markdownUrl={markdownUrl}
   jsonLd={blogPostingJsonLd(post, tag)}
@@ -64,7 +73,7 @@ const crumbs = blogBreadcrumbs(post, tag)
   article={{
     authors: [authorFullName],
     publishedTime,
-    modifiedTime: publishedTime,
+    modifiedTime,
     tags: [tag.data.title],
   }}
 >
@@ -95,7 +104,24 @@ const crumbs = blogBreadcrumbs(post, tag)
               }).format(post.data.date)
             }
           </time>
-          <meta itemprop="dateModified" content={post.data.date.toISOString()} />
+          {
+            showUpdated ? (
+              <span class="before:px-2 before:font-serif before:leading-[1] before:content-['·']">
+                Updated{' '}
+                <time datetime={modifiedDate.toISOString()} itemprop="dateModified">
+                  {
+                    new Intl.DateTimeFormat("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    }).format(modifiedDate)
+                  }
+                </time>
+              </span>
+            ) : (
+              <meta itemprop="dateModified" content={modifiedDate.toISOString()} />
+            )
+          }
         </span>
         <span class="before:px-2 before:font-serif before:leading-[1] before:content-['·']">
           {minute_to_read}
@@ -127,6 +153,17 @@ const crumbs = blogBreadcrumbs(post, tag)
         )
       }
     </header>
+    {
+      neighbors && (
+        <div class="grid grid-cols-canvas">
+          <SeriesNav
+            seriesId={neighbors.series.id}
+            previous={neighbors.previous}
+            next={neighbors.next}
+          />
+        </div>
+      )
+    }
     <TableOfContents {headings} />
     <BlogStickyHeader {post} />
     <Prose as="div" itemprop="articleBody">
@@ -141,7 +178,15 @@ const crumbs = blogBreadcrumbs(post, tag)
         <Container size="tight" class="mx-auto">
           <h2 class="mb-4 text-xl font-extrabold dark:text-white">
             {
-              relatedAreSameTag ? (
+              relatedAreSameSeries && neighbors ? (
+                <>
+                  More{' '}
+                  <a href={neighbors.series.path} class="text-orange-400 hover:text-orange-300">
+                    {neighbors.series.title}
+                  </a>{' '}
+                  posts
+                </>
+              ) : relatedAreSameTag ? (
                 <>
                   More{' '}
                   <a href={`/tag/${tag.id}`} class="text-orange-400 hover:text-orange-300">
@@ -156,7 +201,7 @@ const crumbs = blogBreadcrumbs(post, tag)
           </h2>
           <div class="divide-y divide-slate-200 dark:divide-neutral-700">
             {suggestions.map((post) => (
-              <BlogRow {post} />
+              <BlogRow {post} heading="h3" />
             ))}
           </div>
         </Container>

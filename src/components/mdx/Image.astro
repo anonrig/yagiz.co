@@ -18,26 +18,24 @@ const loadImage = images[key]
 if (isAsset && loadImage === undefined) {
   throw new Error('src should not be empty')
 }
+
+const asset = isAsset && loadImage ? (await loadImage()).default : undefined
+const imageClass = [
+  'rounded-lg object-contain w-full !h-[unset] !relative bg-white dark:bg-white-reversed col-wide',
+  className,
+]
 ---
 
 {
-  !isAsset ? (
-    <img
-      {src}
+  asset ? (
+    <AstroImage
+      src={asset}
       {alt}
-      class:list={[
-        "rounded-lg object-contain w-full !h-[unset] !relative bg-white dark:bg-white-reversed col-wide",
-        className,
-      ]}
+      width={asset.width}
+      height={asset.height}
+      class:list={imageClass}
     />
   ) : (
-    <AstroImage
-      src={loadImage()}
-      {alt}
-      class:list={[
-        "rounded-lg object-contain w-full !h-[unset] !relative bg-white dark:bg-white-reversed col-wide",
-        className,
-      ]}
-    />
+    <img {src} {alt} loading="lazy" decoding="async" class:list={imageClass} />
   )
 }
