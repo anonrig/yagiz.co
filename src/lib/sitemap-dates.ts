@@ -38,16 +38,27 @@ export function loadSitemapLastmods(): Map<string, string> {
     if (Number.isNaN(date.getTime())) {
       continue
     }
+    const updatedValue = frontmatterField(source, 'updated')
+    const updated = updatedValue ? new Date(`${updatedValue}T00:00:00.000Z`) : undefined
+    const modified =
+      updated && !Number.isNaN(updated.getTime()) && updated > date ? updated : date
     const id = file.replace(/\.mdx?$/, '')
-    lastmods.set(stripSlash(`${websiteUrl}/${id}`), date.toISOString())
-    if (!latestPost || date > latestPost) {
-      latestPost = date
+    lastmods.set(stripSlash(`${websiteUrl}/${id}`), modified.toISOString())
+    if (!latestPost || modified > latestPost) {
+      latestPost = modified
+    }
+    const series = frontmatterField(source, 'series')
+    if (series) {
+      const current = latestByTag.get(`series:${series}`)
+      if (!current || modified > current) {
+        latestByTag.set(`series:${series}`, modified)
+      }
     }
     const tag = frontmatterField(source, 'tag')
     if (tag) {
       const current = latestByTag.get(tag)
-      if (!current || date > current) {
-        latestByTag.set(tag, date)
+      if (!current || modified > current) {
+        latestByTag.set(tag, modified)
       }
     }
   }
@@ -55,8 +66,12 @@ export function loadSitemapLastmods(): Map<string, string> {
   if (latestPost) {
     lastmods.set(stripSlash(websiteUrl), latestPost.toISOString())
   }
-  for (const [tag, date] of latestByTag) {
-    lastmods.set(stripSlash(`${websiteUrl}/tag/${tag}`), date.toISOString())
+  for (const [key, date] of latestByTag) {
+    if (key.startsWith('series:')) {
+      lastmods.set(stripSlash(`${websiteUrl}/${key.slice('series:'.length)}`), date.toISOString())
+      continue
+    }
+    lastmods.set(stripSlash(`${websiteUrl}/tag/${key}`), date.toISOString())
   }
 
   return lastmods

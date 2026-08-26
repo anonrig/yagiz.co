@@ -1,12 +1,14 @@
 ---
 title: 'Tracing query performance with Knex.js'
 description: >-
-  Over the years, I found myself searching for the same exact problem whenever I was using Knex.js, the query planner for Node.js.
+  A small Knex.js helper that uses perf_hooks to time queries and print planner
+  output so you can see why a query is slow.
 date: 2022-01-23
 tag: performance
 status: published
 image:
   src: knexjs-cover.png
+  alt: Knex.js query tracing
 ---
 
 Over the years, I found myself searching for the same exact problem whenever I was using Knex.js, the query planner for Node.js. Since, the following code snippet is small enough to not be a Node library, I'm intrigued to share this as a blog post.

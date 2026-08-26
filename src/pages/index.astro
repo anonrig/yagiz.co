@@ -71,7 +71,9 @@ const markdownUrl = `${websiteUrl}/index.md`
             {year}
           </h2>
           <div class="divide-y divide-slate-200 dark:divide-neutral-700">
-            {postsByYear.get(year)!.map((post) => <BlogRow {post} itemprop="blogPost" />)}
+            {postsByYear.get(year)!.map((post) => (
+              <BlogRow {post} heading="h3" itemprop="blogPost" />
+            ))}
           </div>
         </Container>
       ))}

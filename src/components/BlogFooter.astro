@@ -20,15 +20,15 @@ const previous = index !== posts.length - 1 ? posts.at(index + 1) : undefined
 ---
 
 <Container size="tight" class="mt-16 flex items-center mx-auto px-[4vw]" as="footer">
-  <div class="flex flex-2 text-black dark:text-neutral-400">
+  <div class="flex min-w-0 flex-2 text-black dark:text-neutral-400">
     {
       previous !== undefined && (
         <a
           href={`/${previous.id}`}
-          aria-label={`Previous article: ${previous.data.title}`}
-          class="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2 rounded"
+          class="flex min-w-0 items-center gap-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2"
         >
-          <ArrowLeft size={20} aria-hidden="true" />
+          <ArrowLeft size={20} aria-hidden="true" class="shrink-0" />
+          <span class="truncate text-sm font-medium">{previous.data.title}</span>
         </a>
       )
     }
@@ -64,15 +64,15 @@ const previous = index !== posts.length - 1 ? posts.at(index + 1) : undefined
     </div>
   </div>
 
-  <div class="flex flex-2 justify-end text-black dark:text-neutral-400">
+  <div class="flex min-w-0 flex-2 justify-end text-black dark:text-neutral-400">
     {
       next !== undefined && (
         <a
           href={`/${next.id}`}
-          aria-label={`Next article: ${next.data.title}`}
-          class="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2 rounded"
+          class="flex min-w-0 items-center justify-end gap-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2"
         >
-          <ArrowRight size={20} aria-hidden="true" />
+          <span class="truncate text-sm font-medium">{next.data.title}</span>
+          <ArrowRight size={20} aria-hidden="true" class="shrink-0" />
         </a>
       )
     }

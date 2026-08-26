@@ -92,6 +92,7 @@ export default defineConfig({
   routeRules: {
     '/': pageCache,
     '/about': pageCache,
+    '/url-parsing': pageCache,
     '/contact': pageCache,
     '/newsletter': pageCache,
     '/press': pageCache,

@@ -13,11 +13,17 @@ const blog = defineCollection({
       image: z
         .object({
           src: z.preprocess((v) => `@/assets/content/${v}`, image()),
-          alt: z.string().optional().default(''),
+          alt: z.string().min(1),
         })
         .optional(),
       status: z.enum(['published', 'draft']),
       canonical_url: z.string().optional(),
+      updated: z.coerce.date().optional(),
+      series: z.enum(['url-parsing']).optional(),
+    })
+    .refine((data) => !data.updated || data.updated.getTime() >= data.date.getTime(), {
+      message: 'updated must be on or after date',
+      path: ['updated'],
     }),
 })
 
