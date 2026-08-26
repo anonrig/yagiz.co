@@ -1,17 +1,14 @@
 import cloudflare from '@astrojs/cloudflare'
 import { cacheCloudflare } from '@astrojs/cloudflare/cache'
-import { unified } from '@astrojs/markdown-remark'
+import { satteri, satteriHeadingIdsPlugin } from '@astrojs/markdown-satteri'
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
 import { transformerMetaHighlight, transformerMetaWordHighlight } from '@shikijs/transformers'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig, fontProviders } from 'astro/config'
-import rehypeAutolinkHeadings from 'rehype-autolink-headings'
-import type { Options as RehypeAutolinkHeadingsOptions } from 'rehype-autolink-headings'
-import rehypeSlug from 'rehype-slug'
-import remarkGfm from 'remark-gfm'
 
 import { websiteUrl } from './src/lib/content.ts'
+import { autolinkHeadingsPlugin } from './src/lib/satteri-autolink.ts'
 import {
   transformerEmptyLine,
   transformerInlineStylesToClasses,
@@ -43,22 +40,19 @@ export default defineConfig({
         transformerInlineStylesToClasses(),
       ],
     },
-    processor: unified({
-      gfm: true,
-      remarkPlugins: [remarkGfm],
-      rehypePlugins: [
-        rehypeSlug,
-        [
-          rehypeAutolinkHeadings,
-          {
-            properties: {
-              className: ['anchor'],
-              ariaLabel: 'Link to this heading',
-            },
-          } satisfies RehypeAutolinkHeadingsOptions,
-        ],
-      ],
+    // Sätteri is Astro 7's default Rust markdown pipeline. Heading IDs must
+    // be applied in this user plugin list so autolink can read them; Astro
+    // also appends the same heading-id plugin after user plugins.
+    processor: satteri({
+      hastPlugins: [satteriHeadingIdsPlugin(), autolinkHeadingsPlugin()],
     }),
+  },
+  // Cloudflare adapter would otherwise wire the unused SESSION KV as a
+  // default session driver and keep the session runtime in the Worker bundle.
+  session: false,
+  experimental: {
+    // JSON schemas for blog/page/tag frontmatter in compatible editors.
+    contentIntellisense: true,
   },
   security: {
     csp: {
