@@ -1,10 +1,17 @@
 ---
+import MarkdownLink from '@/components/MarkdownLink.astro'
 import { rssUrl, xUrl } from '@/lib/content'
+
+interface Props {
+  markdownUrl?: string
+}
 
 export interface Item {
   title: string
   href: string
 }
+
+const { markdownUrl }: Props = Astro.props
 
 const footerItems: (Item & { label?: string })[] = [
   { title: 'About', href: '/about' },
@@ -38,4 +45,5 @@ const footerItems: (Item & { label?: string })[] = [
       ))
     }
   </nav>
+  {markdownUrl && <MarkdownLink href={markdownUrl} />}
 </footer>

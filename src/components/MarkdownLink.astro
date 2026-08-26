@@ -4,13 +4,13 @@ interface Props {
   class?: string
 }
 
-const { href, class: className } = Astro.props
+const { href, class: className }: Props = Astro.props
 ---
 
 <a
   href={href}
   class:list={[
-    'text-xs font-bold text-neutral-500 hover:text-neutral-400 dark:text-neutral-500 dark:hover:text-neutral-400',
+    'rounded text-xs font-bold text-neutral-500 hover:text-neutral-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2 dark:text-neutral-500 dark:hover:text-neutral-400',
     className,
   ]}
 >

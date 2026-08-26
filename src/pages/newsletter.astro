@@ -1,6 +1,5 @@
 ---
 import { getEntry } from 'astro:content'
-import MarkdownLink from '@/components/MarkdownLink.astro'
 import NewsletterForm from '@/components/NewsletterForm.astro'
 import Page from '@/components/Page.astro'
 import Layout from '@/layouts/Layout.astro'
@@ -30,7 +29,4 @@ const breadcrumbs = pageBreadcrumbs(page.data.title, '/newsletter')
   >
     <NewsletterForm />
   </Page>
-  <div class="mx-auto mt-8 max-w-[calc(750px+8vw)] px-[4vw] text-center">
-    <MarkdownLink href={markdownUrl} />
-  </div>
 </Layout>
