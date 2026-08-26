@@ -13,7 +13,7 @@ const blog = defineCollection({
         tag: reference('tags'),
         image: z
           .object({
-            src: z.preprocess((v) => `@/assets/content/${v}`, image()),
+            src: z.preprocess((v) => `@/assets/content/${String(v)}`, image()),
             alt: z.string().min(1),
           })
           .optional(),
@@ -44,7 +44,7 @@ const pages = defineCollection({
       description: z.string(),
       image: z
         .object({
-          src: z.preprocess((v) => `@/assets/${v}`, image()),
+          src: z.preprocess((v) => `@/assets/${String(v)}`, image()),
           alt: z.string(),
           caption: z.string().optional(),
         })

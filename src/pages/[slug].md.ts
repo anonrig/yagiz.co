@@ -29,8 +29,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
   ]
 }
 
-export function GET({ props }: APIContext): Response {
-  const { type, entry } = props as Props
+export function GET({ props }: APIContext<Props>): Response {
+  const { type, entry } = props
   const markdown = type === 'post' ? postToMarkdown(entry) : pageToMarkdown(entry)
   const canonical = `${websiteUrl}/${entry.id}`
 

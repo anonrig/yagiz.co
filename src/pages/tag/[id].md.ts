@@ -12,8 +12,11 @@ export const getStaticPaths: GetStaticPaths = async () => {
   return tags.map((tag) => ({ params: { id: tag.id }, props: { tag } }))
 }
 
-export async function GET({ props, params }: APIContext): Promise<Response> {
-  const tag = props.tag as CollectionEntry<'tags'>
+export async function GET({
+  props,
+  params,
+}: APIContext<{ tag: CollectionEntry<'tags'> }>): Promise<Response> {
+  const { tag } = props
   const collected = await getCollection(
     'blog',
     ({ data }) => data.status === 'published' && data.tag.id === params.id,

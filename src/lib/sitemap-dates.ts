@@ -8,12 +8,14 @@ function stripSlash(url: string): string {
 }
 
 function frontmatterField(source: string, name: string): string | undefined {
-  const block = source.match(/^---\r?\n(?<body>[\s\S]*?)\r?\n---/u)
-  if (!block?.groups?.body) {
+  const block = /^---\r?\n(?<body>[\s\S]*?)\r?\n---/u.exec(source)
+  const body = block?.groups?.body
+  if (body === undefined) {
     return undefined
   }
-  const match = block.groups.body.match(new RegExp(`^${name}:\\s*['"]?(?<value>[^\\n'"]+)`, 'mu'))
-  return match?.groups?.value?.trim()
+  const match = new RegExp(`^${name}:\\s*['"]?(?<value>[^\\n'"]+)`, 'mu').exec(body)
+  const value = match?.groups?.value
+  return value === undefined ? undefined : value.trim()
 }
 
 export function loadSitemapLastmods(): Map<string, string> {

@@ -46,6 +46,7 @@
     "@types/node": "^26.2.0",
     "oxfmt": "^0.65.0",
     "oxlint": "^1.80.0",
+    "oxlint-tsgolint": "^7.0.2001",
     "to-vfile": "^8.0.0",
     "typescript": "^6.0.3",
     "vfile-matter": "^5.0.1"
