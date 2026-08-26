@@ -1,7 +1,8 @@
 export const prerender = true
 
-import { getCollection } from 'astro:content'
 import type { APIRoute } from 'astro'
+import { getCollection } from 'astro:content'
+
 import { authorFullName, websiteDescription, websiteTitle, websiteUrl } from '@/lib/content'
 import { postsInSeries, SERIES } from '@/lib/series'
 import { pageToMarkdown, postToMarkdown, seriesToMarkdown } from '@/lib/to-markdown'

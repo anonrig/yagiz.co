@@ -19,7 +19,8 @@ if (isAsset && loadImage === undefined) {
   throw new Error('src should not be empty')
 }
 
-const asset = isAsset && loadImage ? (await loadImage()).default : undefined
+const loaded = isAsset && loadImage ? await loadImage() : undefined
+const asset = loaded?.default
 const imageClass = [
   'rounded-lg object-contain w-full !h-[unset] !relative bg-white dark:bg-white-reversed col-wide',
   className,

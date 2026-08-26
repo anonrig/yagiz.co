@@ -1,23 +1,23 @@
 import { readdirSync, readFileSync } from 'node:fs'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { join } from 'node:path'
+
 import { websiteUrl } from './content.ts'
 
 function stripSlash(url: string): string {
-  return url.replace(/\/+$/, '')
+  return url.replace(/\/+$/u, '')
 }
 
 function frontmatterField(source: string, name: string): string | undefined {
-  const block = source.match(/^---\r?\n([\s\S]*?)\r?\n---/)
-  if (!block) {
+  const block = source.match(/^---\r?\n(?<body>[\s\S]*?)\r?\n---/u)
+  if (!block?.groups?.body) {
     return undefined
   }
-  const match = block[1].match(new RegExp(`^${name}:\\s*['"]?([^\\n'"]+)`, 'm'))
-  return match?.[1]?.trim()
+  const match = block.groups.body.match(new RegExp(`^${name}:\\s*['"]?(?<value>[^\\n'"]+)`, 'mu'))
+  return match?.groups?.value?.trim()
 }
 
 export function loadSitemapLastmods(): Map<string, string> {
-  const blogDir = join(dirname(fileURLToPath(import.meta.url)), '../content/blog')
+  const blogDir = join(import.meta.dirname, '../content/blog')
   const lastmods = new Map<string, string>()
   const latestByTag = new Map<string, Date>()
   let latestPost: Date | undefined
@@ -41,7 +41,7 @@ export function loadSitemapLastmods(): Map<string, string> {
     const updatedValue = frontmatterField(source, 'updated')
     const updated = updatedValue ? new Date(`${updatedValue}T00:00:00.000Z`) : undefined
     const modified = updated && !Number.isNaN(updated.getTime()) && updated > date ? updated : date
-    const id = file.replace(/\.mdx?$/, '')
+    const id = file.replace(/\.mdx?$/u, '')
     lastmods.set(stripSlash(`${websiteUrl}/${id}`), modified.toISOString())
     if (!latestPost || modified > latestPost) {
       latestPost = modified

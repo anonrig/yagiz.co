@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "./shiki-tokens.css";
+@import 'tailwindcss';
+@import './shiki-tokens.css';
 @config "../../tailwind.config.mjs";
 
 :root {
@@ -16,19 +16,19 @@ body {
 }
 
 .prose .anchor {
-  @apply absolute invisible no-underline font-extrabold cursor-pointer -ml-5 pr-2;
+  @apply invisible absolute -ml-5 cursor-pointer pr-2 font-extrabold no-underline;
   width: 80%;
   max-width: 700px;
 }
 
 .prose a {
-  @apply transition-all decoration-orange-400 underline-offset-2 decoration-[0.1em];
+  @apply decoration-orange-400 decoration-[0.1em] underline-offset-2 transition-all;
   @apply font-bold text-orange-400 underline;
 }
 
 .prose .anchor:after {
   @apply text-neutral-300 dark:text-neutral-700;
-  content: "#";
+  content: '#';
 }
 
 .prose *:hover > .anchor {
@@ -50,15 +50,15 @@ pre {
 }
 
 /* Remove Safari input shadow on mobile */
-input[type="text"],
-input[type="email"] {
+input[type='text'],
+input[type='email'] {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
 }
 
 .astro-code {
-  @apply text-xs font-mono leading-4 px-3 py-2 rounded-md border border-solid border-[#333333];
+  @apply rounded-md border border-solid border-[#333333] px-3 py-2 font-mono text-xs leading-4;
   background-color: #2f333c;
   color: #abb2bf;
   overflow-x: auto;
@@ -88,7 +88,7 @@ pre .s-overflow-x {
   overflow-x: auto;
 }
 .astro-code-title {
-  @apply flex items-center justify-between gap-2 px-3 py-1.5 font-mono font-medium border rounded-t-lg text-neutral-200 border-[#333333] bg-[#1c1c1c] text-xs;
+  @apply flex items-center justify-between gap-2 rounded-t-lg border border-[#333333] bg-[#1c1c1c] px-3 py-1.5 font-mono text-xs font-medium text-neutral-200;
 }
 .astro-code-title-label {
   @apply min-w-0 truncate;
@@ -100,7 +100,7 @@ pre .s-overflow-x {
   @apply bg-white/10 text-neutral-100;
 }
 .astro-code-copy:focus-visible {
-  @apply outline-none ring-2 ring-orange-400;
+  @apply ring-2 ring-orange-400 outline-none;
 }
 .astro-code-copy-check {
   display: none;

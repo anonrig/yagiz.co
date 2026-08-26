@@ -1,8 +1,8 @@
 import type { ShikiTransformer } from '@shikijs/types'
 
-const TITLE_RE = /title="([^"]*)"/
+const TITLE_RE = /title="(?<title>[^"]*)"/u
 
-type HastProps = {
+interface HastProps {
   properties?: {
     style?: unknown
     class?: unknown
@@ -17,15 +17,15 @@ function classList(properties: HastProps['properties']): string[] {
     if (Array.isArray(value)) {
       tokens.push(...value.map(String))
     } else if (typeof value === 'string' && value.length > 0) {
-      tokens.push(...value.split(/\s+/))
+      tokens.push(...value.split(/\s+/u))
     }
   }
   return [...new Set(tokens.filter(Boolean))]
 }
 
 function hexClass(prefix: string, value: string): string | undefined {
-  const hex = value.trim().match(/^#([0-9a-f]{3,8})$/i)
-  return hex ? `${prefix}-${hex[1].toLowerCase()}` : undefined
+  const hex = value.trim().match(/^#(?<hex>[0-9a-f]{3,8})$/iu)
+  return hex?.groups?.hex ? `${prefix}-${hex.groups.hex.toLowerCase()}` : undefined
 }
 
 function isBoldWeight(value: string): boolean {
@@ -86,10 +86,14 @@ function consumeInlineStyles(node: HastProps): void {
     const value = decl.slice(sep + 1).trim()
     if (prop === 'color') {
       const token = hexClass('s', value)
-      if (token) extra.push(token)
+      if (token) {
+        extra.push(token)
+      }
     } else if (prop === 'background-color') {
       const token = hexClass('sb', value)
-      if (token) extra.push(token)
+      if (token) {
+        extra.push(token)
+      }
     } else if (prop === 'font-style' && value === 'italic') {
       extra.push('s-italic')
     } else if (prop === 'font-weight' && isBoldWeight(value)) {
@@ -105,15 +109,21 @@ function consumeInlineStyles(node: HastProps): void {
   }
 }
 
-function svgIcon(
-  className: string,
-  children: Array<{
-    type: 'element'
-    tagName: string
-    properties: Record<string, string>
-    children: []
-  }>,
-) {
+interface SvgChild {
+  type: 'element'
+  tagName: string
+  properties: Record<string, string>
+  children: []
+}
+
+interface SvgIcon {
+  type: 'element'
+  tagName: 'svg'
+  properties: Record<string, string | string[]>
+  children: SvgChild[]
+}
+
+function svgIcon(className: string, children: SvgChild[]): SvgIcon {
   return {
     type: 'element' as const,
     tagName: 'svg',
@@ -134,7 +144,12 @@ function svgIcon(
   }
 }
 
-function copyButton() {
+function copyButton(): {
+  type: 'element'
+  tagName: 'button'
+  properties: Record<string, string | string[]>
+  children: SvgIcon[]
+} {
   return {
     type: 'element' as const,
     tagName: 'button',
@@ -177,21 +192,24 @@ export function transformerMetaTitle(): ShikiTransformer {
   return {
     name: 'meta-title',
     preprocess(_code, options) {
-      const meta = options.meta
+      const { meta } = options
       if (!meta?.__raw) {
         return
       }
 
       let raw = meta.__raw
       const match = TITLE_RE.exec(raw)
-      if (match) {
-        meta.title = match[1]
+      if (match?.groups?.title !== undefined) {
+        meta.title = match.groups.title
         raw = raw.replace(match[0], '')
       }
 
       meta.__raw = raw
-        .replace(/\{([^}]+)\}/g, (_, inner: string) => `{${inner.replace(/\s+/g, '')}}`)
-        .replace(/\s+/g, ' ')
+        .replaceAll(
+          /\{(?<inner>[^}]+)\}/gu,
+          (_match, inner: string) => `{${inner.replaceAll(/\s+/gu, '')}}`,
+        )
+        .replaceAll(/\s+/gu, ' ')
         .trim()
     },
     root(hast) {

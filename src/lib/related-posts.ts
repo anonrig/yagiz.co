@@ -13,8 +13,7 @@ export function relatedPosts(
     return sameSeries.slice(0, limit)
   }
 
-  const seen = new Set(sameSeries.map((post) => post.id))
-  seen.add(current.id)
+  const seen = new Set([current.id, ...sameSeries.map((post) => post.id)])
   const sameTag = others.filter(
     (post) => !seen.has(post.id) && post.data.tag.id === current.data.tag.id,
   )

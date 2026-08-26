@@ -1,5 +1,5 @@
 export function countWords(body: string | undefined): number {
-  return (body ?? '').trim().split(/\s+/).filter(Boolean).length
+  return (body ?? '').trim().split(/\s+/u).filter(Boolean).length
 }
 
 export function readingTimeMinutes(words: number): number {

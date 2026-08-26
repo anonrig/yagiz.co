@@ -1,7 +1,19 @@
 import type { CollectionEntry } from 'astro:content'
+
 import { authorFullName, authorJobTitle, githubImage } from '@/lib/content'
 
-export function BlogOG({ post }: { post: CollectionEntry<'blog'> }) {
+interface OgNode {
+  type: string
+  props: {
+    tw?: string
+    style?: Record<string, string>
+    src?: string
+    alt?: string
+    children?: (OgNode | string)[]
+  }
+}
+
+export function BlogOG({ post }: { post: CollectionEntry<'blog'> }): OgNode {
   return {
     type: 'div',
     props: {

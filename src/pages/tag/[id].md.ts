@@ -1,7 +1,9 @@
 export const prerender = true
 
-import { type CollectionEntry, getCollection } from 'astro:content'
 import type { APIContext, GetStaticPaths } from 'astro'
+import { getCollection } from 'astro:content'
+import type { CollectionEntry } from 'astro:content'
+
 import { websiteUrl } from '@/lib/content'
 import { markdownResponse, tagToMarkdown } from '@/lib/to-markdown'
 
@@ -10,7 +12,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   return tags.map((tag) => ({ params: { id: tag.id }, props: { tag } }))
 }
 
-export async function GET({ props, params }: APIContext) {
+export async function GET({ props, params }: APIContext): Promise<Response> {
   const tag = props.tag as CollectionEntry<'tags'>
   const posts = await getCollection(
     'blog',

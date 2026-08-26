@@ -62,12 +62,20 @@
 </form>
 
 <script>
-  const form: HTMLFormElement = document.querySelector('form')!
-  const submit: HTMLButtonElement = document.querySelector('#submit')!
-  const name: HTMLInputElement = document.querySelector('#name')!
-  const email: HTMLInputElement = document.querySelector('#email')!
-  const successMessage: HTMLDivElement = document.querySelector('#success-message')!
-  const errorMessage: HTMLDivElement = document.querySelector('#error-message')!
+  function requireEl<T extends Element>(selector: string, ctor: new () => T): T {
+    const el = document.querySelector(selector)
+    if (!(el instanceof ctor)) {
+      throw new Error(`Missing ${selector}`)
+    }
+    return el
+  }
+
+  const form = requireEl('form', HTMLFormElement)
+  const submit = requireEl('#submit', HTMLButtonElement)
+  const name = requireEl('#name', HTMLInputElement)
+  const email = requireEl('#email', HTMLInputElement)
+  const successMessage = requireEl('#success-message', HTMLDivElement)
+  const errorMessage = requireEl('#error-message', HTMLDivElement)
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault()

@@ -1,7 +1,8 @@
 export const prerender = true
 
-import { getCollection } from 'astro:content'
 import type { APIRoute } from 'astro'
+import { getCollection } from 'astro:content'
+
 import { authorFullName, websiteDescription, websiteTitle, websiteUrl } from '@/lib/content'
 
 export const GET: APIRoute = async () => {
@@ -14,15 +15,13 @@ export const GET: APIRoute = async () => {
 
   const postLinks = posts
     .map((post) => {
-      const date = post.data.date.toISOString().split('T')[0]
+      const date = post.data.date.toISOString().slice(0, 10)
       return `- [${post.data.title}](${websiteUrl}/${post.id}.md): ${post.data.description} (${date})`
     })
     .join('\n')
 
   const tagLinks = tags
-    .map((tag) => {
-      return `- [#${tag.data.title}](${websiteUrl}/tag/${tag.id}.md): ${tag.data.description}`
-    })
+    .map((tag) => `- [#${tag.data.title}](${websiteUrl}/tag/${tag.id}.md): ${tag.data.description}`)
     .join('\n')
 
   const content = [

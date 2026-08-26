@@ -1,7 +1,9 @@
 export const prerender = true
 
-import { type CollectionEntry, getCollection } from 'astro:content'
 import type { APIContext, GetStaticPaths } from 'astro'
+import { getCollection } from 'astro:content'
+import type { CollectionEntry } from 'astro:content'
+
 import { websiteUrl } from '@/lib/content'
 import { markdownResponse, pageToMarkdown, postToMarkdown } from '@/lib/to-markdown'
 
@@ -27,7 +29,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   ]
 }
 
-export async function GET({ props }: APIContext) {
+export function GET({ props }: APIContext): Response {
   const { type, entry } = props as Props
   const markdown = type === 'post' ? postToMarkdown(entry) : pageToMarkdown(entry)
   const canonical = `${websiteUrl}/${entry.id}`

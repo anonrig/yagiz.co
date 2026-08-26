@@ -1,4 +1,5 @@
 import type { CollectionEntry } from 'astro:content'
+
 import { authorFullName, websiteDescription, websiteTitle, websiteUrl } from '@/lib/content'
 
 const ATTRIBUTION = [
@@ -13,19 +14,22 @@ const ATTRIBUTION = [
 ].join('\n')
 
 function escapeYaml(value: string): string {
-  if (/[:#{}[\],&*?|>!%@`]/.test(value) || /[\n\r"]/.test(value) || value.includes('\\')) {
+  if (/[:#{}[\],&*?|>!%@`]/u.test(value) || /[\n\r"]/u.test(value) || value.includes('\\')) {
     return `"${value
-      .replace(/\\/g, '\\\\')
-      .replace(/"/g, '\\"')
-      .replace(/\r/g, '\\r')
-      .replace(/\n/g, '\\n')}"`
+      .replaceAll('\\', String.raw`\\`)
+      .replaceAll('"', String.raw`\"`)
+      .replaceAll('\r', String.raw`\r`)
+      .replaceAll('\n', String.raw`\n`)}"`
   }
   return value
 }
 
 function yamlFrontmatter(fields: Record<string, string | undefined>): string {
   const lines = Object.entries(fields)
-    .filter((entry): entry is [string, string] => entry[1] !== undefined && entry[1] !== '')
+    .filter((entry): entry is [string, string] => {
+      const [, field] = entry
+      return field !== undefined && field !== ''
+    })
     .map(([key, value]) => `${key}: ${escapeYaml(value)}`)
 
   return ['---', ...lines, '---'].join('\n')
@@ -34,13 +38,13 @@ function yamlFrontmatter(fields: Record<string, string | undefined>): string {
 /** Rewrite site-relative markdown image/link targets to absolute URLs. */
 export function absolutizeMarkdownUrls(body: string): string {
   return body
-    .replace(/\]\((\/[^)\s]+)\)/g, (_match, path: string) => `](${websiteUrl}${path})`)
-    .replace(/src="(\/[^"]+)"/g, (_match, path: string) => `src="${websiteUrl}${path}"`)
+    .replaceAll(/\]\((?<path>\/[^)\s]+)\)/gu, (_match, path: string) => `](${websiteUrl}${path})`)
+    .replaceAll(/src="(?<path>\/[^"]+)"/gu, (_match, path: string) => `src="${websiteUrl}${path}"`)
 }
 
 export function postToMarkdown(post: CollectionEntry<'blog'>): string {
-  const date = post.data.date.toISOString().split('T')[0]
-  const updated = post.data.updated?.toISOString().split('T')[0]
+  const date = post.data.date.toISOString().slice(0, 10)
+  const updated = post.data.updated?.toISOString().slice(0, 10)
   const canonical = `${websiteUrl}/${post.id}`
   const markdownUrl = `${canonical}.md`
   const publishedLine = updated
@@ -106,7 +110,7 @@ export function tagToMarkdown(
 
   const postList = posts
     .map((p) => {
-      const date = p.data.date.toISOString().split('T')[0]
+      const date = p.data.date.toISOString().slice(0, 10)
       return `- [${p.data.title}](${websiteUrl}/${p.id}.md) — ${date}`
     })
     .join('\n')
@@ -142,7 +146,7 @@ export function seriesToMarkdown(
 
   const postList = posts
     .map((post) => {
-      const date = post.data.date.toISOString().split('T')[0]
+      const date = post.data.date.toISOString().slice(0, 10)
       return `- [${post.data.title}](${websiteUrl}/${post.id}.md) — ${date}`
     })
     .join('\n')
@@ -170,7 +174,7 @@ export function seriesToMarkdown(
 export function homeToMarkdown(posts: CollectionEntry<'blog'>[]): string {
   const postList = posts
     .map((post) => {
-      const date = post.data.date.toISOString().split('T')[0]
+      const date = post.data.date.toISOString().slice(0, 10)
       return `- [${post.data.title}](${websiteUrl}/${post.id}.md) — ${date}`
     })
     .join('\n')

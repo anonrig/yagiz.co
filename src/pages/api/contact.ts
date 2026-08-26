@@ -1,11 +1,14 @@
-import { env } from 'cloudflare:workers'
 import type { APIRoute } from 'astro'
+import { env } from 'cloudflare:workers'
 
-const response = ({ status, message }: { status: number; message: string }) =>
-  new Response(JSON.stringify({ status, message }), {
-    status,
-    headers: { 'Content-Type': 'application/json' },
-  })
+const response = ({ status, message }: { status: number; message: string }): Response =>
+  Response.json(
+    { status, message },
+    {
+      status,
+      headers: { 'Content-Type': 'application/json' },
+    },
+  )
 
 export const POST: APIRoute = async ({ request }) => {
   const body: {
@@ -30,8 +33,8 @@ export const POST: APIRoute = async ({ request }) => {
       text: `From: ${body.email}\n\n${body.message}`,
       html: `<p><strong>From:</strong> ${body.email}</p><br><p>${body.message.replaceAll('\n', '<br>')}</p>`,
     })
-  } catch (err) {
-    console.error('Failed to send contact email:', err)
+  } catch (error) {
+    console.error('Failed to send contact email:', error)
     return response({ status: 500, message: 'Failed to send message. Please try again.' })
   }
 

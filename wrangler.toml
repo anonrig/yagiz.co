@@ -1,6 +1,6 @@
 name = "yagiz"
 compatibility_date = "2026-03-21"
-compatibility_flags = [ "nodejs_compat" ]
+compatibility_flags = ["nodejs_compat"]
 send_metrics = false
 preview_urls = true
 # Custom worker wraps Astro's handler for Accept negotiation + Link headers.
