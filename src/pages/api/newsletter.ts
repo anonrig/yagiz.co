@@ -1,39 +1,52 @@
 import type { APIRoute } from 'astro'
+
 import { env } from 'cloudflare:workers'
 
-const response = ({ status, message }: { status: number; message: string }): Response =>
-  Response.json(
-    { status, message },
-    {
-      status,
-      headers: { 'Content-Type': 'application/json' },
-    },
-  )
+import {
+  isEmail,
+  isHoneypot,
+  jsonResponse,
+  readJsonObject,
+  readString,
+  validateName,
+} from '@/lib/form-api'
+import { isRateLimited } from '@/lib/rate-limit'
 
 export const POST: APIRoute = async ({ request }) => {
-  const body: { email?: string; name?: string } = await request.json()
+  const body = await readJsonObject(request)
+  if (body === null) {
+    return jsonResponse(400, 'Invalid JSON body.')
+  }
 
-  if (!body.email?.length || !body.name?.length) {
-    return response({
-      status: 400,
-      message: 'Input validation failed. Make sure you have an email and a full name',
-    })
+  if (isHoneypot(readString(body, 'company'))) {
+    return jsonResponse(200, 'Added you to the newsletter. Thank you for signing up.')
+  }
+
+  if (await isRateLimited(request, 'newsletter')) {
+    return jsonResponse(429, 'Too many requests. Please try again later.')
+  }
+
+  const email = readString(body, 'email')
+  const name = readString(body, 'name')
+
+  if (!isEmail(email) || !validateName(name)) {
+    return jsonResponse(
+      400,
+      'Input validation failed. Make sure you have an email and a full name',
+    )
   }
 
   try {
     await env.newsletter
       .prepare('INSERT INTO subscribers (email, name) VALUES (?, ?) ON CONFLICT (email) DO NOTHING')
-      .bind(body.email, body.name)
+      .bind(email, name)
       .run()
   } catch (error) {
     console.error('Failed to insert subscriber into D1:', error)
-    return response({ status: 500, message: 'Failed to register. Please try again.' })
+    return jsonResponse(500, 'Failed to register. Please try again.')
   }
 
-  return response({
-    status: 200,
-    message: 'Added you to the newsletter. Thank you for signing up.',
-  })
+  return jsonResponse(200, 'Added you to the newsletter. Thank you for signing up.')
 }
 
 export const prerender = false
