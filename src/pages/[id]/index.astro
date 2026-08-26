@@ -18,7 +18,13 @@ import Layout from '@/layouts/Layout.astro'
 import { authorFullName, websiteUrl } from '@/lib/content'
 import { countWords, readingTimeLabel } from '@/lib/reading-time'
 import { relatedPosts } from '@/lib/related-posts'
-import { absoluteUrl, blogBreadcrumbs, blogPostingJsonLd, isoDate, postModifiedDate } from '@/lib/schema'
+import {
+  absoluteUrl,
+  blogBreadcrumbs,
+  blogPostingJsonLd,
+  isoDate,
+  postModifiedDate,
+} from '@/lib/schema'
 import { seriesNeighbors } from '@/lib/series'
 
 interface Props {

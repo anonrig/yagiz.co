@@ -40,8 +40,7 @@ export function loadSitemapLastmods(): Map<string, string> {
     }
     const updatedValue = frontmatterField(source, 'updated')
     const updated = updatedValue ? new Date(`${updatedValue}T00:00:00.000Z`) : undefined
-    const modified =
-      updated && !Number.isNaN(updated.getTime()) && updated > date ? updated : date
+    const modified = updated && !Number.isNaN(updated.getTime()) && updated > date ? updated : date
     const id = file.replace(/\.mdx?$/, '')
     lastmods.set(stripSlash(`${websiteUrl}/${id}`), modified.toISOString())
     if (!latestPost || modified > latestPost) {
