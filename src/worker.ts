@@ -2,6 +2,7 @@ import { handle } from '@astrojs/cloudflare/handler'
 import {
   appendLink,
   appendVaryAccept,
+  isAgentOnlyPath,
   isImmutableAsset,
   markdownPath,
   preferredType,
@@ -29,6 +30,19 @@ function withHeaders(response: Response, mutate: (headers: Headers) => void): Re
 
 const PAGE_CDN_CACHE = 'public, max-age=3600, stale-while-revalidate=86400'
 const ASSET_CDN_CACHE = 'public, max-age=31536000, immutable'
+
+function applySeoHeaders(request: Request, response: Response): Response {
+  const pathname = new URL(request.url).pathname
+  return withHeaders(response, (headers) => {
+    if (isAgentOnlyPath(pathname)) {
+      headers.set('X-Robots-Tag', 'noindex, nofollow')
+      return
+    }
+    if (response.status === 404) {
+      headers.set('X-Robots-Tag', 'noindex, follow')
+    }
+  })
+}
 
 function applyCdnCache(request: Request, response: Response): Response {
   if (request.method !== 'GET' && request.method !== 'HEAD') {
@@ -66,7 +80,7 @@ export default {
     const url = new URL(request.url)
 
     if (shouldSkipNegotiation(url.pathname)) {
-      return applyCdnCache(request, await handle(request, env, ctx))
+      return applySeoHeaders(request, applyCdnCache(request, await handle(request, env, ctx)))
     }
 
     const accept = request.headers.get('accept')
@@ -85,6 +99,7 @@ export default {
           request,
           withHeaders(mdResponse, (headers) => {
             headers.set('Content-Type', 'text/markdown; charset=utf-8')
+            headers.set('X-Robots-Tag', 'noindex, nofollow')
             appendVaryAccept(headers)
             appendLink(
               headers,
@@ -102,14 +117,17 @@ export default {
     }
 
     const response = await handle(request, env, ctx)
-    return applyCdnCache(
+    return applySeoHeaders(
       request,
-      withHeaders(response, (headers) => {
-        appendVaryAccept(headers)
-        if (headers.get('content-type')?.includes('text/html')) {
-          appendLink(headers, `<${mdPath}>; rel="alternate"; type="text/markdown"`)
-        }
-      }),
+      applyCdnCache(
+        request,
+        withHeaders(response, (headers) => {
+          appendVaryAccept(headers)
+          if (headers.get('content-type')?.includes('text/html')) {
+            appendLink(headers, `<${mdPath}>; rel="alternate"; type="text/markdown"`)
+          }
+        }),
+      ),
     )
   },
 } satisfies ExportedHandler<Env>

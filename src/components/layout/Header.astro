@@ -1,10 +1,11 @@
 ---
 import type { Item } from './Footer.astro'
 
-const headerItems: Item[] = [
+const headerItems: Array<Item & { hideOnNarrow?: boolean }> = [
   { title: 'Home', href: '/' },
   { title: 'About', href: '/about' },
   { title: 'Press', href: '/press' },
+  { title: 'Newsletter', href: '/newsletter', hideOnNarrow: true },
   { title: 'Contact', href: '/contact' },
 ]
 
@@ -36,7 +37,10 @@ const isActive = (href: string) => (href === '/' ? pathname === '/' : pathname.s
         <a
           href={item.href}
           aria-current={isActive(item.href) ? 'page' : undefined}
-          class="mx-1 md:mx-4 text-sm font-bold text-slate-800 hover:text-slate-600 dark:text-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2 rounded"
+          class:list={[
+            'mx-1 rounded text-sm font-bold text-slate-800 hover:text-slate-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2 dark:text-zinc-200 md:mx-4',
+            item.hideOnNarrow && 'hidden sm:inline',
+          ]}
         >
           {item.title}
         </a>

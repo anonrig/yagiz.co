@@ -108,6 +108,15 @@ export function isImmutableAsset(pathname: string): boolean {
   return pathname.startsWith('/_astro/') || IMMUTABLE_ASSET.test(pathname)
 }
 
+export function isAgentOnlyPath(pathname: string): boolean {
+  return (
+    pathname.endsWith('.md') ||
+    pathname === '/llms.txt' ||
+    pathname === '/llms-full.txt' ||
+    pathname.endsWith('/llms.txt')
+  )
+}
+
 /** Paths that should skip HTML↔markdown negotiation. */
 export function shouldSkipNegotiation(pathname: string): boolean {
   return (

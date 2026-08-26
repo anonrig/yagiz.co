@@ -1,0 +1,39 @@
+---
+interface Heading {
+  depth: number
+  slug: string
+  text: string
+}
+
+interface Props {
+  headings: Heading[]
+}
+
+const headings = Astro.props.headings.filter(
+  (heading) => heading.depth === 2 || heading.depth === 3,
+)
+---
+
+{
+  headings.length >= 3 && (
+    <nav aria-label="Table of contents" class="mb-10 grid grid-cols-canvas">
+      <div class="col-main rounded-md border border-slate-200 px-4 py-3 text-left dark:border-neutral-700">
+        <p class="mb-2 text-xs font-extrabold uppercase tracking-wide text-slate-500">
+          On this page
+        </p>
+        <ol class="space-y-1 text-sm">
+          {headings.map((heading) => (
+            <li class:list={[heading.depth === 3 && 'pl-4']}>
+              <a
+                href={`#${heading.slug}`}
+                class="font-bold text-orange-400 hover:text-orange-300"
+              >
+                {heading.text}
+              </a>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </nav>
+  )
+}

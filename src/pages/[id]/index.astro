@@ -8,6 +8,7 @@ import BlogStickyHeader from '@/components/BlogStickyHeader.astro'
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import MarkdownLink from '@/components/MarkdownLink.astro'
 import { components } from '@/components/mdx'
+import TableOfContents from '@/components/TableOfContents.astro'
 import Container from '@/components/ui/Container.astro'
 import Figure from '@/components/ui/Figure.astro'
 import Heading from '@/components/ui/Heading.astro'
@@ -15,6 +16,7 @@ import Prose from '@/components/ui/Prose.astro'
 import Layout from '@/layouts/Layout.astro'
 import { authorFullName, websiteUrl } from '@/lib/content'
 import { countWords, readingTimeLabel } from '@/lib/reading-time'
+import { relatedPosts } from '@/lib/related-posts'
 import { absoluteUrl, blogBreadcrumbs, blogPostingJsonLd, isoDate } from '@/lib/schema'
 
 interface Props {
@@ -32,7 +34,7 @@ export async function getStaticPaths(): Promise<ReturnType<GetStaticPaths>> {
 }
 
 const { post } = Astro.props
-const { Content } = await render(post)
+const { Content, headings } = await render(post)
 const tag = await getEntry(post.data.tag.collection, post.data.tag.id)
 if (!tag) {
   throw new Error('Tag not found')
@@ -43,9 +45,8 @@ const minute_to_read = readingTimeLabel(post.body)
 const posts = await getCollection('blog', ({ data }) => data.status === 'published')
 posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
 const index = posts.findIndex((p) => p.id === post.id)
-const suggestions = [posts.at(index - 2), posts.at(index - 1)].filter(
-  Boolean,
-) as CollectionEntry<'blog'>[]
+const suggestions = relatedPosts(post, posts)
+const relatedAreSameTag = suggestions.every((item) => item.data.tag.id === post.data.tag.id)
 const publishedTime = isoDate(post.data.date)
 const markdownUrl = `${websiteUrl}/${post.id}.md`
 const url = absoluteUrl(`/${post.id}`)
@@ -61,7 +62,7 @@ const crumbs = blogBreadcrumbs(post, tag)
   jsonLd={blogPostingJsonLd(post, tag)}
   canonical={post.data.canonical_url}
   article={{
-    authors: [authorFullName],
+    authors: [authorFullName, absoluteUrl('/about')],
     publishedTime,
     modifiedTime: publishedTime,
     tags: [tag.data.title],
@@ -126,6 +127,7 @@ const crumbs = blogBreadcrumbs(post, tag)
         )
       }
     </header>
+    <TableOfContents {headings} />
     <BlogStickyHeader {post} />
     <Prose as="div" itemprop="articleBody">
       <Content {components} />
@@ -138,7 +140,19 @@ const crumbs = blogBreadcrumbs(post, tag)
       <section class="mt-24 bg-[#f6f6f6] dark:bg-[#2f333c] py-12 px-[4vw]">
         <Container size="tight" class="mx-auto">
           <h2 class="mb-4 text-xl font-extrabold dark:text-white">
-            You might also like...
+            {
+              relatedAreSameTag ? (
+                <>
+                  More{' '}
+                  <a href={`/tag/${tag.id}`} class="text-orange-400 hover:text-orange-300">
+                    {tag.data.title}
+                  </a>{' '}
+                  posts
+                </>
+              ) : (
+                'You might also like...'
+              )
+            }
           </h2>
           <div class="divide-y divide-slate-200 dark:divide-neutral-700">
             {suggestions.map((post) => (
