@@ -113,8 +113,8 @@ export default defineConfig({
   integrations: [
     mdx(),
     sitemap({
-      lastmod: new Date(),
       // Markdown / llms endpoints are for agents; keep them out of the HTML sitemap.
+      // Do not stamp every URL with the build clock — Google treats that lastmod as noise.
       filter: (page) => !isMarkdownOrLlmsAsset(page),
     }),
   ],

@@ -3,11 +3,12 @@ import type { CollectionEntry } from 'astro:content'
 import { getCollection } from 'astro:content'
 import type { GetStaticPaths } from 'astro'
 import BlogRow from '@/components/BlogRow.astro'
+import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import MarkdownLink from '@/components/MarkdownLink.astro'
 import Container from '@/components/ui/Container.astro'
 import Layout from '@/layouts/Layout.astro'
 import { websiteUrl } from '@/lib/content'
-import { tagCollectionJsonLd } from '@/lib/schema'
+import { absoluteUrl, tagBreadcrumbs, tagCollectionJsonLd } from '@/lib/schema'
 
 interface Props {
   tag: CollectionEntry<'tags'>
@@ -29,6 +30,8 @@ const posts = await getCollection(
 )
 posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
 const markdownUrl = `${websiteUrl}/tag/${tag.id}.md`
+const url = absoluteUrl(`/tag/${tag.id}`)
+const crumbs = tagBreadcrumbs(tag)
 ---
 
 <Layout
@@ -37,11 +40,13 @@ const markdownUrl = `${websiteUrl}/tag/${tag.id}.md`
   markdownUrl={markdownUrl}
   jsonLd={tagCollectionJsonLd(tag, posts)}
 >
-  <section>
+  <section itemscope itemtype="https://schema.org/CollectionPage" itemid={url}>
+    <link itemprop="url" href={url} />
     <Container size="tight" class="mx-auto -mt-6 flex flex-col gap-8 px-[4vw] text-center">
-      <h1 class="text-2xl font-extrabold text-orange-400">#{tag.data.title}</h1>
+      <Breadcrumbs items={crumbs} />
+      <h1 class="text-2xl font-extrabold text-orange-400" itemprop="name">#{tag.data.title}</h1>
 
-      <div class="leading-6 dark:text-white">{tag.data.description}</div>
+      <div class="leading-6 dark:text-white" itemprop="description">{tag.data.description}</div>
 
       <div>
         <span class="mr-2 mt-2 font-bold dark:text-white">More:</span>
@@ -60,12 +65,25 @@ const markdownUrl = `${websiteUrl}/tag/${tag.id}.md`
       <MarkdownLink href={markdownUrl} />
     </Container>
 
-    <div class="py-14">
+    <div
+      class="py-14"
+      itemprop="mainEntity"
+      itemscope
+      itemtype="https://schema.org/ItemList"
+    >
+      <meta itemprop="numberOfItems" content={String(posts.length)} />
       <Container
         size="tight"
         class="mx-auto divide-y divide-slate-200 px-[4vw] dark:divide-neutral-700"
       >
-        {posts.map((post) => <BlogRow {post} />)}
+        {
+          posts.map((post, index) => (
+            <div itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+              <meta itemprop="position" content={String(index + 1)} />
+              <BlogRow {post} itemprop="item" />
+            </div>
+          ))
+        }
       </Container>
     </div>
   </section>

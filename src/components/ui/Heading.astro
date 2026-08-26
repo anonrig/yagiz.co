@@ -1,5 +1,14 @@
+---
+interface Props {
+  itemprop?: string
+}
+
+const { itemprop } = Astro.props
+---
+
 <h1
   class="col-main text-4xl font-extrabold tracking-tight text-slate-800 dark:text-white"
+  itemprop={itemprop}
 >
   <slot />
 </h1>
