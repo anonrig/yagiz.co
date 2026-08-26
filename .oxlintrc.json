@@ -104,6 +104,12 @@
     "jsdoc/require-param-description": "off",
     "jsdoc/check-tag-names": "off",
 
+    "unicorn/import-style": "off",
+    "eslint/no-duplicate-imports": ["error", { "allowSeparateTypeImports": true }],
+    "eslint/new-cap": ["error", { "capIsNewExceptions": ["BlogOG"] }],
+    "eslint/no-underscore-dangle": ["error", { "allow": ["__raw"] }],
+    "eslint/no-use-before-define": ["error", { "functions": false }],
+
     "typescript/adjacent-overload-signatures": "error",
     "typescript/array-type": "error",
     "typescript/ban-ts-comment": "error",
@@ -233,6 +239,30 @@
         "node/no-sync": "off",
         "eslint/no-console": "off",
         "unicorn/no-process-exit": "off"
+      }
+    },
+    {
+      "files": ["src/pages/api/**"],
+      "rules": {
+        "eslint/no-console": "off"
+      }
+    },
+    {
+      "files": ["src/lib/sitemap-dates.ts"],
+      "rules": {
+        "node/no-sync": "off"
+      }
+    },
+    {
+      "files": ["src/components/BlogOG.ts"],
+      "rules": {
+        "unicorn/filename-case": "off"
+      }
+    },
+    {
+      "files": ["**/*.d.ts"],
+      "rules": {
+        "typescript/triple-slash-reference": "off"
       }
     }
   ]

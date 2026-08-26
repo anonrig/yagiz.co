@@ -13,13 +13,16 @@ import { homeJsonLd, schemaIds } from '@/lib/schema'
 const posts = await getCollection('blog', ({ data }) => data.status === 'published')
 posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
 
-const postsByYear = posts.reduce((acc, post) => {
+const postsByYear = new Map<number, typeof posts>()
+for (const post of posts) {
   const year = post.data.date.getFullYear()
-  const bucket = acc.get(year) ?? []
-  bucket.push(post)
-  acc.set(year, bucket)
-  return acc
-}, new Map<number, typeof posts>())
+  const bucket = postsByYear.get(year)
+  if (bucket) {
+    bucket.push(post)
+  } else {
+    postsByYear.set(year, [post])
+  }
+}
 
 const years = [...postsByYear.keys()]
 const markdownUrl = `${websiteUrl}/index.md`
@@ -71,7 +74,7 @@ const markdownUrl = `${websiteUrl}/index.md`
             {year}
           </h2>
           <div class="divide-y divide-slate-200 dark:divide-neutral-700">
-            {postsByYear.get(year)!.map((post) => (
+            {(postsByYear.get(year) ?? []).map((post) => (
               <BlogRow {post} heading="h3" itemprop="blogPost" />
             ))}
           </div>

@@ -1,4 +1,5 @@
 import { handle } from '@astrojs/cloudflare/handler'
+
 import {
   appendLink,
   appendVaryAccept,
@@ -32,7 +33,7 @@ const PAGE_CDN_CACHE = 'public, max-age=3600, stale-while-revalidate=86400'
 const ASSET_CDN_CACHE = 'public, max-age=31536000, immutable'
 
 function applySeoHeaders(request: Request, response: Response): Response {
-  const pathname = new URL(request.url).pathname
+  const { pathname } = new URL(request.url)
   return withHeaders(response, (headers) => {
     if (isAgentOnlyPath(pathname)) {
       headers.set('X-Robots-Tag', 'noindex, nofollow')
@@ -52,7 +53,7 @@ function applyCdnCache(request: Request, response: Response): Response {
     return response
   }
 
-  const pathname = new URL(request.url).pathname
+  const { pathname } = new URL(request.url)
   if (pathname.startsWith('/api/')) {
     return response
   }
@@ -69,7 +70,7 @@ function applyCdnCache(request: Request, response: Response): Response {
   })
 }
 
-async function assetsFetch(env: Env, request: Request, pathname: string): Promise<Response> {
+function assetsFetch(env: Env, request: Request, pathname: string): Promise<Response> {
   const url = new URL(request.url)
   url.pathname = pathname
   return env.ASSETS.fetch(new Request(url.toString(), request))
@@ -105,7 +106,7 @@ export default {
             appendVaryAccept(headers)
             appendLink(
               headers,
-              `<${url.pathname === '/' ? '/' : url.pathname.replace(/\/+$/, '') || '/'}>; rel="canonical"`,
+              `<${url.pathname === '/' ? '/' : url.pathname.replace(/\/+$/u, '') || '/'}>; rel="canonical"`,
             )
           }),
         )

@@ -18,10 +18,16 @@ if (isCancel(intention)) {
 }
 
 switch (intention) {
-  case 'email':
+  case 'email': {
     await sendEmail()
     break
-  case 'blog':
+  }
+  case 'blog': {
     await createBlog()
     break
+  }
+  default: {
+    cancel('That action is not implemented yet')
+    process.exit(0)
+  }
 }

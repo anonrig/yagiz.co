@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
+
 import { cancel, group, outro, select, spinner, text } from '@clack/prompts'
 
 const contentFolder = path.resolve('./src/content')
@@ -19,7 +20,7 @@ title: '${title}'
 description: >-
   ${description}
 type: Blog
-  date: '${new Date().toISOString().split('T')[0]}'
+  date: '${new Date().toISOString().slice(0, 10)}'
 tag: ${tag}
 status: ${status}
 ---
@@ -52,7 +53,7 @@ export async function createBlog() {
             }
 
             // only allow letters, numbers and hypens
-            const re = /^[a-z0-9]+(?:-[a-z0-9]+)*$/g
+            const re = /^[a-z0-9]+(?:-[a-z0-9]+)*$/gu
             if (re.exec(value) === null) {
               return 'Slug should be all lowercase and contain only letters, numbers, and hyphens'
             }
@@ -68,9 +69,9 @@ export async function createBlog() {
         select({
           message: 'Select a tag',
           required: true,
-          options: allTags.map((tag) => ({
-            value: tag,
-            label: tag,
+          options: allTags.map((value) => ({
+            value,
+            label: value,
           })),
         }),
       status: () =>
@@ -100,7 +101,7 @@ export async function createBlog() {
   const creating = spinner()
   creating.start('Creating the document')
   const documentPath = path.join(contentFolder, `blog/${slug}.mdx`)
-  fs.writeFileSync(documentPath, template.trim(), 'utf-8')
+  fs.writeFileSync(documentPath, template.trim(), 'utf8')
   creating.stop()
 
   outro(`Blog post is created at ${documentPath}`)

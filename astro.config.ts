@@ -6,11 +6,11 @@ import sitemap from '@astrojs/sitemap'
 import { transformerMetaHighlight, transformerMetaWordHighlight } from '@shikijs/transformers'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig, fontProviders } from 'astro/config'
-import rehypeAutolinkHeadings, {
-  type Options as RehypeAutolinkHeadingsOptions,
-} from 'rehype-autolink-headings'
+import rehypeAutolinkHeadings from 'rehype-autolink-headings'
+import type { Options as RehypeAutolinkHeadingsOptions } from 'rehype-autolink-headings'
 import rehypeSlug from 'rehype-slug'
 import remarkGfm from 'remark-gfm'
+
 import { websiteUrl } from './src/lib/content.ts'
 import {
   transformerEmptyLine,
@@ -25,7 +25,7 @@ function isMarkdownOrLlmsAsset(page: string): boolean {
 
 const sitemapLastmods = loadSitemapLastmods()
 
-const pageCache = { maxAge: 3600, swr: 86400, tags: ['page'] }
+const pageCache = { maxAge: 3600, swr: 86_400, tags: ['page'] }
 
 // https://astro.build/config
 export default defineConfig({
@@ -121,7 +121,7 @@ export default defineConfig({
       // lastmod comes from each post's frontmatter date, not the build clock.
       filter: (page) => !isMarkdownOrLlmsAsset(page),
       serialize(item) {
-        const lastmod = sitemapLastmods.get(item.url.replace(/\/+$/, ''))
+        const lastmod = sitemapLastmods.get(item.url.replace(/\/+$/u, ''))
         return lastmod ? { ...item, lastmod } : item
       },
     }),

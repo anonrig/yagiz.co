@@ -35,23 +35,23 @@ const { post } = Astro.props
 </header>
 
 <script>
-  const header = document.getElementById('sticky-header') as HTMLElement
-  const progressIndicator = document.getElementById('progress-indicator') as HTMLElement
+  const header = document.querySelector('#sticky-header') as HTMLElement
+  const progressIndicator = document.querySelector('#progress-indicator') as HTMLElement
 
   const articleHeader = document.querySelector('article > header:not(#sticky-header)')
   if (articleHeader) {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (!entry.isIntersecting) {
-          header.removeAttribute('aria-hidden')
-          header.style.transition = 'transform 0.25s ease-out, opacity 0.25s ease-out'
-          header.style.transform = 'translateY(0)'
-          header.style.opacity = '1'
-        } else {
+        if (entry.isIntersecting) {
           header.setAttribute('aria-hidden', 'true')
           header.style.transition = 'transform 0.15s ease-in, opacity 0.15s ease-in'
           header.style.transform = 'translateY(-50px)'
           header.style.opacity = '0'
+        } else {
+          header.removeAttribute('aria-hidden')
+          header.style.transition = 'transform 0.25s ease-out, opacity 0.25s ease-out'
+          header.style.transform = 'translateY(0)'
+          header.style.opacity = '1'
         }
       },
       { threshold: 0 }

@@ -1,10 +1,12 @@
-import type { CollectionEntry } from 'astro:content'
-import { getCollection } from 'astro:content'
 import fs from 'node:fs/promises'
 import path from 'node:path'
+
 import type { APIRoute, GetStaticPaths } from 'astro'
+import { getCollection } from 'astro:content'
+import type { CollectionEntry } from 'astro:content'
 import satori from 'satori'
 import sharp from 'sharp'
+
 import { BlogOG } from '@/components/BlogOG'
 import { openGraphImage } from '@/lib/content'
 

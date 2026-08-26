@@ -1,7 +1,7 @@
 ---
 import type { Item } from './Footer.astro'
 
-const headerItems: Array<Item & { hideOnNarrow?: boolean }> = [
+const headerItems: (Item & { hideOnNarrow?: boolean })[] = [
   { title: 'Home', href: '/' },
   { title: 'About', href: '/about' },
   { title: 'Press', href: '/press' },

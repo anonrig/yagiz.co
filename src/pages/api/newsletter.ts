@@ -1,11 +1,14 @@
-import { env } from 'cloudflare:workers'
 import type { APIRoute } from 'astro'
+import { env } from 'cloudflare:workers'
 
-const response = ({ status, message }: { status: number; message: string }) =>
-  new Response(JSON.stringify({ status, message }), {
-    status,
-    headers: { 'Content-Type': 'application/json' },
-  })
+const response = ({ status, message }: { status: number; message: string }): Response =>
+  Response.json(
+    { status, message },
+    {
+      status,
+      headers: { 'Content-Type': 'application/json' },
+    },
+  )
 
 export const POST: APIRoute = async ({ request }) => {
   const body: { email?: string; name?: string } = await request.json()
@@ -22,8 +25,8 @@ export const POST: APIRoute = async ({ request }) => {
       .prepare('INSERT INTO subscribers (email, name) VALUES (?, ?) ON CONFLICT (email) DO NOTHING')
       .bind(body.email, body.name)
       .run()
-  } catch (err) {
-    console.error('Failed to insert subscriber into D1:', err)
+  } catch (error) {
+    console.error('Failed to insert subscriber into D1:', error)
     return response({ status: 500, message: 'Failed to register. Please try again.' })
   }
 

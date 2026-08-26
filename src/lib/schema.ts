@@ -1,4 +1,5 @@
 import type { CollectionEntry } from 'astro:content'
+
 import {
   authorFullName,
   authorJobTitle,
@@ -42,7 +43,7 @@ export function pageCanonical(pathname: string, override?: string): string {
   if (override) {
     return override
   }
-  const path = pathname.replace(/\/+$/, '') || '/'
+  const path = pathname.replace(/\/+$/u, '') || '/'
   return absoluteUrl(path)
 }
 
@@ -64,7 +65,7 @@ export function imageObject(
 }
 
 export function isoDate(date: Date): string {
-  return date.toISOString().split('T')[0]
+  return date.toISOString().slice(0, 10)
 }
 
 export function postModifiedDate(post: CollectionEntry<'blog'>): Date {
@@ -379,7 +380,7 @@ export function webPageJsonLd(options: {
   type?: WebPageType | WebPageType[]
   breadcrumbs?: BreadcrumbItem[]
   image?: string
-  hasPart?: Array<{ name: string; fragment: string }>
+  hasPart?: { name: string; fragment: string }[]
   mainEntity?: JsonLd
   potentialAction?: JsonLd
 }): JsonLd {

@@ -1,8 +1,10 @@
 export const prerender = true
 
-import { getCollection } from 'astro:content'
-import rss, { type RSSFeedItem } from '@astrojs/rss'
+import rss from '@astrojs/rss'
+import type { RSSFeedItem } from '@astrojs/rss'
 import type { APIRoute } from 'astro'
+import { getCollection } from 'astro:content'
+
 import { authorFullName, websiteDescription, websiteTitle, websiteUrl } from '@/lib/content'
 
 export async function GET(): Promise<ReturnType<APIRoute>> {
@@ -24,15 +26,13 @@ export async function GET(): Promise<ReturnType<APIRoute>> {
 <language>en-us</language>
 <copyright>${authorFullName} - yagiz.co</copyright>
 `,
-    items: posts.map((post): RSSFeedItem => {
-      return {
-        title: post.data.title,
-        description: post.data.description,
-        link: `/${post.id}`,
-        pubDate: post.data.date,
-        author: authorFullName,
-        categories: [post.data.tag.id],
-      }
-    }),
+    items: posts.map((post): RSSFeedItem => ({
+      title: post.data.title,
+      description: post.data.description,
+      link: `/${post.id}`,
+      pubDate: post.data.date,
+      author: authorFullName,
+      categories: [post.data.tag.id],
+    })),
   })
 }

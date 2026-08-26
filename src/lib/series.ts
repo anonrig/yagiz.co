@@ -16,7 +16,7 @@ export function isSeriesId(value: string): value is SeriesId {
   return value in SERIES
 }
 
-export function seriesDefinition(id: SeriesId) {
+export function seriesDefinition(id: SeriesId): (typeof SERIES)[SeriesId] {
   return SERIES[id]
 }
 
@@ -26,7 +26,7 @@ export function postsInSeries(
 ): CollectionEntry<'blog'>[] {
   return posts
     .filter((post) => post.data.series === id)
-    .sort((a, b) => a.data.date.getTime() - b.data.date.getTime())
+    .toSorted((a, b) => a.data.date.getTime() - b.data.date.getTime())
 }
 
 export function seriesNeighbors(

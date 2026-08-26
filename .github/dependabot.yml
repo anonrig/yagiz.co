@@ -4,12 +4,12 @@ updates:
     directory: /
     schedule:
       interval: monthly
-    commit-message: 
+    commit-message:
       prefix: github-actions
 
   - package-ecosystem: npm
     directory: /
     schedule:
       interval: monthly
-    commit-message: 
+    commit-message:
       prefix: pnpm

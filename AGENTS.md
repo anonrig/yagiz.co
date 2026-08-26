@@ -81,12 +81,12 @@ must include the LLM surfaces: `/llms.txt`, `/llms-full.txt`, `Accept: text/mark
 
 These APIs were **removed** in `@astrojs/cloudflare` v13+ / Astro 6+. Do not use them:
 
-| Old (v4/v5) | New (v13+ / Astro 6+) |
-|---|---|
-| `Astro.locals.runtime.env` | `import { env } from "cloudflare:workers"` |
-| `Astro.locals.runtime.cf` | `Astro.request.cf` |
-| `Astro.locals.runtime.caches` | global `caches` |
-| `Astro.locals.runtime.ctx` | `Astro.locals.cfContext` |
+| Old (v4/v5)                   | New (v13+ / Astro 6+)                      |
+| ----------------------------- | ------------------------------------------ |
+| `Astro.locals.runtime.env`    | `import { env } from "cloudflare:workers"` |
+| `Astro.locals.runtime.cf`     | `Astro.request.cf`                         |
+| `Astro.locals.runtime.caches` | global `caches`                            |
+| `Astro.locals.runtime.ctx`    | `Astro.locals.cfContext`                   |
 
 Cloudflare bindings (D1, KV, etc.) are accessed like this in API routes:
 
@@ -114,6 +114,7 @@ export const POST: APIRoute = async ({ request }) => {
 - **Schema**: `migrations/0001_create_subscribers.sql`
 
 Apply migrations:
+
 ```sh
 wrangler d1 migrations apply newsletter --remote   # production
 wrangler d1 migrations apply newsletter --local    # local dev
@@ -136,12 +137,12 @@ Do **not** use `fontProviders.fontsource()` — it requires outbound HTTPS to
 
 ## Removed dependencies (do not re-add)
 
-| Package | Replaced by |
-|---|---|
-| `@fontsource-variable/mulish` | Astro fonts API + local WOFF2 |
-| `astro-seo` | Inline meta tags in `Layout.astro` |
-| `date-fns` | Native `Date.getTime()` / `toISOString().split('T')[0]` |
-| `reading-time` | Inline word-count: `Math.max(1, Math.round(words / 200)) + " min read"` |
-| `open` | Was unused |
-| `rehype-pretty-code` | Astro built-in Shiki + `@shikijs/transformers` |
-| `@biomejs/biome` | Oxlint + Oxfmt |
+| Package                       | Replaced by                                                             |
+| ----------------------------- | ----------------------------------------------------------------------- |
+| `@fontsource-variable/mulish` | Astro fonts API + local WOFF2                                           |
+| `astro-seo`                   | Inline meta tags in `Layout.astro`                                      |
+| `date-fns`                    | Native `Date.getTime()` / `toISOString().split('T')[0]`                 |
+| `reading-time`                | Inline word-count: `Math.max(1, Math.round(words / 200)) + " min read"` |
+| `open`                        | Was unused                                                              |
+| `rehype-pretty-code`          | Astro built-in Shiki + `@shikijs/transformers`                          |
+| `@biomejs/biome`              | Oxlint + Oxfmt                                                          |
