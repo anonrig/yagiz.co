@@ -1,6 +1,7 @@
 import type { CollectionEntry } from 'astro:content'
 
 import { authorFullName, websiteDescription, websiteTitle, websiteUrl } from '@/lib/content'
+import { discussionPermalink } from '@/lib/discussion'
 
 const ATTRIBUTION = [
   '',
@@ -50,6 +51,9 @@ export function postToMarkdown(post: CollectionEntry<'blog'>): string {
   const publishedLine = updated
     ? `*Published: ${date} · Updated: ${updated} · Tag: ${post.data.tag.id}*`
     : `*Published: ${date} · Tag: ${post.data.tag.id}*`
+  const discussion = post.data.discussion
+    ? discussionPermalink(post.data.discussion)
+    : undefined
 
   return [
     yamlFrontmatter({
@@ -59,6 +63,7 @@ export function postToMarkdown(post: CollectionEntry<'blog'>): string {
       updated,
       tag: post.data.tag.id,
       series: post.data.series,
+      discussion,
       author: authorFullName,
       canonical,
       markdown: markdownUrl,
@@ -70,6 +75,7 @@ export function postToMarkdown(post: CollectionEntry<'blog'>): string {
     '',
     publishedLine,
     '',
+    ...(discussion === undefined ? [] : [`Discussion: ${discussion}`, '']),
     '---',
     '',
     absolutizeMarkdownUrls(post.body ?? ''),
