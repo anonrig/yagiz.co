@@ -148,29 +148,32 @@ const originHref = discussionPermalink(discussion)
     const user = document.createElement('span')
     user.textContent = ` @${comment.author.username}`
 
-    header.append(name, user)
+    header.appendChild(name)
+    header.appendChild(user)
     if (comment.createdAt.length > 0) {
       const time = document.createElement('time')
       time.dateTime = comment.createdAt
       time.textContent = ` · ${formatCommentTime(comment.createdAt)}`
-      header.append(time)
+      header.appendChild(time)
     }
 
     const text = document.createElement('p')
     text.className = 'mt-1 whitespace-pre-wrap text-sm text-slate-700 dark:text-neutral-200'
     text.textContent = comment.text
 
-    body.append(header, text)
-    row.append(avatar(comment.author.name, comment.author.avatarUrl), body)
-    item.append(row)
+    body.appendChild(header)
+    body.appendChild(text)
+    row.appendChild(avatar(comment.author.name, comment.author.avatarUrl))
+    row.appendChild(body)
+    item.appendChild(row)
 
     if (comment.replies.length > 0) {
       const nested = document.createElement('ol')
       nested.className = 'mt-3 space-y-3 border-l-2 border-slate-200 pl-4 dark:border-neutral-700'
       for (const reply of comment.replies) {
-        nested.append(renderComment(reply))
+        nested.appendChild(renderComment(reply))
       }
-      item.append(nested)
+      item.appendChild(nested)
     }
 
     return item
@@ -200,7 +203,7 @@ const originHref = discussionPermalink(discussion)
     list.replaceChildren()
     if (thread.comments.length > 0) {
       for (const comment of thread.comments) {
-        list.append(renderComment(comment))
+        list.appendChild(renderComment(comment))
       }
       setHidden(list, false)
     }
@@ -233,8 +236,8 @@ const originHref = discussionPermalink(discussion)
     }
   }
 
-  const root = document.getElementById('post-comments')
+  const root = document.querySelector('#post-comments')
   if (root instanceof HTMLElement) {
-    void loadComments(root)
+    await loadComments(root)
   }
 </script>

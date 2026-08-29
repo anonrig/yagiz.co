@@ -77,10 +77,7 @@ test('discussion URLs stay on the public conversation', () => {
     discussionPermalink('2091898811153031276'),
     'https://x.com/yagiznizipli/status/2091898811153031276',
   )
-  assert.equal(
-    discussionPermalink('200', 'alice'),
-    'https://x.com/alice/status/200',
-  )
+  assert.equal(discussionPermalink('200', 'alice'), 'https://x.com/alice/status/200')
   assert.equal(
     discussionReplyUrl('2091898811153031276'),
     'https://x.com/intent/tweet?in_reply_to=2091898811153031276',

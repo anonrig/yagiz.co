@@ -97,9 +97,7 @@ function parseEntry(value: unknown): ParsedEntry | undefined {
   }
 }
 
-function isEligible(
-  entry: ParsedEntry,
-): entry is ParsedEntry & { author: DiscussionAuthor } {
+function isEligible(entry: ParsedEntry): entry is ParsedEntry & { author: DiscussionAuthor } {
   return (
     !entry.unavailable &&
     entry.text.trim().length > 0 &&
@@ -229,14 +227,15 @@ export function buildCommentThread(
   entries: readonly ParsedEntry[],
 ): DiscussionThread {
   const originParsed = entries.find((entry) => entry.id === originId)
-  const origin = originParsed !== undefined && isEligible(originParsed)
-    ? toEntry(originParsed)
-    : {
-        id: originId,
-        text: '',
-        createdAt: '',
-        author: { name: '', username: '' },
-      }
+  const origin =
+    originParsed !== undefined && isEligible(originParsed)
+      ? toEntry(originParsed)
+      : {
+          id: originId,
+          text: '',
+          createdAt: '',
+          author: { name: '', username: '' },
+        }
 
   const eligible = entries.filter(
     (entry): entry is ParsedEntry & { author: DiscussionAuthor } =>

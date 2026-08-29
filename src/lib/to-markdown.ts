@@ -51,9 +51,7 @@ export function postToMarkdown(post: CollectionEntry<'blog'>): string {
   const publishedLine = updated
     ? `*Published: ${date} · Updated: ${updated} · Tag: ${post.data.tag.id}*`
     : `*Published: ${date} · Tag: ${post.data.tag.id}*`
-  const discussion = post.data.discussion
-    ? discussionPermalink(post.data.discussion)
-    : undefined
+  const discussion = post.data.discussion ? discussionPermalink(post.data.discussion) : undefined
 
   return [
     yamlFrontmatter({
