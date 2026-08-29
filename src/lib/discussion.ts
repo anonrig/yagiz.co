@@ -275,6 +275,25 @@ export function buildCommentThread(
   }
 }
 
+export async function loadDiscussion(
+  id: string,
+  fetchImpl: typeof globalThis.fetch = globalThis.fetch,
+): Promise<DiscussionThread> {
+  if (!isDiscussionId(id)) {
+    throw new Error('Invalid discussion id.')
+  }
+
+  const response = await fetchImpl(conversationSourceUrl(id), {
+    headers: { accept: 'application/json' },
+  })
+  if (!response.ok) {
+    throw new Error(`Could not load conversation (${String(response.status)})`)
+  }
+
+  const payload: unknown = await response.json()
+  return buildCommentThread(id, parseConversation(payload))
+}
+
 export function isDiscussionThread(value: unknown): value is DiscussionThread {
   if (!isRecord(value) || !isRecord(value.origin) || !Array.isArray(value.comments)) {
     return false

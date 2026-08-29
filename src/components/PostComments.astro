@@ -1,8 +1,12 @@
 ---
+import CommentItem from '@/components/CommentItem.astro'
+import type { DiscussionThread } from '@/lib/discussion'
 import {
   commentsLabel,
   discussionPermalink,
   discussionReplyUrl,
+  formatCommentTime,
+  loadDiscussion,
 } from '@/lib/discussion'
 
 interface Props {
@@ -12,12 +16,27 @@ interface Props {
 const { discussion } = Astro.props
 const replyHref = discussionReplyUrl(discussion)
 const originHref = discussionPermalink(discussion)
+
+let thread: DiscussionThread | undefined
+try {
+  thread = await loadDiscussion(discussion)
+} catch {
+  thread = undefined
+}
+
+const origin = thread?.origin
+const hasOrigin = origin !== undefined && origin.text.length > 0
+const originMeta =
+  hasOrigin && origin.author.name.length > 0
+    ? `${origin.author.name} @${origin.author.username}${
+        origin.createdAt.length > 0 ? ` · ${formatCommentTime(origin.createdAt)}` : ''
+      }`
+    : ''
 ---
 
 <section
   id="post-comments"
   class="mt-16 grid grid-cols-canvas"
-  data-discussion={discussion}
   aria-labelledby="post-comments-heading"
 >
   <div
@@ -29,45 +48,52 @@ const originHref = discussionPermalink(discussion)
     >
       Comments
     </h2>
-    <p
-      data-comments-status
-      class="mt-2 text-sm text-slate-500 dark:text-neutral-400"
-    >
-      Loading comments…
-    </p>
-    <blockquote
-      data-comments-origin
-      class="mt-4 hidden border-l-[5px] border-orange-400 bg-gray-100 px-4 py-3 dark:bg-[#1c1c1c]"
-    >
-      <p
-        data-comments-origin-meta
-        class="mb-1 text-xs font-extrabold uppercase tracking-wide text-slate-500"
-      >
-      </p>
-      <p
-        data-comments-origin-text
-        class="text-sm font-bold tracking-tight text-slate-600 dark:text-neutral-300"
-      >
-      </p>
-      <p class="mt-2 text-sm">
-        <a
-          href={originHref}
-          class="font-bold text-orange-400 hover:text-orange-300"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          View the discussion
-          <span class="sr-only"> (opens in a new tab)</span>
-        </a>
-      </p>
-    </blockquote>
-    <p
-      data-comments-count
-      class="mt-4 hidden text-sm font-semibold text-slate-600 dark:text-neutral-300"
-    >
-      {commentsLabel(0)}
-    </p>
-    <ol data-comments-list class="mt-4 hidden space-y-4"></ol>
+    {
+      thread === undefined && (
+        <p class="mt-2 text-sm text-slate-500 dark:text-neutral-400">
+          Comments are unavailable right now.
+        </p>
+      )
+    }
+    {
+      hasOrigin && (
+        <blockquote class="mt-4 border-l-[5px] border-orange-400 bg-gray-100 px-4 py-3 dark:bg-[#1c1c1c]">
+          <p class="mb-1 text-xs font-extrabold uppercase tracking-wide text-slate-500">
+            {originMeta}
+          </p>
+          <p class="text-sm font-bold tracking-tight text-slate-600 dark:text-neutral-300">
+            {origin.text}
+          </p>
+          <p class="mt-2 text-sm">
+            <a
+              href={originHref}
+              class="font-bold text-orange-400 hover:text-orange-300"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View the discussion
+              <span class="sr-only"> (opens in a new tab)</span>
+            </a>
+          </p>
+        </blockquote>
+      )
+    }
+    {
+      thread !== undefined && (
+        <p class="mt-4 text-sm font-semibold text-slate-600 dark:text-neutral-300">
+          {commentsLabel(thread.commentCount)}
+        </p>
+      )
+    }
+    {
+      thread !== undefined && thread.comments.length > 0 && (
+        <ol class="mt-4 space-y-4">
+          {thread.comments.map((comment) => (
+            <CommentItem {comment} />
+          ))}
+        </ol>
+      )
+    }
     <a
       href={replyHref}
       class="mt-4 inline-flex rounded text-sm font-extrabold text-orange-400 hover:text-orange-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2"
@@ -79,165 +105,3 @@ const originHref = discussionPermalink(discussion)
     </a>
   </div>
 </section>
-
-<script>
-  import type { DiscussionComment, DiscussionThread } from '@/lib/discussion'
-  import {
-    commentsLabel,
-    formatCommentTime,
-    isDiscussionId,
-    isDiscussionThread,
-  } from '@/lib/discussion'
-
-  function requireChild<T extends Element>(
-    root: HTMLElement,
-    selector: string,
-    ctor: new () => T,
-  ): T {
-    const el = root.querySelector(selector)
-    if (!(el instanceof ctor)) {
-      throw new Error(`Missing ${selector}`)
-    }
-    return el
-  }
-
-  function setHidden(el: HTMLElement, hidden: boolean): void {
-    el.classList.toggle('hidden', hidden)
-  }
-
-  function authorLine(name: string, username: string, createdAt: string): string {
-    const when = createdAt.length > 0 ? ` · ${formatCommentTime(createdAt)}` : ''
-    return `${name} @${username}${when}`
-  }
-
-  function avatar(name: string, url: string | undefined): HTMLElement {
-    if (url !== undefined && url.length > 0) {
-      const image = document.createElement('img')
-      image.src = url
-      image.alt = ''
-      image.width = 40
-      image.height = 40
-      image.className = 'h-10 w-10 shrink-0 rounded-full object-cover bg-slate-200 dark:bg-neutral-700'
-      return image
-    }
-
-    const fallback = document.createElement('span')
-    fallback.setAttribute('aria-hidden', 'true')
-    fallback.className =
-      'flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-200 text-sm font-extrabold text-slate-500 dark:bg-neutral-700 dark:text-neutral-300'
-    fallback.textContent = name.trim().slice(0, 1).toUpperCase() || '?'
-    return fallback
-  }
-
-  function renderComment(comment: DiscussionComment): HTMLLIElement {
-    const item = document.createElement('li')
-
-    const row = document.createElement('article')
-    row.className = 'flex gap-3'
-
-    const body = document.createElement('div')
-    body.className = 'min-w-0 flex-1'
-
-    const header = document.createElement('p')
-    header.className = 'text-sm text-slate-500 dark:text-neutral-400'
-
-    const name = document.createElement('span')
-    name.className = 'font-extrabold text-slate-800 dark:text-white'
-    name.textContent = comment.author.name
-
-    const user = document.createElement('span')
-    user.textContent = ` @${comment.author.username}`
-
-    header.appendChild(name)
-    header.appendChild(user)
-    if (comment.createdAt.length > 0) {
-      const time = document.createElement('time')
-      time.dateTime = comment.createdAt
-      time.textContent = ` · ${formatCommentTime(comment.createdAt)}`
-      header.appendChild(time)
-    }
-
-    const text = document.createElement('p')
-    text.className = 'mt-1 whitespace-pre-wrap text-sm text-slate-700 dark:text-neutral-200'
-    text.textContent = comment.text
-
-    body.appendChild(header)
-    body.appendChild(text)
-    row.appendChild(avatar(comment.author.name, comment.author.avatarUrl))
-    row.appendChild(body)
-    item.appendChild(row)
-
-    if (comment.replies.length > 0) {
-      const nested = document.createElement('ol')
-      nested.className = 'mt-3 space-y-3 border-l-2 border-slate-200 pl-4 dark:border-neutral-700'
-      for (const reply of comment.replies) {
-        nested.appendChild(renderComment(reply))
-      }
-      item.appendChild(nested)
-    }
-
-    return item
-  }
-
-  function renderThread(root: HTMLElement, thread: DiscussionThread): void {
-    const status = requireChild(root, '[data-comments-status]', HTMLParagraphElement)
-    const origin = requireChild(root, '[data-comments-origin]', HTMLQuoteElement)
-    const originMeta = requireChild(root, '[data-comments-origin-meta]', HTMLParagraphElement)
-    const originText = requireChild(root, '[data-comments-origin-text]', HTMLParagraphElement)
-    const count = requireChild(root, '[data-comments-count]', HTMLParagraphElement)
-    const list = requireChild(root, '[data-comments-list]', HTMLOListElement)
-
-    if (thread.origin.text.length > 0) {
-      originMeta.textContent = authorLine(
-        thread.origin.author.name,
-        thread.origin.author.username,
-        thread.origin.createdAt,
-      )
-      originText.textContent = thread.origin.text
-      setHidden(origin, false)
-    }
-
-    count.textContent = commentsLabel(thread.commentCount)
-    setHidden(count, false)
-
-    list.replaceChildren()
-    if (thread.comments.length > 0) {
-      for (const comment of thread.comments) {
-        list.appendChild(renderComment(comment))
-      }
-      setHidden(list, false)
-    }
-
-    setHidden(status, true)
-  }
-
-  async function loadComments(root: HTMLElement): Promise<void> {
-    const id = root.dataset.discussion ?? ''
-    const status = requireChild(root, '[data-comments-status]', HTMLParagraphElement)
-
-    if (!isDiscussionId(id)) {
-      status.textContent = 'Could not load comments.'
-      status.setAttribute('role', 'alert')
-      return
-    }
-
-    try {
-      const response = await fetch(`/api/discussion?id=${encodeURIComponent(id)}`, {
-        headers: { accept: 'application/json' },
-      })
-      const payload: unknown = await response.json()
-      if (!response.ok || !isDiscussionThread(payload)) {
-        throw new Error('Could not load comments.')
-      }
-      renderThread(root, payload)
-    } catch {
-      status.textContent = 'Could not load comments.'
-      status.setAttribute('role', 'alert')
-    }
-  }
-
-  const root = document.querySelector('#post-comments')
-  if (root instanceof HTMLElement) {
-    await loadComments(root)
-  }
-</script>
