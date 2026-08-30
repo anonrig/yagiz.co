@@ -84,11 +84,11 @@ test('discussion URLs stay on the public conversation', () => {
   )
 })
 
-test('conversationSourceUrl includes a token for the public feed', () => {
-  const url = conversationSourceUrl('2091898811153031276')
-  assert.match(url, /^https:\/\/cdn\.syndication\.twimg\.com\/tweet-result\?/u)
-  assert.match(url, /id=2091898811153031276/u)
-  assert.match(url, /token=52jw6jj6clj/u)
+test('conversationSourceUrl points at the public conversation', () => {
+  assert.equal(
+    conversationSourceUrl('2091898811153031276'),
+    'https://api.fxtwitter.com/2/conversation/2091898811153031276',
+  )
 })
 
 test('commentsLabel and formatCommentTime are reader-facing', () => {
@@ -117,6 +117,43 @@ test('parseConversation and buildCommentThread nest eligible replies', () => {
     thread.comments.some((comment) => comment.text === 'gone'),
     false,
   )
+})
+
+test('parseConversation reads thread and replies from a conversation payload', () => {
+  const entries = parseConversation({
+    status: {
+      id: ORIGIN_ID,
+      text: 'Published a new post',
+      created_at: 'Mon Jan 15 12:00:00 +0000 2024',
+      author: { name: 'Jane Doe', screen_name: 'jane' },
+    },
+    thread: [
+      {
+        id: ORIGIN_ID,
+        text: 'Published a new post',
+        created_at: 'Mon Jan 15 12:00:00 +0000 2024',
+        author: { name: 'Jane Doe', screen_name: 'jane' },
+      },
+    ],
+    replies: [
+      {
+        id: '200',
+        text: '@jane Helpful write-up',
+        created_at: 'Tue Jan 16 12:00:00 +0000 2024',
+        author: {
+          name: 'Alice',
+          screen_name: 'alice',
+          avatar_url: 'https://example.com/alice.jpg',
+        },
+        replying_to: { status: ORIGIN_ID },
+      },
+    ],
+  })
+  const thread = buildCommentThread(ORIGIN_ID, entries)
+  assert.equal(thread.commentCount, 1)
+  assert.equal(thread.comments[0]?.text, 'Helpful write-up')
+  assert.equal(thread.comments[0]?.author.username, 'alice')
+  assert.equal(thread.comments[0]?.author.avatarUrl, 'https://example.com/alice.jpg')
 })
 
 test('parseConversation accepts a public feed list', () => {

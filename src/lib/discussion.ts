@@ -66,6 +66,7 @@ function parseAuthor(value: unknown): DiscussionAuthor | undefined {
 
   const avatarUrl =
     asString(value.avatarUrl) ||
+    asString(value.avatar_url) ||
     asString(value.profile_image_url_https) ||
     asString(value.profile_image_url)
 
@@ -84,7 +85,11 @@ function parseEntry(value: unknown): ParsedEntry | undefined {
 
   const text = asString(value.text) || asString(value.full_text)
   const createdAt = asString(value.createdAt) || asString(value.created_at)
-  const inReplyToId = asString(value.inReplyToId) || asString(value.in_reply_to_status_id_str)
+  const inReplyToId =
+    asString(value.inReplyToId) ||
+    asString(value.in_reply_to_status_id_str) ||
+    asString(value.replying_to_status) ||
+    (isRecord(value.replying_to) ? asString(value.replying_to.status) : '')
   const unavailable = value.unavailable === true || value.tombstone !== undefined
 
   return {
@@ -95,6 +100,29 @@ function parseEntry(value: unknown): ParsedEntry | undefined {
     unavailable,
     ...(inReplyToId.length > 0 ? { inReplyToId } : {}),
   }
+}
+
+function appendUnknownList(target: unknown[], value: unknown): void {
+  if (!Array.isArray(value)) {
+    return
+  }
+  for (const item of value) {
+    target.push(item)
+  }
+}
+
+function uniqueEntries(values: readonly unknown[]): ParsedEntry[] {
+  const seen = new Set<string>()
+  const entries: ParsedEntry[] = []
+  for (const value of values) {
+    const entry = parseEntry(value)
+    if (entry === undefined || seen.has(entry.id)) {
+      continue
+    }
+    seen.add(entry.id)
+    entries.push(entry)
+  }
+  return entries
 }
 
 function isEligible(entry: ParsedEntry): entry is ParsedEntry & { author: DiscussionAuthor } {
@@ -162,8 +190,16 @@ export function discussionReplyUrl(id: string): string {
 }
 
 export function conversationSourceUrl(id: string): string {
+  return `https://api.fxtwitter.com/2/conversation/${encodeURIComponent(id)}`
+}
+
+function originFallbackUrl(id: string): string {
   const token = ((Number(id) / 1e15) * Math.PI).toString(36).replaceAll(/0+|\./gu, '')
   return `https://cdn.syndication.twimg.com/tweet-result?id=${encodeURIComponent(id)}&lang=en&token=${token}`
+}
+
+function stripLeadingMention(text: string): string {
+  return text.replace(/^@\w+\s+/u, '')
 }
 
 export function commentsLabel(count: number): string {
@@ -194,10 +230,7 @@ export function parseConversation(payload: unknown): ParsedEntry[] {
   }
 
   if (Array.isArray(payload)) {
-    return payload.flatMap((item) => {
-      const entry = parseEntry(item)
-      return entry === undefined ? [] : [entry]
-    })
+    return uniqueEntries(payload)
   }
 
   const list = isRecord(payload)
@@ -208,10 +241,20 @@ export function parseConversation(payload: unknown): ParsedEntry[] {
         : undefined
     : undefined
   if (list !== undefined) {
-    return list.flatMap((item) => {
-      const entry = parseEntry(item)
-      return entry === undefined ? [] : [entry]
-    })
+    return uniqueEntries(list)
+  }
+
+  if (
+    isRecord(payload) &&
+    (Array.isArray(payload.thread) || Array.isArray(payload.replies) || isRecord(payload.status))
+  ) {
+    const items: unknown[] = []
+    if (isRecord(payload.status)) {
+      items.push(payload.status)
+    }
+    appendUnknownList(items, payload.thread)
+    appendUnknownList(items, payload.replies)
+    return uniqueEntries(items)
   }
 
   const single = parseEntry(payload)
@@ -237,13 +280,23 @@ export function buildCommentThread(
           author: { name: '', username: '' },
         }
 
-  const eligible = entries.filter(
-    (entry): entry is ParsedEntry & { author: DiscussionAuthor } =>
-      entry.id !== originId && isEligible(entry),
-  )
+  const replyEntries: (ParsedEntry & { author: DiscussionAuthor })[] = []
+  for (const entry of entries) {
+    if (entry.id === originId || !isEligible(entry)) {
+      continue
+    }
+    replyEntries.push({
+      id: entry.id,
+      text: stripLeadingMention(entry.text),
+      createdAt: entry.createdAt,
+      author: entry.author,
+      inReplyToId: entry.inReplyToId,
+      unavailable: entry.unavailable,
+    })
+  }
 
   const nodes = new Map<string, MutableComment>(
-    eligible.map((entry) => [
+    replyEntries.map((entry) => [
       entry.id,
       {
         ...toEntry(entry),
@@ -253,7 +306,7 @@ export function buildCommentThread(
   )
 
   const roots: MutableComment[] = []
-  for (const entry of eligible) {
+  for (const entry of replyEntries) {
     const node = nodes.get(entry.id)
     if (node === undefined) {
       continue
@@ -283,13 +336,32 @@ export async function loadDiscussion(
     throw new Error('Invalid discussion id.')
   }
 
-  const response = await fetchImpl(conversationSourceUrl(id), {
-    headers: { accept: 'application/json' },
-  })
+  const headers = {
+    accept: 'application/json',
+    'user-agent': 'Mozilla/5.0',
+  }
+
+  try {
+    return await readDiscussion(id, conversationSourceUrl(id), fetchImpl, headers)
+  } catch (error) {
+    try {
+      return await readDiscussion(id, originFallbackUrl(id), fetchImpl, headers)
+    } catch {
+      throw error instanceof Error ? error : new Error('Could not load conversation')
+    }
+  }
+}
+
+async function readDiscussion(
+  id: string,
+  url: string,
+  fetchImpl: typeof globalThis.fetch,
+  headers: HeadersInit,
+): Promise<DiscussionThread> {
+  const response = await fetchImpl(url, { headers })
   if (!response.ok) {
     throw new Error(`Could not load conversation (${String(response.status)})`)
   }
-
   const payload: unknown = await response.json()
   return buildCommentThread(id, parseConversation(payload))
 }
