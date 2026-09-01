@@ -378,15 +378,13 @@ export function webPageJsonLd(options: {
   title: string
   description: string
   type?: WebPageType | WebPageType[]
-  breadcrumbs?: BreadcrumbItem[]
-  image?: string
   hasPart?: { name: string; fragment: string }[]
   mainEntity?: JsonLd
   potentialAction?: JsonLd
 }): JsonLd {
   const url = absoluteUrl(options.path)
-  const crumbs = options.breadcrumbs ?? pageBreadcrumbs(options.title, options.path)
-  const image = imageObject(options.image ?? `${websiteUrl}/opengraph-image.png`, options.title)
+  const crumbs = pageBreadcrumbs(options.title, options.path)
+  const image = imageObject(`${websiteUrl}/opengraph-image.png`, options.title)
 
   return {
     '@context': 'https://schema.org',
