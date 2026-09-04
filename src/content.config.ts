@@ -21,6 +21,10 @@ const blog = defineCollection({
         canonical_url: z.string().optional(),
         updated: z.coerce.date().optional(),
         series: z.enum(['url-parsing']).optional(),
+        discussion: z
+          .string()
+          .regex(/^\d{1,20}$/u, 'discussion must be a numeric id')
+          .optional(),
       })
       .refine((data) => !data.updated || data.updated.getTime() >= data.date.getTime(), {
         message: 'updated must be on or after date',
