@@ -27,7 +27,7 @@
     "@shikijs/types": "^4.4.3",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.3",
-    "astro": "^7.2.4",
+    "astro": "^7.2.8",
     "handlebars": "^4.7.9",
     "mjml": "^5.4.0",
     "node-mailjet": "^6.0.11",
