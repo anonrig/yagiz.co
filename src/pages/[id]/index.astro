@@ -4,6 +4,7 @@ import type { CollectionEntry } from 'astro:content'
 import type { GetStaticPaths } from 'astro'
 
 import BlogFooter from '@/components/BlogFooter.astro'
+import PostComments from '@/components/PostComments.astro'
 import BlogRow from '@/components/BlogRow.astro'
 import BlogStickyHeader from '@/components/BlogStickyHeader.astro'
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
@@ -171,6 +172,7 @@ const neighbors = seriesNeighbors(post, posts)
     <Prose as="div" itemprop="articleBody">
       <Content {components} />
     </Prose>
+    {post.data.discussion && <PostComments discussion={post.data.discussion} />}
     <BlogFooter {index} {posts} />
   </article>
 
