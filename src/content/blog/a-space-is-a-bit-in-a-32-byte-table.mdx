@@ -1,0 +1,214 @@
+---
+title: 'A space is a bit in a 32-byte table'
+description: >-
+  Percent-encoding expands some bytes to %XX and copies the rest.
+  Ada classifies sixteen bytes with one pshufb of the WHATWG bitmap
+  it already has. A mostly clean 1024-byte query goes from 1.0 GB/s
+  to 9.6 GB/s. A string of spaces gets slower.
+date: '2026-09-27'
+tag: performance
+series: url-parsing
+status: published
+---
+
+Suppose you want to percent-encode a query string. In [Ada][ada]
+the rules come from the [WHATWG URL Standard][whatwg]. A space
+becomes `%20`. A quotation mark becomes `%22`. Letters stay put.
+
+A reasonable function might look as follows.
+
+```cpp title="The obvious percent-encoder"
+void percent_encode(std::string_view input, const uint8_t set[],
+                    std::string& out) {
+  for (unsigned char c : input) {
+    if (set[c >> 3] & (1u << (c & 7))) {
+      out.append(hex + c * 4, 3);
+    } else {
+      out += static_cast<char>(c);
+    }
+  }
+}
+```
+
+`set` is 32 bytes, one bit per possible byte. Byte `c` lives in
+`set[c >> 3]`, and the bit inside that byte is `c & 7`. The hex
+table holds 256 entries of `"%XX\0"`, so `hex + c * 4` is the
+three characters you append. Space is `0x20`: index 4, bit 0.
+The standard keeps a different table for a query, a path, a
+fragment, and a username. In the query table that byte is
+`0x0D`, which is space, `"`, and `#`. The bit is set, so the
+space is encoded.
+
+In the [last post][ipv4] an IPv4 host was 7 to 16 bytes and never
+filled a SIMD register. A query is long enough. The trouble is
+the output. [Base16][base16] turns every byte into two characters,
+so a vector load becomes two vector stores. Percent-encoding
+turns some bytes into three and copies the others.
+`hello world!!!!!` is 16 bytes and becomes `hello%20world!!!!!`,
+which is 18. There is no store of a fixed width.
+
+Scanning a URL can stop at the first byte that is special.
+Encoding cannot. It has to remember every byte that needs `%XX`
+and keep going.
+
+## Look up the table you already have
+
+`pshufb` indexes 16 lanes. The table is 32 bytes, so it occupies
+two registers: one for `0x00`–`0x7F`, one for `0x80`–`0xFF`. The
+index in a half is `(b >> 3) & 0x0F`. A second shuffle turns
+`b & 7` into `1 << (b & 7)`. AND the two results. A non-zero
+lane needs `%XX`.
+
+A scan can bake its lookup into the binary, because the
+characters it rejects never change. Percent-encoding is handed a
+different table for each part of the URL. Building a fresh
+lookup from that table on every call [was slower][pr], so this
+path loads the 32 bytes it was given.
+
+```cpp title="Sixteen bytes against the 32-byte set"
+int percent_mask(__m128i word, const tables& t) {
+  const __m128i idx = _mm_and_si128(_mm_srli_epi16(word, 3), t.mask_0f);
+  const __m128i lo = _mm_shuffle_epi8(t.cs_lo, idx);
+  const __m128i hi = _mm_shuffle_epi8(t.cs_hi, idx);
+  const __m128i high_byte = _mm_cmpgt_epi8(t.zero, word);
+  const __m128i cs_byte =
+      _mm_or_si128(_mm_and_si128(hi, high_byte),
+                   _mm_andnot_si128(high_byte, lo));
+  const __m128i bits =
+      _mm_shuffle_epi8(t.pow2, _mm_and_si128(word, t.mask_07));
+  const __m128i hits = _mm_and_si128(cs_byte, bits);
+  return _mm_movemask_epi8(_mm_cmpeq_epi8(hits, t.zero)) ^ 0xFFFF;
+}
+```
+
+SSE has no byte shift, so the index is a 16-bit shift. The
+neighbor spills into bits 5–7 of the low byte, and the AND with
+`0x0F` drops that spill. Bytes `0x80`–`0xFF` are negative as
+signed `int8`, which is how the compare picks the high half.
+`128` in the bit table is the byte `-128`.
+
+`movemask` sets a bit where a lane is `0xFF`. The compare against
+zero is `0xFF` on the clean lanes, so XOR with `0xFFFF` leaves a
+bit set on every byte that must be encoded.
+
+For `hello world!!!!!` the mask is `32`, bit 5. Count the
+trailing zeros, append `"hello"`, append `"%20"`, append
+`"world!!!!!"`.
+
+The same walk handles a whole window. Two adjacent windows with
+empty masks are one 32-byte `append`. Anything shorter than 16
+bytes goes back to the byte loop, so a vector load never reads
+past the end of the string. The IPv4 fast path had to promise
+those bytes, or use a masked load. Before the first window the
+output reserves three bytes per input byte, which is the longest
+expansion, so the walk does not reallocate.
+
+The shuffle stops at the mask. Each set bit is still three
+scalar bytes from the hex table. Base16 uses `pshufb` to write
+the digits. This path uses it to decide which bytes become
+digits.
+
+```cpp title="One window of the mask"
+void encode_mask_window(const char* p, uint32_t mask, size_t width,
+                        std::string& out) {
+  size_t off = 0;
+  while (mask != 0) {
+    const int zero_run = std::countr_zero(mask);
+    if (zero_run != 0) {
+      out.append(p + off, static_cast<size_t>(zero_run));
+    }
+    off += static_cast<size_t>(zero_run);
+    out.append(hex + static_cast<uint8_t>(p[off]) * 4, 3);
+    ++off;
+    mask >>= static_cast<unsigned>(zero_run + 1);
+  }
+  if (off < width) {
+    out.append(p + off, width - off);
+  }
+}
+```
+
+I checked this against the byte loop for every byte value, on
+each table the standard defines, and with a space at each offset
+of a 64-byte string. The strings matched. The walk in [Ada's
+percent-encoder][kernel] is this idea.
+
+## What it costs
+
+Intel Xeon at 2.4 GHz, g++ 13.3, `-O3`. The output buffer is
+reserved to three times the input and reused, so this is the
+encode. Median of seven runs. The SSSE3 column is the function
+above, including strings shorter than the 48-byte minimum Ada
+uses in the library.
+
+The run-copy column is the byte loop's test, except a clean span
+is one `append`. That is the obvious scalar improvement. I
+wanted to know how much of the SIMD gap was just "copy more than
+one byte."
+
+| Input | Bytes | Byte loop | Run copy | SSSE3 |
+| --- | ---: | ---: | ---: | ---: |
+| One leading space, then `a` | 1024 | 997 ns | 534 ns | 107 ns |
+| A space every 16 bytes | 1024 | 1028 ns | 704 ns | 374 ns |
+| `user:name@host/path?q=1`, username rules | 256 | 281 ns | 282 ns | 221 ns |
+| Every byte a space | 1024 | 1462 ns | 1591 ns | 1601 ns |
+| Byte 0xE1, then a pipe | 2 | 4.5 ns | 5.7 ns | 5.2 ns |
+
+On the query, 1024 input bytes in 107 ns is 9.6 GB/s. The byte
+loop is 1.0 GB/s. Copying the clean spans gets you to 1.9 GB/s,
+and the shuffle is the rest: it finds the gap sixteen bytes at
+a time. That row is the friendly case, one hit and then a
+kilobyte of letters. At 48 bytes, three loads of 16, the same
+shape was 112 ns against 12 ns. A 47-byte string leaves 15 bytes
+on the byte loop and landed near 26 ns.
+
+A space every 16 bytes is one hit per window: 1028 ns against
+374 ns, about 2.8 times. Repeating `user:name@host/path?q=1`
+under the rules for a username and password, 256 bytes, is 281
+ns against 221 ns, about 1.3 times. Colon, at-sign, slash, and
+question mark all have to be escaped, and the gaps are too short
+for the run copy to matter.
+
+A string of spaces has no gap. The shuffle classified every
+lane, and then every lane is still a scalar `%XX`. 1024 bytes
+take 1462 ns in the byte loop and 1601 ns here, about 0.70 GB/s
+against 0.64 GB/s. The output is 3072 bytes either way. Two
+bytes lose for the other reason: loading the table costs more
+than testing two bytes.
+
+There is no 256-bit version. The fast path is SSSE3, sixteen
+bytes, on a Xeon that has AVX-512. In the base16 post, widening
+the register is where 6.4 GB/s became 11 GB/s.
+
+Ada takes this path only for the tail that starts at the first
+byte the table marks, and only when that tail is at least 48
+bytes. The longest example in the library's own benchmark of
+this function is 46 bytes, so those examples stay on the byte
+loop.
+
+The code that writes a query or a fragment is compiled apart
+from this vector path, and it stays on the byte loop. Putting
+the intrinsics in the same file slowed those writes even on
+strings that never needed them.
+
+On ARM the same lookup is one instruction that can index all 32
+bytes (`vqtbl2q_u8`). On RISC-V there is no 16-bit mask. The
+code finds the next byte that needs encoding, copies the clean
+prefix, and encodes that one byte. I did not time either. When
+every byte is a hit, the byte loop is still the right choice.
+
+Turning the escapes back into bytes is a different job, and it
+stays one byte at a time. A run of ordinary characters is copied
+in one block. `%XX` folds into a single byte. In an HTML form,
+`+` is also a space. Internationalized domain names are another
+conversion, UTF-8 to Unicode scalars and back. That one can go
+through [simdutf][simdutf], and only if you ask for it at build
+time. The default leaves it off. Neither one uses this table.
+
+[ada]: https://github.com/ada-url/ada
+[pr]: https://github.com/ada-url/ada/pull/1230
+[simdutf]: https://github.com/simdutf/simdutf
+[whatwg]: https://url.spec.whatwg.org/#percent-encoded-bytes
+[kernel]: https://github.com/ada-url/ada/blob/main/src/unicode_percent_encode.cpp
+[ipv4]: https://www.yagiz.co/simd-is-the-wrong-way-to-parse-ipv4
+[base16]: https://lemire.me/blog/2022/12/23/fast-base16-encoding/
