@@ -1,0 +1,107 @@
+---
+import CommentItem from '@/components/CommentItem.astro'
+import type { DiscussionThread } from '@/lib/discussion'
+import {
+  commentsLabel,
+  discussionPermalink,
+  discussionReplyUrl,
+  formatCommentTime,
+  loadDiscussion,
+} from '@/lib/discussion'
+
+interface Props {
+  discussion: string
+}
+
+const { discussion } = Astro.props
+const replyHref = discussionReplyUrl(discussion)
+const originHref = discussionPermalink(discussion)
+
+let thread: DiscussionThread | undefined
+try {
+  thread = await loadDiscussion(discussion)
+} catch {
+  thread = undefined
+}
+
+const origin = thread?.origin
+const hasOrigin = origin !== undefined && origin.text.length > 0
+const originMeta =
+  hasOrigin && origin.author.name.length > 0
+    ? `${origin.author.name} @${origin.author.username}${
+        origin.createdAt.length > 0 ? ` · ${formatCommentTime(origin.createdAt)}` : ''
+      }`
+    : ''
+---
+
+<section
+  id="post-comments"
+  class="mt-16 grid grid-cols-canvas"
+  aria-labelledby="post-comments-heading"
+>
+  <div
+    class="col-main rounded-md border border-slate-200 px-4 py-4 text-left dark:border-neutral-700"
+  >
+    <h2
+      id="post-comments-heading"
+      class="text-xl font-extrabold text-slate-800 dark:text-white"
+    >
+      Comments
+    </h2>
+    {
+      thread === undefined && (
+        <p class="mt-2 text-sm text-slate-500 dark:text-neutral-400">
+          Comments are unavailable right now.
+        </p>
+      )
+    }
+    {
+      hasOrigin && (
+        <blockquote class="mt-4 border-l-[5px] border-orange-400 bg-gray-100 px-4 py-3 dark:bg-[#1c1c1c]">
+          <p class="mb-1 text-xs font-extrabold uppercase tracking-wide text-slate-500">
+            {originMeta}
+          </p>
+          <p class="text-sm font-bold tracking-tight text-slate-600 dark:text-neutral-300">
+            {origin.text}
+          </p>
+          <p class="mt-2 text-sm">
+            <a
+              href={originHref}
+              class="font-bold text-orange-400 hover:text-orange-300"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View the discussion
+              <span class="sr-only"> (opens in a new tab)</span>
+            </a>
+          </p>
+        </blockquote>
+      )
+    }
+    {
+      thread !== undefined && (
+        <p class="mt-4 text-sm font-semibold text-slate-600 dark:text-neutral-300">
+          {commentsLabel(thread.commentCount)}
+        </p>
+      )
+    }
+    {
+      thread !== undefined && thread.comments.length > 0 && (
+        <ol class="mt-4 space-y-4">
+          {thread.comments.map((comment) => (
+            <CommentItem {comment} />
+          ))}
+        </ol>
+      )
+    }
+    <a
+      href={replyHref}
+      class="mt-4 inline-flex rounded text-sm font-extrabold text-orange-400 hover:text-orange-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Join the discussion
+      <span class="sr-only"> (opens in a new tab)</span>
+    </a>
+  </div>
+</section>

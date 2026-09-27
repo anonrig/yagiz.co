@@ -1,0 +1,57 @@
+---
+import type { DiscussionComment } from '@/lib/discussion'
+import { formatCommentTime } from '@/lib/discussion'
+
+interface Props {
+  comment: DiscussionComment
+}
+
+const { comment } = Astro.props
+const initial = comment.author.name.trim().slice(0, 1).toUpperCase() || '?'
+---
+
+<li>
+  <article class="flex gap-3">
+    {
+      comment.author.avatarUrl ? (
+        <img
+          src={comment.author.avatarUrl}
+          alt=""
+          width={40}
+          height={40}
+          class="h-10 w-10 shrink-0 rounded-full bg-slate-200 object-cover dark:bg-neutral-700"
+        />
+      ) : (
+        <span
+          aria-hidden="true"
+          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-200 text-sm font-extrabold text-slate-500 dark:bg-neutral-700 dark:text-neutral-300"
+        >
+          {initial}
+        </span>
+      )
+    }
+    <div class="min-w-0 flex-1">
+      <p class="text-sm text-slate-500 dark:text-neutral-400">
+        <span class="font-extrabold text-slate-800 dark:text-white">{comment.author.name}</span>
+        <span> @{comment.author.username}</span>
+        {
+          comment.createdAt.length > 0 && (
+            <time datetime={comment.createdAt}> · {formatCommentTime(comment.createdAt)}</time>
+          )
+        }
+      </p>
+      <p class="mt-1 whitespace-pre-wrap text-sm text-slate-700 dark:text-neutral-200">
+        {comment.text}
+      </p>
+    </div>
+  </article>
+  {
+    comment.replies.length > 0 && (
+      <ol class="mt-3 space-y-3 border-l-2 border-slate-200 pl-4 dark:border-neutral-700">
+        {comment.replies.map((reply) => (
+          <Astro.self comment={reply} />
+        ))}
+      </ol>
+    )
+  }
+</li>
