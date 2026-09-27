@@ -57,6 +57,11 @@ occupies two registers: one for `0x00`–`0x7F`, one for
 shuffle turns `b & 7` into `1 << (b & 7)`. AND the two results.
 A non-zero lane needs `%XX`.
 
+The scanner can bake a nibble table into the binary, because its
+classes are fixed. The encode set is an argument. Building a
+nibble table from that argument on every call [regressed][pr],
+so the kernel loads the 32 bytes it was handed.
+
 ```cpp title="Sixteen bytes against the 32-byte set"
 int percent_mask(__m128i word, const tables& t) {
   const __m128i idx = _mm_and_si128(_mm_srli_epi16(word, 3), t.mask_0f);
@@ -88,10 +93,17 @@ trailing zeros, append `"hello"`, append `"%20"`, append
 `"world!!!!!"`.
 
 The same walk handles a whole window. Two adjacent windows with
-empty masks are one 32-byte `append`. Anything under 16 bytes
-falls back to the byte loop. Before the first window the output
+empty masks are one 32-byte `append`. A tail shorter than 16
+bytes goes back to the byte loop, so the kernel never reads past
+the end of the suffix. The IPv4 fast path had to promise those
+bytes, or use a masked load. Before the first window the output
 reserves three bytes per input byte, which is the longest
 expansion, so the walk does not reallocate.
+
+The shuffle stops at the mask. Each set bit is still three
+scalar bytes from the hex table. Base16 uses `pshufb` to write
+the digits. This kernel uses it to decide which bytes become
+digits.
 
 ```cpp title="One window of the mask"
 void encode_mask_window(const char* p, uint32_t mask, size_t width,
@@ -133,22 +145,36 @@ improvement. I wanted to know how much of the SIMD gap was just
 | Input | Bytes | Byte loop | Run copy | SSSE3 |
 | --- | ---: | ---: | ---: | ---: |
 | One leading space, then `a` | 1024 | 997 ns | 534 ns | 107 ns |
+| A space every 16 bytes | 1024 | 1028 ns | 704 ns | 374 ns |
+| `user:name@host/path?q=1`, userinfo set | 256 | 281 ns | 282 ns | 221 ns |
 | Every byte a space | 1024 | 1462 ns | 1591 ns | 1601 ns |
 | Byte 0xE1, then a pipe | 2 | 4.5 ns | 5.7 ns | 5.2 ns |
 
 On the query, 1024 input bytes in 107 ns is 9.6 GB/s. The byte
 loop is 1.0 GB/s. Copying the clean spans gets you to 1.9 GB/s,
 and the shuffle is the rest: it finds the gap sixteen bytes at
-a time. At 48 bytes, one 32-byte pair and one 16-byte window,
-the same input was 112 ns against 12 ns. A 47-byte suffix leaves
-15 bytes on the scalar tail and landed near 26 ns.
+a time. That row is the friendly case, one hit and then a
+kilobyte of letters. At 48 bytes, one 32-byte pair and one
+16-byte window, the same shape was 112 ns against 12 ns. A
+47-byte suffix leaves 15 bytes on the scalar tail and landed
+near 26 ns.
 
-A string of spaces has no gap. The mask walk writes the same
-three hex characters the byte loop writes, plus the work of
-noticing that. 1024 bytes take 1462 ns in the byte loop and
-1601 ns in the kernel, about 0.70 GB/s against 0.64 GB/s. The
-output is 3072 bytes either way. Two bytes lose as well: loading
-the table costs more than two `bit_at` tests.
+A space every 16 bytes is one hit per window: 1028 ns against
+374 ns, about 2.8 times. Repeating `user:name@host/path?q=1`
+under the userinfo set, 256 bytes, is 281 ns against 221 ns,
+about 1.3 times. Colon, at-sign, slash, and question mark are
+hits, and the gaps are too short for the run copy to matter.
+
+A string of spaces has no gap. The shuffle classified every
+lane, and then every lane is still a scalar `%XX`. 1024 bytes
+take 1462 ns in the byte loop and 1601 ns in the kernel, about
+0.70 GB/s against 0.64 GB/s. The output is 3072 bytes either
+way. Two bytes lose for the other reason: loading the table
+costs more than two `bit_at` tests.
+
+There is no 256-bit kernel. The code is SSSE3, sixteen bytes,
+on a Xeon that has AVX-512. In the base16 post, widening the
+register is where 6.4 GB/s became 11 GB/s.
 
 Ada therefore runs the kernel only on the suffix that starts at
 the first byte `bit_at` flags, and only when that suffix is at
@@ -159,10 +185,22 @@ translation unit. Moving the intrinsics into that file slowed
 them even on inputs that never took the vector path.
 
 NEON does the same lookup with `vqtbl2q_u8`, which indexes all
-32 bytes in one instruction. I did not time it. A full mask
-still belongs on the byte loop.
+32 bytes in one instruction. RISC-V does not build the 16-bit
+mask. An indexed load and `vfirst` return the next hit, the
+clean prefix is copied, and one byte is encoded. I did not time
+either. A full mask still belongs on the byte loop.
+
+Decoding is a different function, and it is scalar.
+`percent_decode` and `form_urlencoded_decode` copy the plain
+runs with `memcpy` and fold `%XX` into one byte. The form
+decoder also turns `+` into a space. IDNA's UTF-8 and UTF-32
+conversion can go through [simdutf][simdutf], behind
+`ADA_USE_SIMDUTF`, which defaults to off. Neither one consults
+this bitmap.
 
 [ada]: https://github.com/ada-url/ada
+[pr]: https://github.com/ada-url/ada/pull/1230
+[simdutf]: https://github.com/simdutf/simdutf
 [whatwg]: https://url.spec.whatwg.org/#percent-encoded-bytes
 [kernel]: https://github.com/ada-url/ada/blob/main/src/unicode_percent_encode.cpp
 [ipv4]: https://www.yagiz.co/simd-is-the-wrong-way-to-parse-ipv4
