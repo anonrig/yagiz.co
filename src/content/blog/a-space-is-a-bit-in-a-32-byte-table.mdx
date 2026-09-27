@@ -1,0 +1,317 @@
+---
+title: 'A space is a bit in a 32-byte table'
+description: >-
+  Ada's percent-encoder looks up the existing 32-byte WHATWG bitmap
+  sixteen bytes at a time, then walks every set bit and writes %XX.
+  The scanner next to it stops at the first hit. The kernel runs
+  once the remaining suffix is at least 48 bytes.
+date: '2026-09-27'
+tag: performance
+series: url-parsing
+status: published
+---
+
+Suppose you want to percent-encode a query string. In [Ada][ada]
+the rules come from the [WHATWG URL Standard][whatwg]. A space
+in a query becomes `%20`. A quotation mark becomes `%22`. The
+letters stay as they are.
+
+A reasonable function might look as follows.
+
+```cpp title="The obvious percent-encoder"
+void percent_encode(std::string_view input, const uint8_t set[],
+                    std::string& out) {
+  for (unsigned char c : input) {
+    if (set[c >> 3] & (1u << (c & 7))) {
+      out.append(hex + c * 4, 3);
+    } else {
+      out += static_cast<char>(c);
+    }
+  }
+}
+```
+
+`set` is 32 bytes. Byte `c` lives in `set[c >> 3]`, and the bit
+inside that byte is `c & 7`. The hex table is 256 entries of
+`"%XX\0"`, packed every four bytes, so `hex + c * 4` is the
+three characters you append. Space is `0x20`, index 4, bit 0.
+In the query set that byte is `0x0D`, which is space, `"`, and
+`#`. `0x0D & 1` is set, so the space is encoded.
+
+In the [last post][ipv4] the input was an IPv4 host, 7 to 16
+bytes, and a SIMD register was the wrong tool. A query is the
+other shape. Ada already scans hosts, paths, queries, and
+fragments sixteen bytes at a time. Those scans stop at the first
+byte that needs work. Percent-encoding is what happens after
+that: every flagged byte grows from one byte to three, and the
+clean bytes in between have to be copied. The scan throws the
+mask away after the first hit. The encoder has to walk the
+whole mask.
+
+## The scan and the encode
+
+The absolute-URL fast path classifies a byte with two 16-byte
+nibble tables. A byte is a stop when the low nibble and the high
+nibble both say so:
+
+```cpp title="The scanner's nibble test"
+// low[b & 0xF] & high[b >> 4] != 0
+const __m128i lo = _mm_and_si128(word, nibble);
+const __m128i hi = _mm_and_si128(_mm_srli_epi16(word, 4), nibble);
+const __m128i hit = _mm_and_si128(_mm_shuffle_epi8(lo_tbl, lo),
+                                 _mm_shuffle_epi8(hi_tbl, hi));
+```
+
+High nibbles that share a stop pattern share a bit in those
+tables. Eight bits, so at most eight distinct patterns. The
+host, path, query, and fragment classes used by the scanner fit,
+the tables are `constexpr`, and a miss is "keep scanning." The
+first hit is a `ctz` and the scan returns.
+
+Percent-encoding cannot return there. `hello world!!!!!` is 16
+bytes. The query set flags the space and nothing else. The
+result is `hello%20world!!!!!`, which is 18 bytes. The five
+bytes before the space are copied, three bytes are written for
+the space, and the ten bytes after it are copied. A scanner
+would have stopped at index 5.
+
+The encode sets are also a different table. Query, special
+query, fragment, path, userinfo, C0 control, and
+`application/x-www-form-urlencoded` are each a 32-byte bitmap,
+the same one `bit_at` already uses. They are an argument, not a
+`constexpr` nibble table baked into the scanner. Building a
+nibble lookup from that bitmap on every call was tried. It
+regressed. The kernel in
+[`unicode_percent_encode.cpp`][kernel] loads the 32 bytes that
+are already there and shuffles those.
+
+## Two halves of one bitmap
+
+`pshufb` indexes 16 lanes. The bitmap is 32 bytes, so it occupies
+two XMM registers: `cs_lo` for input bytes `0x00`–`0x7F`, and
+`cs_hi` for `0x80`–`0xFF`. The index within a half is
+`(b >> 3) & 0x0F`. There is no byte shift in SSE. A 16-bit shift
+spills the neighbor's low bits into positions 5–7 of the low
+byte, and the AND with `0x0F` drops that spill. The high byte of
+the pair is already `b >> 3`, because the low byte is only eight
+bits wide.
+
+Bytes `0x80`–`0xFF` are negative as signed `int8`. Comparing the
+word against zero selects `cs_hi` for those lanes and `cs_lo` for
+the rest.
+
+The bit inside the bitmap byte is another shuffle. The constant
+`1, 2, 4, 8, 16, 32, 64, 128` is stored twice. `128` is the byte
+`-128`. `pshufb` of `b & 7` turns that into `1 << (b & 7)` in
+every lane. AND it with the bitmap byte. A non-zero lane needs
+encoding.
+
+```cpp title="Sixteen bytes against the 32-byte set"
+int percent_mask(__m128i word, const tables& t) {
+  const __m128i idx = _mm_and_si128(_mm_srli_epi16(word, 3), t.mask_0f);
+  const __m128i lo = _mm_shuffle_epi8(t.cs_lo, idx);
+  const __m128i hi = _mm_shuffle_epi8(t.cs_hi, idx);
+  const __m128i high_byte = _mm_cmpgt_epi8(t.zero, word);
+  const __m128i cs_byte =
+      _mm_or_si128(_mm_and_si128(hi, high_byte),
+                   _mm_andnot_si128(high_byte, lo));
+  const __m128i bits =
+      _mm_shuffle_epi8(t.pow2, _mm_and_si128(word, t.mask_07));
+  const __m128i hits = _mm_and_si128(cs_byte, bits);
+  return _mm_movemask_epi8(_mm_cmpeq_epi8(hits, t.zero)) ^ 0xFFFF;
+}
+```
+
+`movemask` sets a bit for each lane that is `0xFF`. The compare
+against zero is `0xFF` on the clean lanes. XOR with `0xFFFF`
+flips the mask, so a set bit is a byte that needs `%XX`.
+
+For `hello world!!!!!` that mask is `32`, bit 5, the space.
+`ctz` is 5. Append `"hello"`, append `"%20"`, append
+`"world!!!!!"`.
+
+I ran the real `percent_encode_suffix` against the byte loop on
+every byte from 0 to 255, for all seven character sets, and on a
+space planted at each offset of a 64-byte string. The outputs
+matched.
+
+## Copy the gaps, encode the hits
+
+A zero mask is the fast case. Two adjacent 16-byte windows are
+checked together, and if both masks are zero the 32 bytes are one
+`append`. Otherwise each window is either a 16-byte copy or a
+walk of its mask. The walk is the same idea as the one-space
+example: `ctz` skips a clean run, the hex table writes three
+bytes, the bit is shifted off, and the tail after the last hit
+is copied.
+
+```cpp title="One window of the mask"
+void encode_mask_window(const char* p, uint32_t mask, size_t width,
+                        std::string& out) {
+  size_t off = 0;
+  while (mask != 0) {
+    const int zero_run = std::countr_zero(mask);
+    if (zero_run != 0) {
+      out.append(p + off, static_cast<size_t>(zero_run));
+    }
+    off += static_cast<size_t>(zero_run);
+    out.append(hex + static_cast<uint8_t>(p[off]) * 4, 3);
+    ++off;
+    mask >>= static_cast<unsigned>(zero_run + 1);
+  }
+  if (off < width) {
+    out.append(p + off, width - off);
+  }
+}
+```
+
+Whatever is left under 16 bytes goes back to the byte loop. The
+wide path reserves three output bytes per input byte before the
+first window, which is the longest `%XX` expansion, so the walk
+does not reallocate in the middle of a mask.
+
+NEON does the same job with a real byte shift and a 32-byte
+table lookup. `vqtbl2q_u8` indexes both halves in one
+instruction, so there is no `cs_lo` / `cs_hi` blend. The bit is
+`1 << (b & 7)` as a variable shift. A horizontal add of the
+comparison bits rebuilds the same 16-bit mask, and the walk
+above consumes it.
+
+RVV does not build that mask. An indexed load reads the bitmap,
+the bit test is a compare, and `vfirst` returns the next hit.
+The clean prefix is copied, one byte is encoded, and the loop
+continues at the vector length the hardware picked. Sparse input
+likes that. A window where every byte is a hit encodes one byte
+per trip.
+
+The SSSE3 functions are compiled with `target("ssse3")` on
+gcc and clang, the same way the parser scanners are. An SSE2
+baseline binary still contains the kernel. clang-cl and MSVC do
+not honor that attribute, so those builds stay on the scalar
+loop.
+
+## Forty-eight bytes
+
+The public encoder does not start at byte 0 with SIMD. It scans
+for the first byte `bit_at` flags. If there is none, nothing
+needs encoding and the function returns a copy. The kernel
+only sees the suffix that starts at that first byte.
+
+That suffix has to be at least 48 bytes. The check is in the
+caller and again inside `percent_encode_suffix`, so a short
+suffix never makes the call into the other translation unit.
+The longest string in the percent-encode benchmark is 46 bytes,
+one short of the gate, so those examples stay on the byte loop.
+The comment next to the constant says 2 to 44. 48 is also one
+32-byte pair plus one 16-byte window, so a suffix of that length
+has an empty scalar tail. A 47-byte suffix leaves 15 bytes on
+the byte loop.
+On this machine that tail moved a one-space query from about
+12 ns to about 26 ns.
+
+`percent_encode<true>` and `percent_encode<false>` stay on the
+byte loop at every length. `url_aggregator::set_hash` appends
+with the first of those, straight into its single buffer.
+`set_search` does the same when the URL has no fragment yet.
+If a fragment is already there, `set_search` builds a temporary
+through the allocating overload, and that overload can take the
+kernel. `ada::url::set_hash` and `set_search` always use the
+allocating overload, so a long enough suffix uses the kernel.
+
+The kernel lives in its own file. The library build defines
+`ADA_PERCENT_ENCODE_SIMD_SEPARATE_TU` and compiles that file
+beside `ada.cpp`, which then skips the `#include`. Putting the
+intrinsics into the unity translation unit changed GCC's
+inlining budget and slowed the aggregator setters on CodSpeed,
+including `SetHash`, even when those setters never took the
+vector path. The amalgamated single-header build still includes
+the file, because that build is one translation unit by design.
+
+## What I measured
+
+Intel Xeon, the hypervisor brand string is `Intel(R) Xeon(R)
+Processor`, 2.4 GHz. g++ 13.3.0, `-O3 -DNDEBUG -mssse3`. The
+output string is reserved to three times the input and cleared
+each iteration, so this is the encode. Median of seven runs.
+The SSSE3 column is the kernel with the 48-byte gate removed,
+so the short row is visible. Ada would have used the byte loop
+there.
+
+The byte loop is the scalar code above. The run loop is the
+same classification, but it copies a clean span in one
+`append` before it writes `%XX`. I wanted to see how much of
+the SIMD win is "copy more than one byte."
+
+| Input | Bytes | Byte loop | Run copy | SSSE3 |
+| --- | ---: | ---: | ---: | ---: |
+| One leading space, then `a` | 48 | 112 ns | 28 ns | 12 ns |
+| One leading space, then `a` | 256 | 256 ns | 142 ns | 32 ns |
+| One leading space, then `a` | 1024 | 997 ns | 534 ns | 107 ns |
+| A space every 16 bytes | 1024 | 1028 ns | 704 ns | 374 ns |
+| `user:name@host/path?q=1`, userinfo set | 256 | 281 ns | 282 ns | 221 ns |
+| Every byte a space | 1024 | 1462 ns | 1591 ns | 1601 ns |
+| Userinfo punctuation, every byte encoded | 1024 | 1465 ns | 1592 ns | 1597 ns |
+| Byte 0xE1, then a pipe | 2 | 4.5 ns | 5.7 ns | 5.2 ns |
+
+On a query that is one space and then unreserved bytes, copying
+runs already beats the byte loop, and the SIMD kernel still
+beats that copy. At 1024 bytes the run loop is 534 ns and the
+kernel is 107 ns. The classify is finding the gaps sixteen bytes
+at a time, which the scalar scan does one byte at a time even
+after it has learned to `append` a span.
+
+A space every 16 bytes is the same story, smaller. One hit per
+window, then a clean copy. About 2.8 times the byte loop, about
+1.9 times the run loop.
+
+Userinfo on a credential-shaped string is a smaller win, about
+1.3 times at 256 bytes. Colon, at-sign, slash, and question mark
+are hits. The rest is copied. The run loop does not help,
+because the hits are close enough that the spans are short.
+
+When every byte is a hit, the mask walk and the run loop both
+have nothing to copy. They write the same three-byte hex entry
+the byte loop writes, plus the work of finding a run that is
+never there. A 1024-byte string of spaces takes 1462 ns in the
+byte loop and 1601 ns in the kernel. The punctuation string, on
+the userinfo set, matches it. Output is 3072 bytes either way.
+The kernel is about ten percent slower.
+
+The two-byte input is the other loss. Table setup is larger
+than two `bit_at` tests. That is the row the 48-byte gate
+exists for, along with the setter translation-unit split.
+
+## What I would keep
+
+1. **The bitmap you already have.** Query and userinfo are
+   arguments. A `constexpr` nibble table is the right tool for
+   the scanner, where the class is fixed and the first hit
+   returns. It is the wrong thing to rebuild on every encode.
+2. **Walk every set bit.** The scanner's `ctz` consumes one hit.
+   The encoder's `ctz` consumes all of them, and the zeros
+   between them are an `append`.
+3. **Pair two clean windows.** A 32-byte copy is the common
+   query. One space per window is still a win. A window where
+   every byte is a hit is not.
+4. **Leave the short path scalar, in the caller's translation
+   unit.** Two bytes lose. The appending setters should keep
+   the byte loop, because the inlining cost showed up even
+   when the vector code never ran.
+5. **Keep the 48-byte gate.** On this machine a sparse query
+   would win below that. The gate matches the strings Ada
+   actually benchmarks. Under it, a 47-byte suffix would also
+   pay for a 15-byte scalar tail. A full mask still belongs on
+   the byte loop. I would rather special-case "every byte is a
+   hit" by density than lower the gate.
+
+A URL host was too short to fill a register. A query suffix is
+long enough, and the bit that says "this space becomes `%20`"
+was already sitting in a 32-byte table.
+
+[ada]: https://github.com/ada-url/ada
+[whatwg]: https://url.spec.whatwg.org/#percent-encoded-bytes
+[kernel]: https://github.com/ada-url/ada/blob/main/src/unicode_percent_encode.cpp
+[sets]: https://github.com/ada-url/ada/blob/main/include/ada/character_sets-inl.h
+[parser]: https://github.com/ada-url/ada/blob/main/src/parser.cpp
+[pr]: https://github.com/ada-url/ada/pull/1230
+[ipv4]: https://www.yagiz.co/simd-is-the-wrong-way-to-parse-ipv4
