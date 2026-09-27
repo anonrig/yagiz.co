@@ -30,10 +30,12 @@ void percent_encode(std::string_view input, const uint8_t set[],
 }
 ```
 
-`set` is 32 bytes. Byte `c` lives in `set[c >> 3]`, and the bit
-inside that byte is `c & 7`. The hex table holds 256 entries of
-`"%XX\0"`, so `hex + c * 4` is the three characters you append.
-Space is `0x20`: index 4, bit 0. In the query set that byte is
+`set` is 32 bytes, one bit per possible byte. Byte `c` lives in
+`set[c >> 3]`, and the bit inside that byte is `c & 7`. The hex
+table holds 256 entries of `"%XX\0"`, so `hex + c * 4` is the
+three characters you append. Space is `0x20`: index 4, bit 0.
+The standard keeps a different table for a query, a path, a
+fragment, and a username. In the query table that byte is
 `0x0D`, which is space, `"`, and `#`. The bit is set, so the
 space is encoded.
 
@@ -45,22 +47,23 @@ turns some bytes into three and copies the others.
 `hello world!!!!!` is 16 bytes and becomes `hello%20world!!!!!`,
 which is 18. There is no store of a fixed width.
 
-Ada's scanner already classifies sixteen bytes and returns at
-the first hit. Encoding has to keep the mask and walk every set
-bit.
+Scanning a URL can stop at the first byte that is special.
+Encoding cannot. It has to remember every byte that needs `%XX`
+and keep going.
 
 ## Look up the table you already have
 
-`pshufb` indexes 16 lanes. The character set is 32 bytes, so it
-occupies two registers: one for `0x00`–`0x7F`, one for
-`0x80`–`0xFF`. The index in a half is `(b >> 3) & 0x0F`. A second
-shuffle turns `b & 7` into `1 << (b & 7)`. AND the two results.
-A non-zero lane needs `%XX`.
+`pshufb` indexes 16 lanes. The table is 32 bytes, so it occupies
+two registers: one for `0x00`–`0x7F`, one for `0x80`–`0xFF`. The
+index in a half is `(b >> 3) & 0x0F`. A second shuffle turns
+`b & 7` into `1 << (b & 7)`. AND the two results. A non-zero
+lane needs `%XX`.
 
-The scanner can bake a nibble table into the binary, because its
-classes are fixed. The encode set is an argument. Building a
-nibble table from that argument on every call [regressed][pr],
-so the kernel loads the 32 bytes it was handed.
+A scan can bake its lookup into the binary, because the
+characters it rejects never change. Percent-encoding is handed a
+different table for each part of the URL. Building a fresh
+lookup from that table on every call [was slower][pr], so this
+path loads the 32 bytes it was given.
 
 ```cpp title="Sixteen bytes against the 32-byte set"
 int percent_mask(__m128i word, const tables& t) {
@@ -93,16 +96,16 @@ trailing zeros, append `"hello"`, append `"%20"`, append
 `"world!!!!!"`.
 
 The same walk handles a whole window. Two adjacent windows with
-empty masks are one 32-byte `append`. A tail shorter than 16
-bytes goes back to the byte loop, so the kernel never reads past
-the end of the suffix. The IPv4 fast path had to promise those
-bytes, or use a masked load. Before the first window the output
-reserves three bytes per input byte, which is the longest
+empty masks are one 32-byte `append`. Anything shorter than 16
+bytes goes back to the byte loop, so a vector load never reads
+past the end of the string. The IPv4 fast path had to promise
+those bytes, or use a masked load. Before the first window the
+output reserves three bytes per input byte, which is the longest
 expansion, so the walk does not reallocate.
 
 The shuffle stops at the mask. Each set bit is still three
 scalar bytes from the hex table. Base16 uses `pshufb` to write
-the digits. This kernel uses it to decide which bytes become
+the digits. This path uses it to decide which bytes become
 digits.
 
 ```cpp title="One window of the mask"
@@ -126,27 +129,28 @@ void encode_mask_window(const char* p, uint32_t mask, size_t width,
 ```
 
 I checked this against the byte loop for every byte value, on
-all seven WHATWG sets, and with a space at each offset of a
-64-byte string. The strings matched. The function in Ada is
-[`percent_encode_suffix`][kernel].
+each table the standard defines, and with a space at each offset
+of a 64-byte string. The strings matched. The walk in [Ada's
+percent-encoder][kernel] is this idea.
 
 ## What it costs
 
 Intel Xeon at 2.4 GHz, g++ 13.3, `-O3`. The output buffer is
 reserved to three times the input and reused, so this is the
-encode. Median of seven runs. The SSSE3 column is the kernel
-with Ada's 48-byte length check removed.
+encode. Median of seven runs. The SSSE3 column is the function
+above, including strings shorter than the 48-byte minimum Ada
+uses in the library.
 
-The run-copy column is the byte loop's classification, except a
-clean span is one `append`. That is the obvious scalar
-improvement. I wanted to know how much of the SIMD gap was just
-"copy more than one byte."
+The run-copy column is the byte loop's test, except a clean span
+is one `append`. That is the obvious scalar improvement. I
+wanted to know how much of the SIMD gap was just "copy more than
+one byte."
 
 | Input | Bytes | Byte loop | Run copy | SSSE3 |
 | --- | ---: | ---: | ---: | ---: |
 | One leading space, then `a` | 1024 | 997 ns | 534 ns | 107 ns |
 | A space every 16 bytes | 1024 | 1028 ns | 704 ns | 374 ns |
-| `user:name@host/path?q=1`, userinfo set | 256 | 281 ns | 282 ns | 221 ns |
+| `user:name@host/path?q=1`, username rules | 256 | 281 ns | 282 ns | 221 ns |
 | Every byte a space | 1024 | 1462 ns | 1591 ns | 1601 ns |
 | Byte 0xE1, then a pipe | 2 | 4.5 ns | 5.7 ns | 5.2 ns |
 
@@ -154,49 +158,52 @@ On the query, 1024 input bytes in 107 ns is 9.6 GB/s. The byte
 loop is 1.0 GB/s. Copying the clean spans gets you to 1.9 GB/s,
 and the shuffle is the rest: it finds the gap sixteen bytes at
 a time. That row is the friendly case, one hit and then a
-kilobyte of letters. At 48 bytes, one 32-byte pair and one
-16-byte window, the same shape was 112 ns against 12 ns. A
-47-byte suffix leaves 15 bytes on the scalar tail and landed
-near 26 ns.
+kilobyte of letters. At 48 bytes, three loads of 16, the same
+shape was 112 ns against 12 ns. A 47-byte string leaves 15 bytes
+on the byte loop and landed near 26 ns.
 
 A space every 16 bytes is one hit per window: 1028 ns against
 374 ns, about 2.8 times. Repeating `user:name@host/path?q=1`
-under the userinfo set, 256 bytes, is 281 ns against 221 ns,
-about 1.3 times. Colon, at-sign, slash, and question mark are
-hits, and the gaps are too short for the run copy to matter.
+under the rules for a username and password, 256 bytes, is 281
+ns against 221 ns, about 1.3 times. Colon, at-sign, slash, and
+question mark all have to be escaped, and the gaps are too short
+for the run copy to matter.
 
 A string of spaces has no gap. The shuffle classified every
 lane, and then every lane is still a scalar `%XX`. 1024 bytes
-take 1462 ns in the byte loop and 1601 ns in the kernel, about
-0.70 GB/s against 0.64 GB/s. The output is 3072 bytes either
-way. Two bytes lose for the other reason: loading the table
-costs more than two `bit_at` tests.
+take 1462 ns in the byte loop and 1601 ns here, about 0.70 GB/s
+against 0.64 GB/s. The output is 3072 bytes either way. Two
+bytes lose for the other reason: loading the table costs more
+than testing two bytes.
 
-There is no 256-bit kernel. The code is SSSE3, sixteen bytes,
-on a Xeon that has AVX-512. In the base16 post, widening the
-register is where 6.4 GB/s became 11 GB/s.
+There is no 256-bit version. The fast path is SSSE3, sixteen
+bytes, on a Xeon that has AVX-512. In the base16 post, widening
+the register is where 6.4 GB/s became 11 GB/s.
 
-Ada therefore runs the kernel only on the suffix that starts at
-the first byte `bit_at` flags, and only when that suffix is at
-least 48 bytes. The longest string in the percent-encode
-benchmark is 46 bytes, so those examples stay on the byte loop.
-The appending setters stay there too, in the caller's
-translation unit. Moving the intrinsics into that file slowed
-them even on inputs that never took the vector path.
+Ada takes this path only for the tail that starts at the first
+byte the table marks, and only when that tail is at least 48
+bytes. The longest example in the library's own benchmark of
+this function is 46 bytes, so those examples stay on the byte
+loop.
 
-NEON does the same lookup with `vqtbl2q_u8`, which indexes all
-32 bytes in one instruction. RISC-V does not build the 16-bit
-mask. An indexed load and `vfirst` return the next hit, the
-clean prefix is copied, and one byte is encoded. I did not time
-either. A full mask still belongs on the byte loop.
+The code that writes a query or a fragment is compiled apart
+from this vector path, and it stays on the byte loop. Putting
+the intrinsics in the same file slowed those writes even on
+strings that never needed them.
 
-Decoding is a different function, and it is scalar.
-`percent_decode` and `form_urlencoded_decode` copy the plain
-runs with `memcpy` and fold `%XX` into one byte. The form
-decoder also turns `+` into a space. IDNA's UTF-8 and UTF-32
-conversion can go through [simdutf][simdutf], behind
-`ADA_USE_SIMDUTF`, which defaults to off. Neither one consults
-this bitmap.
+On ARM the same lookup is one instruction that can index all 32
+bytes (`vqtbl2q_u8`). On RISC-V there is no 16-bit mask. The
+code finds the next byte that needs encoding, copies the clean
+prefix, and encodes that one byte. I did not time either. When
+every byte is a hit, the byte loop is still the right choice.
+
+Turning the escapes back into bytes is a different job, and it
+stays one byte at a time. A run of ordinary characters is copied
+in one block. `%XX` folds into a single byte. In an HTML form,
+`+` is also a space. Internationalized domain names are another
+conversion, UTF-8 to Unicode scalars and back. That one can go
+through [simdutf][simdutf], and only if you ask for it at build
+time. The default leaves it off. Neither one uses this table.
 
 [ada]: https://github.com/ada-url/ada
 [pr]: https://github.com/ada-url/ada/pull/1230
