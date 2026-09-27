@@ -281,29 +281,6 @@ The two-byte input is the other loss. Table setup is larger
 than two `bit_at` tests. That is the row the 48-byte gate
 exists for, along with the setter translation-unit split.
 
-## What I would keep
-
-1. **The bitmap you already have.** Query and userinfo are
-   arguments. A `constexpr` nibble table is the right tool for
-   the scanner, where the class is fixed and the first hit
-   returns. It is the wrong thing to rebuild on every encode.
-2. **Walk every set bit.** The scanner's `ctz` consumes one hit.
-   The encoder's `ctz` consumes all of them, and the zeros
-   between them are an `append`.
-3. **Pair two clean windows.** A 32-byte copy is the common
-   query. One space per window is still a win. A window where
-   every byte is a hit is not.
-4. **Leave the short path scalar, in the caller's translation
-   unit.** Two bytes lose. The appending setters should keep
-   the byte loop, because the inlining cost showed up even
-   when the vector code never ran.
-5. **Keep the 48-byte gate.** On this machine a sparse query
-   would win below that. The gate matches the strings Ada
-   actually benchmarks. Under it, a 47-byte suffix would also
-   pay for a 15-byte scalar tail. A full mask still belongs on
-   the byte loop. I would rather special-case "every byte is a
-   hit" by density than lower the gate.
-
 A URL host was too short to fill a register. A query suffix is
 long enough, and the bit that says "this space becomes `%20`"
 was already sitting in a 32-byte table.
