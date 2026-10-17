@@ -3,7 +3,7 @@ import { getEntry } from 'astro:content'
 import Page from '@/components/Page.astro'
 import Layout from '@/layouts/Layout.astro'
 import { websiteUrl } from '@/lib/content'
-import { absoluteUrl, pageBreadcrumbs, pressPageJsonLd } from '@/lib/schema'
+import { pageBreadcrumbs, pressPageJsonLd } from '@/lib/schema'
 
 const page = await getEntry('pages', 'press')
 
@@ -19,11 +19,12 @@ const breadcrumbs = pageBreadcrumbs(page.data.title, '/press')
   description={page.data.description}
   markdownUrl={markdownUrl}
   jsonLd={pressPageJsonLd(page.data.title, page.data.description)}
+  schemaType="https://schema.org/CollectionPage"
+  microdataName={false}
 >
   <Page
     {page}
     itemtype="https://schema.org/CollectionPage"
-    itemid={absoluteUrl('/press')}
     breadcrumbs={breadcrumbs}
   />
 </Layout>

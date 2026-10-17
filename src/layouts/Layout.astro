@@ -6,13 +6,13 @@ import Header from '@/components/layout/Header.astro'
 import {
   authorFullName,
   openGraphImage,
+  profileUrls,
   twitterId,
   twitterUsername,
   websiteDescription,
   websiteTitle,
-  xUrl,
 } from '@/lib/content'
-import { absoluteUrl, pageCanonical } from '@/lib/schema'
+import { absoluteUrl, pageCanonical, serializeJsonLd } from '@/lib/schema'
 import type { JsonLd } from '@/lib/schema'
 import '@/styles/globals.css'
 
@@ -25,6 +25,13 @@ interface Props {
   jsonLd?: JsonLd | JsonLd[]
   canonical?: string | false
   robots?: string
+  documentTitle?: string
+  /** When the visible heading already carries itemprop="name". */
+  microdataName?: boolean
+  schemaType?: string
+  schemaId?: string
+  imageWidth?: number
+  imageHeight?: number
   article?: {
     authors?: string[]
     publishedTime?: string
@@ -41,23 +48,28 @@ const {
   markdownUrl,
   jsonLd,
   canonical,
-  robots = 'index, follow',
+  robots = 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
+  documentTitle,
+  microdataName = true,
+  schemaType = 'https://schema.org/WebPage',
+  schemaId,
+  imageWidth = openGraphImage.width,
+  imageHeight = openGraphImage.height,
   article,
 } = Astro.props
 
-const pageTitle = title ? `${title} · ${authorFullName}` : websiteTitle
+const pageTitle = documentTitle ?? (title ? `${title} · ${authorFullName}` : websiteTitle)
 const jsonLdDocuments = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : []
 const selfUrl = pageCanonical(Astro.url.pathname)
 const canonicalUrl = canonical === false ? undefined : pageCanonical(Astro.url.pathname, canonical)
-const socialTitle = title ?? websiteTitle
+const socialTitle = title ?? documentTitle ?? websiteTitle
 const socialImageAlt = imageAlt ?? socialTitle
 const noindex = robots.includes('noindex')
-const googlebot = noindex
-  ? robots
-  : 'index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1'
+const structured = !noindex
+const schemaItemId = schemaId ?? selfUrl
 ---
 
-<html lang="en" class="bg-white text-black dark:bg-white-reversed">
+<html lang="en-US" class="bg-white text-black dark:bg-white-reversed">
   <head>
     <meta charset="utf-8" />
     <title>{pageTitle}</title>
@@ -66,14 +78,13 @@ const googlebot = noindex
     {
       canonical !== false && (
         <>
-          <link rel="alternate" hreflang="en" href={selfUrl} />
+          <link rel="alternate" hreflang="en-US" href={selfUrl} />
           <link rel="alternate" hreflang="x-default" href={selfUrl} />
         </>
       )
     }
     <link rel="author" href={absoluteUrl('/about')} />
-    <link rel="me" href="https://github.com/anonrig" />
-    <link rel="me" href={xUrl} />
+    {profileUrls.map((href) => <link rel="me" href={href} />)}
 
     <!-- Open Graph -->
     <meta property="og:title" content={socialTitle} />
@@ -82,8 +93,8 @@ const googlebot = noindex
     <meta property="og:url" content={selfUrl} />
     <meta property="og:image" content={image} />
     <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:width" content={String(openGraphImage.width)} />
-    <meta property="og:image:height" content={String(openGraphImage.height)} />
+    <meta property="og:image:width" content={String(imageWidth)} />
+    <meta property="og:image:height" content={String(imageHeight)} />
     <meta property="og:image:alt" content={socialImageAlt} />
     <meta property="og:locale" content="en_US" />
     <meta property="og:site_name" content={websiteTitle} />
@@ -111,12 +122,12 @@ const googlebot = noindex
     <meta name="creator" content={authorFullName} />
     <meta name="publisher" content={authorFullName} />
     <meta name="robots" content={robots} />
-    <meta name="googlebot" content={googlebot} />
+    <meta name="googlebot" content={robots} />
     <meta name="twitter:site:id" content={twitterId} />
     <meta name="twitter:creator:id" content={twitterId} />
     <meta name="twitter:image:type" content="image/png" />
-    <meta name="twitter:image:width" content={String(openGraphImage.width)} />
-    <meta name="twitter:image:height" content={String(openGraphImage.height)} />
+    <meta name="twitter:image:width" content={String(imageWidth)} />
+    <meta name="twitter:image:height" content={String(imageHeight)} />
     <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="48x48" />
     <link
       rel="apple-touch-icon"
@@ -138,7 +149,7 @@ const googlebot = noindex
       jsonLdDocuments.map((document) => (
         <script
           type="application/ld+json"
-          set:html={JSON.stringify(document)}
+          set:html={serializeJsonLd(document)}
           is:inline
         />
       ))
@@ -147,7 +158,23 @@ const googlebot = noindex
     <link rel="alternate" type="application/rss+xml" title={websiteTitle} href={new URL("/rss.xml", Astro.site)} />
     <link rel="alternate" type="text/plain" title="llms.txt" href={new URL("/llms.txt", Astro.site)} />
   </head>
-  <body>
+  <body
+    itemscope={structured}
+    itemtype={structured ? schemaType : undefined}
+    itemid={structured ? schemaItemId : undefined}
+  >
+    {
+      structured && (
+        <>
+          {microdataName && <meta itemprop="name" content={socialTitle} />}
+          <meta itemprop="description" content={description} />
+          <meta itemprop="inLanguage" content="en-US" />
+          <meta itemprop="isAccessibleForFree" content="true" />
+          <link itemprop="url" href={selfUrl} />
+          <link itemprop="primaryImageOfPage" href={image} />
+        </>
+      )
+    }
     <a
       href="#main-content"
       class="sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:left-4 focus-visible:top-4 focus-visible:z-50 focus-visible:rounded focus-visible:bg-white focus-visible:px-4 focus-visible:py-2 focus-visible:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
@@ -155,7 +182,11 @@ const googlebot = noindex
       Skip to main content
     </a>
     <Header />
-    <main id="main-content" class="py-14" itemprop="mainContentOfPage">
+    <main
+      id="main-content"
+      class="py-14"
+      itemprop={structured ? 'mainContentOfPage' : undefined}
+    >
       <slot />
     </main>
     <CodeCopy />

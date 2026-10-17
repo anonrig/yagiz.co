@@ -1,6 +1,7 @@
 ---
 import MarkdownLink from '@/components/MarkdownLink.astro'
 import { rssUrl, xUrl } from '@/lib/content'
+import { absoluteUrl } from '@/lib/schema'
 
 interface Props {
   markdownUrl?: string
@@ -24,23 +25,21 @@ const footerItems: (Item & { label?: string })[] = [
 ]
 ---
 <footer class="flex flex-col items-center pb-20 pt-12 mx-auto w-full max-w-6xl gap-y-4">
-  <nav
-    aria-label="Footer navigation"
-    class="flex flex-wrap items-center justify-center"
-    itemscope
-    itemtype="https://schema.org/SiteNavigationElement"
-  >
+  <nav aria-label="Footer navigation" class="flex flex-wrap items-center justify-center">
     {
       footerItems.map((item, index) => (
         <a
           href={item.href}
           aria-label={item.label}
+          itemscope
+          itemtype="https://schema.org/SiteNavigationElement"
           class="flex items-center text-xs font-normal text-slate-500 dark:text-neutral-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2 rounded"
         >
           {index !== 0 && (
             <span aria-hidden="true" class="px-[0.7rem] font-serif leading-[1]">·</span>
           )}
-          {item.title}
+          <link itemprop="url" href={absoluteUrl(item.href)} />
+          <span itemprop="name">{item.title}</span>
         </a>
       ))
     }

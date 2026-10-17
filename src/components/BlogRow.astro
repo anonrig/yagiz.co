@@ -6,11 +6,13 @@ import { absoluteUrl } from '@/lib/schema'
 
 interface Props {
   post: CollectionEntry<'blog'>
+  /** Microdata property on the enclosing Blog or ListItem, such as `blogPost` or `item`. */
   itemprop?: string
+  headingItemprop?: string
   heading?: 'h2' | 'h3'
 }
 
-const { post, itemprop, heading: HeadingTag = 'h2' } = Astro.props
+const { post, itemprop, headingItemprop, heading: HeadingTag = 'h2' } = Astro.props
 const minute_to_read = readingTimeLabel(post.body)
 const formattedDate = new Intl.DateTimeFormat('en-US', {
   month: 'short',
@@ -22,16 +24,10 @@ const url = absoluteUrl(`/${post.id}`)
 <a
   href={`/${post.id}`}
   class="group relative flex items-center overflow-hidden py-3"
-  itemscope
-  itemtype="https://schema.org/BlogPosting"
-  itemid={`${url}#blogposting`}
-  itemprop={itemprop}
 >
-  <link itemprop="url" href={url} />
-  <meta itemprop="description" content={post.data.description} />
+  {itemprop && <link itemprop={itemprop} href={url} />}
   <time
     datetime={post.data.date.toISOString()}
-    itemprop="datePublished"
     class="mr-6 flex min-w-[45px] whitespace-nowrap text-xs font-extrabold uppercase text-orange-400"
   >
     {formattedDate}
@@ -41,7 +37,7 @@ const url = absoluteUrl(`/${post.id}`)
   >
     <HeadingTag
       class="truncate font-normal dark:text-white dark:group-hover:text-neutral-300 group-hover:text-slate-600"
-      itemprop="headline"
+      itemprop={headingItemprop}
     >
       {post.data.title}
     </HeadingTag>

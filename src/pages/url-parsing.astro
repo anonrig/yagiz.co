@@ -20,13 +20,14 @@ const crumbs = seriesBreadcrumbs(series.title, series.path)
   description={series.description}
   markdownUrl={markdownUrl}
   jsonLd={seriesCollectionJsonLd(series.path, series.title, series.description, posts)}
+  schemaType="https://schema.org/CollectionPage"
+  microdataName={false}
 >
-  <section itemscope itemtype="https://schema.org/CollectionPage" itemid={`${websiteUrl}${series.path}`}>
-    <link itemprop="url" href={`${websiteUrl}${series.path}`} />
+  <section>
     <Container size="tight" class="mx-auto -mt-6 flex flex-col gap-8 px-[4vw] text-center">
-      <Breadcrumbs items={crumbs} />
+      <Breadcrumbs items={crumbs} itemprop="breadcrumb" />
       <h1 class="text-2xl font-extrabold text-orange-400" itemprop="name">{series.title}</h1>
-      <div class="leading-6 dark:text-white" itemprop="description">{series.description}</div>
+      <div class="leading-6 dark:text-white">{series.description}</div>
     </Container>
 
     <div
@@ -44,7 +45,7 @@ const crumbs = seriesBreadcrumbs(series.title, series.path)
           posts.map((post, index) => (
             <div itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
               <meta itemprop="position" content={String(index + 1)} />
-              <BlogRow {post} heading="h2" itemprop="item" />
+              <BlogRow {post} heading="h2" itemprop="item" headingItemprop="name" />
             </div>
           ))
         }

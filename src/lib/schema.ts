@@ -1,17 +1,47 @@
-import type { CollectionEntry } from 'astro:content'
-
 import {
+  articleOpenGraphImages,
+  articleWideImage,
+  authorDescription,
   authorFullName,
   authorJobTitle,
+  githubAvatar,
   githubImage,
+  homepageTitle,
+  logoImage,
   openGraphImage,
+  profileUrls,
   twitterUsername,
   websiteDescription,
   websiteTitle,
   websiteUrl,
-} from '@/lib/content'
-import { countWords, readingTimeIso } from '@/lib/reading-time'
-import { SERIES } from '@/lib/series'
+} from './content.ts'
+import { countWords, readingTimeIso } from './reading-time.ts'
+import { SERIES } from './series.ts'
+import type { SeriesId } from './series.ts'
+
+/** Fields schema builders read from a blog entry. */
+export interface SchemaPost {
+  id: string
+  body?: string
+  data: {
+    title: string
+    description: string
+    date: Date
+    tag: { id: string }
+    canonical_url?: string
+    updated?: Date
+    series?: SeriesId
+  }
+}
+
+/** Fields schema builders read from a tag entry. */
+export interface SchemaTag {
+  id: string
+  data: {
+    title: string
+    description: string
+  }
+}
 
 export type JsonLd = Record<string, unknown>
 
@@ -20,12 +50,27 @@ export interface BreadcrumbItem {
   path: string
 }
 
+export interface CrawlableImage {
+  url: string
+  width: number
+  height: number
+  alt: string
+  encodingFormat?: string
+}
+
 export const schemaIds = {
   person: `${websiteUrl}/#person`,
+  organization: `${websiteUrl}/#organization`,
   website: `${websiteUrl}/#website`,
   blog: `${websiteUrl}/#blog`,
   webpage: `${websiteUrl}/#webpage`,
 } as const
+
+const parsingPaperId = 'https://doi.org/10.1002/spe.3296'
+const parsingPaperUrl = 'https://onlinelibrary.wiley.com/doi/full/10.1002/spe.3296'
+
+/** Google's article guidance: prefer images of at least 50K pixels. */
+const MIN_ARTICLE_IMAGE_PIXELS = 50_000
 
 export type WebPageType = 'WebPage' | 'AboutPage' | 'ContactPage' | 'CollectionPage' | 'ProfilePage'
 
@@ -47,43 +92,119 @@ export function pageCanonical(pathname: string, override?: string): string {
   return absoluteUrl(path)
 }
 
+export function imageMime(format: string): string {
+  if (format === 'jpg' || format === 'jpeg') {
+    return 'image/jpeg'
+  }
+  return `image/${format}`
+}
+
+export function serializeJsonLd(document: JsonLd): string {
+  return JSON.stringify(document).replaceAll('<', String.raw`\u003c`)
+}
+
 export function imageObject(
   url: string,
   caption: string,
-  dimensions: { width: number; height: number } = openGraphImage,
+  options?: {
+    width?: number
+    height?: number
+    encodingFormat?: string
+    copyrightNotice?: string
+  },
 ): JsonLd {
+  const width = options?.width
+  const height = options?.height
   return {
     '@type': 'ImageObject',
     url,
     contentUrl: url,
     caption,
     name: caption,
-    width: dimensions.width,
-    height: dimensions.height,
     inLanguage: 'en-US',
+    creditText: authorFullName,
+    copyrightNotice: options?.copyrightNotice ?? authorFullName,
+    creator: { '@id': schemaIds.person },
+    copyrightHolder: { '@id': schemaIds.person },
+    ...(width !== undefined && height !== undefined ? { width, height } : {}),
+    ...(options?.encodingFormat ? { encodingFormat: options.encodingFormat } : {}),
   }
 }
 
-export function isoDate(date: Date): string {
-  return date.toISOString().slice(0, 10)
+export function isoDateTime(date: Date): string {
+  return date.toISOString()
 }
 
-export function postModifiedDate(post: CollectionEntry<'blog'>): Date {
+export function postModifiedDate(post: SchemaPost): Date {
   return post.data.updated ?? post.data.date
 }
 
-export function personJsonLd(): JsonLd {
+function authorReference(): JsonLd {
   return {
     '@type': 'Person',
     '@id': schemaIds.person,
     name: authorFullName,
+    url: absoluteUrl('/about'),
+  }
+}
+
+function logoObject(): JsonLd {
+  return {
+    '@type': 'ImageObject',
+    url: absoluteUrl('/apple-icon.png'),
+    contentUrl: absoluteUrl('/apple-icon.png'),
+    width: logoImage.width,
+    height: logoImage.height,
+    encodingFormat: 'image/png',
+  }
+}
+
+function publisherReference(): JsonLd {
+  return {
+    '@type': 'Organization',
+    '@id': schemaIds.organization,
+    name: websiteTitle,
+    url: websiteUrl,
+    logo: logoObject(),
+  }
+}
+
+function subscribeAction(): JsonLd {
+  return {
+    '@type': 'SubscribeAction',
+    name: 'Subscribe to the newsletter',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: absoluteUrl('/newsletter'),
+      actionPlatform: [
+        'https://schema.org/DesktopWebPlatform',
+        'https://schema.org/MobileWebPlatform',
+      ],
+    },
+  }
+}
+
+function siteImage(): JsonLd {
+  return imageObject(`${websiteUrl}/opengraph-image.png`, websiteTitle, {
+    width: openGraphImage.width,
+    height: openGraphImage.height,
+    encodingFormat: 'image/png',
+  })
+}
+
+export function personJsonLd(): JsonLd {
+  return {
+    ...authorReference(),
     givenName: 'Yagiz',
     familyName: 'Nizipli',
-    alternateName: ['anonrig', 'Yağız Nizipli'],
-    url: websiteUrl,
-    image: imageObject(githubImage, authorFullName, { width: 460, height: 460 }),
+    alternateName: ['anonrig', 'yagiznizipli', 'Yağız Nizipli'],
+    image: imageObject(githubImage, authorFullName, {
+      width: githubAvatar.width,
+      height: githubAvatar.height,
+      encodingFormat: githubAvatar.encodingFormat,
+    }),
     jobTitle: authorJobTitle,
-    description: websiteDescription,
+    description: authorDescription,
     knowsLanguage: ['en', 'tr'],
     knowsAbout: [
       'Node.js',
@@ -94,6 +215,7 @@ export function personJsonLd(): JsonLd {
       'C++',
       'Rust',
     ],
+    subjectOf: { '@id': parsingPaperId },
     hasOccupation: {
       '@type': 'Occupation',
       name: authorJobTitle,
@@ -127,10 +249,20 @@ export function personJsonLd(): JsonLd {
         '@type': 'PropertyValue',
         name: 'X',
         value: twitterUsername,
-        url: `https://x.com/${twitterUsername}`,
+        url: profileUrls[1],
       },
     ],
-    sameAs: ['https://github.com/anonrig', `https://x.com/${twitterUsername}`],
+    sameAs: [...profileUrls],
+  }
+}
+
+export function organizationJsonLd(): JsonLd {
+  return {
+    ...publisherReference(),
+    description: websiteDescription,
+    founder: { '@id': schemaIds.person },
+    image: siteImage(),
+    sameAs: [...profileUrls],
   }
 }
 
@@ -142,14 +274,22 @@ export function websiteJsonLd(): JsonLd {
     name: websiteTitle,
     description: websiteDescription,
     inLanguage: 'en-US',
-    publisher: { '@id': schemaIds.person },
-    author: { '@id': schemaIds.person },
+    image: siteImage(),
+    publisher: { '@id': schemaIds.organization },
+    author: authorReference(),
     copyrightHolder: { '@id': schemaIds.person },
-    potentialAction: {
-      '@type': 'SubscribeAction',
-      name: 'Subscribe to the newsletter',
-      target: absoluteUrl('/newsletter'),
+    audience: {
+      '@type': 'Audience',
+      audienceType: 'Software engineers',
     },
+    potentialAction: subscribeAction(),
+  }
+}
+
+function graph(...nodes: JsonLd[]): JsonLd {
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [personJsonLd(), organizationJsonLd(), websiteJsonLd(), ...nodes],
   }
 }
 
@@ -173,10 +313,7 @@ export function pageBreadcrumbs(name: string, path: string): BreadcrumbItem[] {
   ]
 }
 
-export function blogBreadcrumbs(
-  post: CollectionEntry<'blog'>,
-  tag: CollectionEntry<'tags'>,
-): BreadcrumbItem[] {
+export function blogBreadcrumbs(post: SchemaPost, tag: SchemaTag): BreadcrumbItem[] {
   return [
     { name: 'Home', path: '/' },
     { name: `#${tag.data.title}`, path: `/tag/${tag.id}` },
@@ -184,7 +321,7 @@ export function blogBreadcrumbs(
   ]
 }
 
-export function tagBreadcrumbs(tag: CollectionEntry<'tags'>): BreadcrumbItem[] {
+export function tagBreadcrumbs(tag: SchemaTag): BreadcrumbItem[] {
   return [
     { name: 'Home', path: '/' },
     { name: `#${tag.data.title}`, path: `/tag/${tag.id}` },
@@ -195,22 +332,21 @@ export function seriesBreadcrumbs(name: string, path: string): BreadcrumbItem[] 
   return pageBreadcrumbs(name, path)
 }
 
-function blogPostPreview(post: CollectionEntry<'blog'>): JsonLd {
-  const url = absoluteUrl(`/${post.id}`)
-  return {
-    '@type': 'BlogPosting',
-    '@id': `${url}#blogposting`,
-    headline: post.data.title,
-    url,
-    datePublished: isoDate(post.data.date),
-    dateModified: isoDate(postModifiedDate(post)),
-    description: post.data.description,
-    author: { '@id': schemaIds.person },
-    image: absoluteUrl(`/${post.id}/opengraph-image.png`),
-  }
+function postUrl(post: SchemaPost): string {
+  return absoluteUrl(`/${post.id}`)
 }
 
-export function blogJsonLd(posts: CollectionEntry<'blog'>[]): JsonLd {
+function listItems(posts: SchemaPost[]): JsonLd[] {
+  return posts.map((post, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: post.data.title,
+    url: postUrl(post),
+    item: postUrl(post),
+  }))
+}
+
+export function blogJsonLd(posts: SchemaPost[]): JsonLd {
   return {
     '@type': 'Blog',
     '@id': schemaIds.blog,
@@ -218,156 +354,183 @@ export function blogJsonLd(posts: CollectionEntry<'blog'>[]): JsonLd {
     name: websiteTitle,
     description: websiteDescription,
     inLanguage: 'en-US',
-    publisher: { '@id': schemaIds.person },
-    author: { '@id': schemaIds.person },
-    blogPost: posts.map((post) => blogPostPreview(post)),
-    numberOfItems: posts.length,
+    publisher: { '@id': schemaIds.organization },
+    author: authorReference(),
+    blogPost: posts.map((post) => postUrl(post)),
   }
 }
 
-export function homeJsonLd(posts: CollectionEntry<'blog'>[]): JsonLd {
-  return {
-    '@context': 'https://schema.org',
-    '@graph': [
-      personJsonLd(),
-      websiteJsonLd(),
-      blogJsonLd(posts),
-      {
-        '@type': 'WebPage',
-        '@id': schemaIds.webpage,
-        url: websiteUrl,
-        name: websiteTitle,
-        description: websiteDescription,
-        inLanguage: 'en-US',
-        isPartOf: { '@id': schemaIds.website },
-        about: { '@id': schemaIds.person },
-        mainEntity: { '@id': schemaIds.blog },
-        primaryImageOfPage: imageObject(`${websiteUrl}/opengraph-image.png`, websiteTitle),
-        author: { '@id': schemaIds.person },
-        publisher: { '@id': schemaIds.person },
-      },
-    ],
+export function homeJsonLd(posts: SchemaPost[]): JsonLd {
+  return graph(blogJsonLd(posts), {
+    '@type': 'WebPage',
+    '@id': schemaIds.webpage,
+    url: websiteUrl,
+    name: homepageTitle,
+    description: websiteDescription,
+    inLanguage: 'en-US',
+    isPartOf: { '@id': schemaIds.website },
+    about: { '@id': schemaIds.person },
+    mainEntity: { '@id': schemaIds.blog },
+    primaryImageOfPage: siteImage(),
+    author: authorReference(),
+    publisher: { '@id': schemaIds.organization },
+  })
+}
+
+function articleVariant(
+  post: SchemaPost,
+  variant: (typeof articleOpenGraphImages)[number],
+  notice: string,
+): JsonLd {
+  return imageObject(absoluteUrl(`/${post.id}/${variant.file}`), post.data.title, {
+    width: variant.width,
+    height: variant.height,
+    encodingFormat: 'image/png',
+    copyrightNotice: notice,
+  })
+}
+
+function generatedArticleImages(post: SchemaPost): [JsonLd, ...JsonLd[]] {
+  const notice = `© ${post.data.date.getUTCFullYear()} ${authorFullName}`
+  const [first, ...rest] = articleOpenGraphImages
+  return [
+    articleVariant(post, first, notice),
+    ...rest.map((variant) => articleVariant(post, variant, notice)),
+  ]
+}
+
+function articleImages(post: SchemaPost, hero?: CrawlableImage): [JsonLd, ...JsonLd[]] {
+  const generated = generatedArticleImages(post)
+  if (hero === undefined || hero.width * hero.height < MIN_ARTICLE_IMAGE_PIXELS) {
+    return generated
   }
+  return [
+    imageObject(hero.url, hero.alt, {
+      width: hero.width,
+      height: hero.height,
+      encodingFormat: hero.encodingFormat,
+      copyrightNotice: `© ${post.data.date.getUTCFullYear()} ${authorFullName}`,
+    }),
+    ...generated,
+  ]
 }
 
 export function blogPostingJsonLd(
-  post: CollectionEntry<'blog'>,
-  tag: CollectionEntry<'tags'>,
+  post: SchemaPost,
+  tag: SchemaTag,
+  options?: {
+    hero?: CrawlableImage
+    related?: SchemaPost[]
+  },
 ): JsonLd {
-  const url = absoluteUrl(`/${post.id}`)
-  const published = isoDate(post.data.date)
-  const modified = isoDate(postModifiedDate(post))
+  const localUrl = postUrl(post)
+  const articleUrl = post.data.canonical_url ?? localUrl
+  const syndicated = Boolean(post.data.canonical_url)
+  const published = isoDateTime(post.data.date)
+  const modified = isoDateTime(postModifiedDate(post))
   const words = countWords(post.body)
   const crumbs = blogBreadcrumbs(post, tag)
-  const image = imageObject(absoluteUrl(`/${post.id}/opengraph-image.png`), post.data.title)
+  const images = articleImages(post, options?.hero)
+  const [primaryImage] = images
+  const related = (options?.related ?? [])
+    .filter((item) => item.id !== post.id)
+    .map((item) => postUrl(item))
+  const keywords = post.data.series
+    ? `${tag.data.title}, ${SERIES[post.data.series].title}`
+    : tag.data.title
 
-  return {
-    '@context': 'https://schema.org',
-    '@graph': [
-      personJsonLd(),
-      websiteJsonLd(),
-      breadcrumbsJsonLd(url, crumbs),
-      {
-        '@type': 'BlogPosting',
-        '@id': `${url}#blogposting`,
-        mainEntityOfPage: {
-          '@type': 'WebPage',
-          '@id': url,
-          url,
-          name: post.data.title,
-          description: post.data.description,
-          isPartOf: { '@id': schemaIds.blog },
-          breadcrumb: { '@id': `${url}#breadcrumb` },
-          primaryImageOfPage: image,
-        },
-        headline: post.data.title,
-        description: post.data.description,
-        url,
-        image,
-        thumbnailUrl: absoluteUrl(`/${post.id}/opengraph-image.png`),
-        datePublished: published,
-        dateModified: modified,
-        inLanguage: 'en-US',
-        author: { '@id': schemaIds.person },
-        publisher: { '@id': schemaIds.person },
-        copyrightHolder: { '@id': schemaIds.person },
-        copyrightYear: post.data.date.getUTCFullYear(),
-        keywords: tag.data.title,
-        articleSection: tag.data.title,
-        wordCount: words,
-        timeRequired: readingTimeIso(post.body),
-        isAccessibleForFree: true,
-        isPartOf: post.data.series
-          ? [{ '@id': schemaIds.blog }, { '@id': absoluteUrl(SERIES[post.data.series].path) }]
-          : { '@id': schemaIds.blog },
-        about: {
-          '@type': 'Thing',
-          name: tag.data.title,
-          url: absoluteUrl(`/tag/${tag.id}`),
-        },
-        speakable: {
-          '@type': 'SpeakableSpecification',
-          cssSelector: ['article h1', '.prose'],
-        },
-        ...(post.data.canonical_url ? { isBasedOn: post.data.canonical_url } : {}),
+  return graph(
+    breadcrumbsJsonLd(localUrl, crumbs),
+    {
+      '@type': 'WebPage',
+      '@id': localUrl,
+      url: localUrl,
+      name: post.data.title,
+      description: post.data.description,
+      inLanguage: 'en-US',
+      isPartOf: { '@id': schemaIds.website },
+      breadcrumb: { '@id': `${localUrl}#breadcrumb` },
+      mainEntity: { '@id': `${articleUrl}#blogposting` },
+      primaryImageOfPage: primaryImage,
+      author: authorReference(),
+      publisher: { '@id': schemaIds.organization },
+      ...(syndicated ? { isBasedOn: articleUrl } : {}),
+      ...(related.length > 0 ? { relatedLink: related } : {}),
+    },
+    {
+      '@type': 'BlogPosting',
+      '@id': `${articleUrl}#blogposting`,
+      mainEntityOfPage: syndicated ? articleUrl : { '@id': localUrl },
+      headline: post.data.title,
+      description: post.data.description,
+      url: articleUrl,
+      image: images,
+      thumbnailUrl: absoluteUrl(`/${post.id}/${articleWideImage.file}`),
+      datePublished: published,
+      dateModified: modified,
+      inLanguage: 'en-US',
+      author: authorReference(),
+      publisher: publisherReference(),
+      copyrightHolder: { '@id': schemaIds.person },
+      copyrightYear: post.data.date.getUTCFullYear(),
+      keywords,
+      articleSection: tag.data.title,
+      wordCount: words,
+      timeRequired: readingTimeIso(post.body),
+      isAccessibleForFree: true,
+      isPartOf: post.data.series
+        ? [{ '@id': schemaIds.blog }, { '@id': absoluteUrl(SERIES[post.data.series].path) }]
+        : { '@id': schemaIds.blog },
+      about: {
+        '@type': 'Thing',
+        name: tag.data.title,
+        url: absoluteUrl(`/tag/${tag.id}`),
       },
-    ],
-  }
+      speakable: {
+        '@type': 'SpeakableSpecification',
+        cssSelector: ['article h1', '.prose'],
+      },
+      ...(syndicated ? { isBasedOn: articleUrl } : {}),
+    },
+  )
 }
 
-export function tagCollectionJsonLd(
-  tag: CollectionEntry<'tags'>,
-  posts: CollectionEntry<'blog'>[],
-): JsonLd {
+export function tagCollectionJsonLd(tag: SchemaTag, posts: SchemaPost[]): JsonLd {
   const url = absoluteUrl(`/tag/${tag.id}`)
   const crumbs = tagBreadcrumbs(tag)
 
-  return {
-    '@context': 'https://schema.org',
-    '@graph': [
-      personJsonLd(),
-      websiteJsonLd(),
-      breadcrumbsJsonLd(url, crumbs),
-      {
-        '@type': 'CollectionPage',
-        '@id': url,
-        url,
-        name: `#${tag.data.title}`,
-        description: tag.data.description,
-        inLanguage: 'en-US',
-        isPartOf: { '@id': schemaIds.blog },
-        breadcrumb: { '@id': `${url}#breadcrumb` },
-        about: {
-          '@type': 'Thing',
-          name: tag.data.title,
-          url,
-        },
-        author: { '@id': schemaIds.person },
-        publisher: { '@id': schemaIds.person },
-        mainEntity: {
-          '@type': 'ItemList',
-          numberOfItems: posts.length,
-          itemListOrder: 'https://schema.org/ItemListOrderDescending',
-          itemListElement: posts.map((post, index) => ({
-            '@type': 'ListItem',
-            position: index + 1,
-            url: absoluteUrl(`/${post.id}`),
-            name: post.data.title,
-            item: blogPostPreview(post),
-          })),
-        },
-      },
-    ],
-  }
+  return graph(breadcrumbsJsonLd(url, crumbs), {
+    '@type': 'CollectionPage',
+    '@id': url,
+    url,
+    name: `#${tag.data.title}`,
+    description: tag.data.description,
+    inLanguage: 'en-US',
+    isPartOf: { '@id': schemaIds.blog },
+    breadcrumb: { '@id': `${url}#breadcrumb` },
+    about: {
+      '@type': 'Thing',
+      name: tag.data.title,
+      url,
+    },
+    author: authorReference(),
+    publisher: { '@id': schemaIds.organization },
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: posts.length,
+      itemListOrder: 'https://schema.org/ItemListOrderDescending',
+      itemListElement: listItems(posts),
+    },
+  })
 }
 
 export function scholarlyArticleJsonLd(): JsonLd {
   return {
     '@type': 'ScholarlyArticle',
-    '@id': 'https://doi.org/10.1002/spe.3296',
+    '@id': parsingPaperId,
     name: 'Parsing Millions of URLs per Second',
-    url: 'https://onlinelibrary.wiley.com/doi/full/10.1002/spe.3296',
-    identifier: 'https://doi.org/10.1002/spe.3296',
+    url: parsingPaperUrl,
+    identifier: parsingPaperId,
     author: [{ '@id': schemaIds.person }, { '@type': 'Person', name: 'Daniel Lemire' }],
     datePublished: '2023-03-07',
   }
@@ -384,50 +547,44 @@ export function webPageJsonLd(options: {
 }): JsonLd {
   const url = absoluteUrl(options.path)
   const crumbs = pageBreadcrumbs(options.title, options.path)
-  const image = imageObject(`${websiteUrl}/opengraph-image.png`, options.title)
 
-  return {
-    '@context': 'https://schema.org',
-    '@graph': [
-      personJsonLd(),
-      websiteJsonLd(),
-      breadcrumbsJsonLd(url, crumbs),
-      {
-        '@type': options.type ?? 'WebPage',
-        '@id': url,
-        url,
-        name: options.title,
-        description: options.description,
-        inLanguage: 'en-US',
-        isPartOf: { '@id': schemaIds.website },
-        about: { '@id': schemaIds.person },
-        author: { '@id': schemaIds.person },
-        publisher: { '@id': schemaIds.person },
-        breadcrumb: { '@id': `${url}#breadcrumb` },
-        primaryImageOfPage: image,
-        ...(options.mainEntity ? { mainEntity: options.mainEntity } : {}),
-        ...(options.potentialAction ? { potentialAction: options.potentialAction } : {}),
-        ...(options.hasPart
-          ? {
-              hasPart: options.hasPart.map((part) => ({
-                '@type': 'WebPageElement',
-                name: part.name,
-                url: `${url}#${part.fragment}`,
-              })),
-            }
-          : {}),
-      },
-    ],
-  }
+  return graph(breadcrumbsJsonLd(url, crumbs), {
+    '@type': options.type ?? 'WebPage',
+    '@id': url,
+    url,
+    name: options.title,
+    description: options.description,
+    inLanguage: 'en-US',
+    isPartOf: { '@id': schemaIds.website },
+    about: { '@id': schemaIds.person },
+    author: authorReference(),
+    publisher: { '@id': schemaIds.organization },
+    breadcrumb: { '@id': `${url}#breadcrumb` },
+    primaryImageOfPage: siteImage(),
+    ...(options.mainEntity ? { mainEntity: options.mainEntity } : {}),
+    ...(options.potentialAction ? { potentialAction: options.potentialAction } : {}),
+    ...(options.hasPart
+      ? {
+          hasPart: options.hasPart.map((part) => ({
+            '@type': 'WebPageElement',
+            name: part.name,
+            url: `${url}#${part.fragment}`,
+          })),
+        }
+      : {}),
+  })
 }
 
 export function aboutPageJsonLd(title: string, description: string): JsonLd {
-  const graph = webPageJsonLd({
+  const data = webPageJsonLd({
     path: '/about',
     title,
     description,
-    type: ['ProfilePage', 'AboutPage'],
-    mainEntity: { '@id': schemaIds.person },
+    type: 'ProfilePage',
+    mainEntity: {
+      ...authorReference(),
+      description: authorDescription,
+    },
     hasPart: [
       { name: 'Who is Yagiz Nizipli?', fragment: 'who-is-yagiz-nizipli' },
       { name: 'Memberships', fragment: 'memberships' },
@@ -436,11 +593,11 @@ export function aboutPageJsonLd(title: string, description: string): JsonLd {
     ],
   })
 
-  const nodes = graph['@graph']
+  const nodes = data['@graph']
   if (Array.isArray(nodes)) {
     nodes.push(scholarlyArticleJsonLd())
   }
-  return graph
+  return data
 }
 
 export function contactPageJsonLd(title: string, description: string): JsonLd {
@@ -463,18 +620,7 @@ export function newsletterPageJsonLd(title: string, description: string): JsonLd
     path: '/newsletter',
     title,
     description,
-    potentialAction: {
-      '@type': 'SubscribeAction',
-      name: 'Subscribe to the newsletter',
-      target: {
-        '@type': 'EntryPoint',
-        urlTemplate: absoluteUrl('/newsletter'),
-        actionPlatform: [
-          'https://schema.org/DesktopWebPlatform',
-          'https://schema.org/MobileWebPlatform',
-        ],
-      },
-    },
+    potentialAction: subscribeAction(),
   })
 }
 
@@ -482,48 +628,34 @@ export function seriesCollectionJsonLd(
   path: string,
   title: string,
   description: string,
-  posts: CollectionEntry<'blog'>[],
+  posts: SchemaPost[],
 ): JsonLd {
   const url = absoluteUrl(path)
   const crumbs = seriesBreadcrumbs(title, path)
 
-  return {
-    '@context': 'https://schema.org',
-    '@graph': [
-      personJsonLd(),
-      websiteJsonLd(),
-      breadcrumbsJsonLd(url, crumbs),
-      {
-        '@type': 'CollectionPage',
-        '@id': url,
-        url,
-        name: title,
-        description,
-        inLanguage: 'en-US',
-        isPartOf: { '@id': schemaIds.blog },
-        breadcrumb: { '@id': `${url}#breadcrumb` },
-        about: {
-          '@type': 'Thing',
-          name: title,
-          url,
-        },
-        author: { '@id': schemaIds.person },
-        publisher: { '@id': schemaIds.person },
-        mainEntity: {
-          '@type': 'ItemList',
-          numberOfItems: posts.length,
-          itemListOrder: 'https://schema.org/ItemListOrderAscending',
-          itemListElement: posts.map((post, index) => ({
-            '@type': 'ListItem',
-            position: index + 1,
-            url: absoluteUrl(`/${post.id}`),
-            name: post.data.title,
-            item: blogPostPreview(post),
-          })),
-        },
-      },
-    ],
-  }
+  return graph(breadcrumbsJsonLd(url, crumbs), {
+    '@type': 'CollectionPage',
+    '@id': url,
+    url,
+    name: title,
+    description,
+    inLanguage: 'en-US',
+    isPartOf: { '@id': schemaIds.blog },
+    breadcrumb: { '@id': `${url}#breadcrumb` },
+    about: {
+      '@type': 'Thing',
+      name: title,
+      url,
+    },
+    author: authorReference(),
+    publisher: { '@id': schemaIds.organization },
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: posts.length,
+      itemListOrder: 'https://schema.org/ItemListOrderAscending',
+      itemListElement: listItems(posts),
+    },
+  })
 }
 
 export function pressPageJsonLd(title: string, description: string): JsonLd {

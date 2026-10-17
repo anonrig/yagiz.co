@@ -11,24 +11,24 @@ import type { BreadcrumbItem } from '@/lib/schema'
 interface Props {
   page: CollectionEntry<'pages'>
   itemtype?: string
-  itemid?: string
   breadcrumbs?: BreadcrumbItem[]
 }
 
-const { page, itemtype, itemid, breadcrumbs } = Astro.props
+const { page, itemtype, breadcrumbs } = Astro.props
+const structured = Boolean(itemtype)
 const { Content } = await render(page)
 ---
 
-<section {...(itemtype ? { itemscope: true, itemtype, itemid } : {})}>
+<section>
   <header class="mb-[4.5rem] grid grid-cols-canvas text-center">
     {
       breadcrumbs && (
         <div class="col-main mb-4">
-          <Breadcrumbs items={breadcrumbs} />
+          <Breadcrumbs items={breadcrumbs} itemprop="breadcrumb" />
         </div>
       )
     }
-    <Heading itemprop={itemtype ? 'name' : undefined}>{page.data.title}</Heading>
+    <Heading itemprop={structured ? 'name' : undefined}>{page.data.title}</Heading>
 
     {
       page.data.image && (
@@ -36,13 +36,13 @@ const { Content } = await render(page)
           alt={page.data.image.alt}
           src={page.data.image.src}
           caption={page.data.image.caption}
-          itemprop={itemtype ? 'image' : undefined}
+          itemprop={structured ? 'image' : undefined}
         />
       )
     }
   </header>
 
-  <Prose itemprop={itemtype ? 'text' : undefined}>
+  <Prose itemprop={structured ? 'text' : undefined}>
     <Content {components} />
   </Prose>
 

@@ -4,7 +4,7 @@ import ContactForm from '@/components/ContactForm.astro'
 import Page from '@/components/Page.astro'
 import Layout from '@/layouts/Layout.astro'
 import { websiteUrl } from '@/lib/content'
-import { absoluteUrl, contactPageJsonLd, pageBreadcrumbs } from '@/lib/schema'
+import { contactPageJsonLd, pageBreadcrumbs } from '@/lib/schema'
 
 const page = await getEntry('pages', 'contact')
 if (!page) {
@@ -20,11 +20,12 @@ const breadcrumbs = pageBreadcrumbs(page.data.title, '/contact')
   description={page.data.description}
   markdownUrl={markdownUrl}
   jsonLd={contactPageJsonLd(page.data.title, page.data.description)}
+  schemaType="https://schema.org/ContactPage"
+  microdataName={false}
 >
   <Page
     {page}
     itemtype="https://schema.org/ContactPage"
-    itemid={absoluteUrl('/contact')}
     breadcrumbs={breadcrumbs}
   >
     <ContactForm />

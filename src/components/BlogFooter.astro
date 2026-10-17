@@ -5,8 +5,8 @@ import type { CollectionEntry } from 'astro:content'
 import { ArrowLeft, ArrowRight } from '@lucide/astro'
 import authorImg from '@/assets/author-image.png'
 import Container from '@/components/ui/Container.astro'
-import { authorFullName } from '@/lib/content'
-import { schemaIds } from '@/lib/schema'
+import { authorFullName, authorJobTitle } from '@/lib/content'
+import { absoluteUrl, schemaIds } from '@/lib/schema'
 
 interface Props {
   index: number
@@ -34,34 +34,37 @@ const previous = index === posts.length - 1 ? undefined : posts.at(index + 1)
   </div>
 
   <div
-    class="flex flex-col"
+    class="flex shrink-0 flex-col items-center px-3"
     itemprop="author"
     itemscope
     itemtype="https://schema.org/Person"
     itemid={schemaIds.person}
   >
-    <div class="flex flex-col items-center gap-y-4">
-      <p class="mb-4 font-extrabold tracking-wide text-slate-800 dark:text-white">
-        Published by:
-      </p>
-      <a
-        href="/about"
-        itemprop="url"
-        aria-label={`About ${authorFullName}`}
-        class="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2 rounded-full"
-      >
-        <Image
-          src={authorImg}
-          alt={authorFullName}
-          width={50}
-          height={50}
-          layout="fixed"
-          class="rounded-full"
-          itemprop="image"
-        />
-      </a>
-      <meta itemprop="name" content={authorFullName} />
-    </div>
+    <p class="mb-3 text-center text-xs font-extrabold tracking-wide text-slate-800 dark:text-white">
+      Published by
+    </p>
+    <a
+      href="/about"
+      rel="author"
+      class="flex flex-col items-center gap-y-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2"
+    >
+      <Image
+        src={authorImg}
+        alt=""
+        width={50}
+        height={50}
+        layout="fixed"
+        class="rounded-full"
+        itemprop="image"
+      />
+      <span itemprop="name" class="text-center text-sm font-extrabold text-slate-800 dark:text-white">
+        {authorFullName}
+      </span>
+    </a>
+    <link itemprop="url" href={absoluteUrl('/about')} />
+    <p class="mt-1 text-center text-xs text-neutral-500 dark:text-neutral-400" itemprop="jobTitle">
+      {authorJobTitle}
+    </p>
   </div>
 
   <div class="flex min-w-0 flex-2 justify-end text-black dark:text-neutral-400">
