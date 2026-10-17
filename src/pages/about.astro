@@ -15,6 +15,7 @@ const breadcrumbs = pageBreadcrumbs(page.data.title, '/about')
 ---
 <Layout
   title={page.data.title}
+  documentTitle={page.data.title}
   description={page.data.description}
   markdownUrl={markdownUrl}
   jsonLd={aboutPageJsonLd(page.data.title, page.data.description)}
