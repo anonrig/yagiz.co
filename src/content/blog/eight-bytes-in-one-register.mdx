@@ -1,0 +1,474 @@
+---
+title: 'Eight bytes in one register'
+description: >-
+  Eight host bytes fit in one register. The usual has-zero test
+  treats "./" as a clean host, so Ada forces the high bit before it
+  subtracts. A clean kilobyte goes from 1.6 GB/s to 33 GB/s on the
+  tab check. The host check itself barely moves.
+date: '2026-10-17'
+tag: performance
+series: url-parsing
+status: published
+---
+
+Suppose you want to know whether the next eight bytes of a host
+are a letter, a digit, `-`, `.`, `_`, or `~`. In [Ada][ada] that
+is the common case inside `can_parse`. The answer has to be
+exact. `./` is not a host. `_^` is not a host.
+
+A reasonable function might look as follows.
+
+```cpp title="The obvious host check"
+bool eight_clean(const char* p) {
+  for (int i = 0; i < 8; i++) {
+    unsigned char c = static_cast<unsigned char>(p[i]);
+    if (!((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') ||
+          c == '-' || c == '.' || c == '_' || c == '~')) {
+      return false;
+    }
+  }
+  return true;
+}
+```
+
+If any byte is wrong we return `false`. If the loop finishes,
+we return `true`. On a real host every byte is fine, so the
+branch is predicted eight times and we learn nothing until the
+end.
+
+We already have a 256-byte table for this class. One load per
+byte. I will come back to it with numbers.
+
+Can we do better?
+
+## Eight bytes at a time
+
+Eight bytes fit in a `uint64_t`, and the arithmetic can run on
+all of them at once. The technique is called SWAR: SIMD within
+a register. [Lamport described it in 1975][swar]. [Daniel's SWAR
+posts][swar-json] are the best explanation I know. I used it
+for a lowercase scan in [an earlier post][branches].
+
+Load the bytes with `memcpy`. It looks expensive. With
+optimizations on, it is one load.
+
+```cpp title="Load eight bytes into a register"
+uint64_t word;
+std::memcpy(&word, p, 8);
+```
+
+On this machine the first byte of the string is the low byte
+of the register. The high bit of each byte, `0x80`, is that
+lane's flag. A mask of all eight flags is `0x8080808080808080`.
+Multiplying by `0x0101010101010101` copies one byte into every
+lane. `splat('.')` is `0x2e2e2e2e2e2e2e2e`.
+
+```cpp title="Broadcast one byte into all eight lanes"
+constexpr uint64_t kOnes = 0x0101010101010101ull;
+constexpr uint64_t kHigh = 0x8080808080808080ull;
+
+constexpr uint64_t splat(uint8_t b) {
+  return kOnes * b;
+}
+```
+
+Addition and subtraction then touch every lane. A byte that
+underflows borrows from the next one.
+
+The same load is how `can_parse` recognizes `https://`. Eight
+byte compares become one integer compare. The constant looks
+backwards because `h` is the low byte: `0x68`, then
+`t t p s : / /`.
+
+```cpp title="Match https:// with one load"
+uint64_t first8;
+std::memcpy(&first8, input, 8);
+if (first8 == 0x2f2f3a7370747468ull) {  // "https://"
+  authority = 8;
+}
+```
+
+`http://` is seven bytes. The eighth byte is the start of the
+host, so mask it off.
+
+```cpp title="http:// ignores the eighth byte"
+if ((first8 & 0x00ffffffffffffffull) == 0x002f2f3a70747468ull) {
+  authority = 7;
+}
+```
+
+On a big-endian machine we load four bytes and compare them
+with `0x68747470`, which is `http` in memory order, then check
+`s://` or `://` one byte at a time. A path segment of 8 to 16
+bytes is the same compare: two loads, XOR, OR, compare with
+zero. Shorter keys keep the live bytes with a mask. Longer
+keys stay on `memcmp`.
+
+On `https://example.com/` the byte compares take 1.7 ns and
+the word compare takes 0.5 ns. The rest of the parse is larger
+than either. The scheme test no longer has a branch per
+character.
+
+## A range that stays in its lane
+
+The host check needs every lane, and it needs a closed range.
+The routine we ship turns the high bit on before the subtract.
+A byte in `0x00`–`0x7F` then cannot borrow from its neighbor.
+The caller has already rejected any word whose high bits are
+set.
+
+```cpp title="High bit set when lo <= byte <= hi"
+uint64_t in_range(uint64_t w, uint8_t lo, uint8_t hi) {
+  uint64_t ge_lo = (w | kHigh) - splat(lo);
+  uint64_t le_hi = (splat(hi) | kHigh) - w;
+  return ge_lo & le_hi & kHigh;
+}
+```
+
+`byte | 0x80` is at least `0x80`. The threshold is at most
+`0x7F`. The subtract stays inside the byte. The high bit of
+`(byte | 0x80) - lo` stays set when `byte >= lo`. The high bit
+of `(hi | 0x80) - byte` stays set when `byte <= hi`. AND the
+two masks.
+
+Let's walk through `a` to `z`:
+
+- `'a'` is `0x61`. `(0x61 | 0x80) - 0x61` is `0x80`.
+  `(0x7A | 0x80) - 0x61` is `0x99`. Both high bits are set.
+- The byte just below `'a'` is `0x60`. `0xE0 - 0x61` is
+  `0x7F`. The lower bound is clear.
+- The byte just above `'z'` is `0x7B`. The lower bound is
+  set, and `(0x7A | 0x80) - 0x7B` is `0x7F`. The upper bound
+  is clear.
+
+`'/'` against the one-byte range `.` loses on the upper bound.
+The next lane is untouched. I checked every ASCII byte in
+every lane, against all six classes, with the neighbors set
+to `m`. They matched. Bytes at or above `0x80` are a different
+function. We return false before this one runs.
+
+A clean word is the OR of the six ranges, and that OR has to
+equal `kHigh`.
+
+```cpp title="Eight clean host bytes"
+bool eight_clean_host(const uint8_t* p) {
+  uint64_t w;
+  std::memcpy(&w, p, 8);
+  if ((w & kHigh) != 0) {
+    return false;
+  }
+  uint64_t ok = in_range(w, 'a', 'z') | in_range(w, '0', '9') |
+                in_range(w, '-', '-') | in_range(w, '.', '.') |
+                in_range(w, '_', '_') | in_range(w, '~', '~');
+  return ok == kHigh;
+}
+```
+
+The word loop takes multiples of eight. The leftover bytes go
+through the 256-byte table, one at a time. `example.com` is 11
+bytes: one word, then three loads. The code is in
+[`implementation.cpp`][impl].
+
+## Has-zero accepts `./`
+
+The formula I tried first is the usual one. Alan Mycroft's
+has-zero, from 1987, as written up in [Bit Twiddling
+Hacks][bithacks]. XOR the word with the character you hope to
+find. A lane that became zero sets its high bit.
+
+```cpp title="High bit set where a byte is zero"
+uint64_t haszero(uint64_t v) {
+  return (v - kOnes) & ~v & kHigh;
+}
+```
+
+Subtracting one from a zero byte underflows, and the high bit
+comes on. A byte from `0x01`–`0x7F` stays clear. `& ~v` drops a
+byte that already had the high bit set, so `0x80` and `0xFF`
+are not zeros.
+
+The underflow borrows. Take the bytes `0x00`, `0x01`. As a
+little-endian word that is `0x0100`. Has-zero returns `0x8080`
+for those two lanes. The `0x00` is a real zero. The `0x01`
+borrowed, and now it looks like a zero too. A run of `0x01`
+keeps going. `0x00 0x01 0x01 0x41` lights the first three
+lanes and stops at `0x41`.
+
+The mask is the wrong set of positions. The word-level answer
+is still right: a false lane only shows up behind a real zero,
+so "is any byte zero?" does not flip. That is a fine test when
+you only need the yes or no. It is a bad test for "is every
+byte one of these characters?".
+
+`.` is `0x2E`. `/` is `0x2F`, which is `.` XOR 1. XOR `./`
+with eight dots and the lanes are `0x00`, `0x01`. Has-zero
+lights both. `_` and `^` are the same pair. OR one has-zero
+mask per allowed character, demand that every high bit be set,
+and both words look clean.
+
+```text
+input      after XOR with the matched byte    lanes
+./aaaaaa   00 01 4f 4f 4f 4f 4f 4f             80 80 ..
+_^aaaaaa   00 01 3e 3e 3e 3e 3e 3e             80 80 ..
+```
+
+The test suite says it in one line. SWAR must not treat `./`
+or `_^` as eight clean host bytes.
+`https://foo_^bar.com/` does not parse. The has-zero version
+would have let it through.
+
+## What the host check costs
+
+Intel Xeon at 2.4 GHz, g++ 13.3, `-O3 -march=native`. The
+machine has AVX-512BW, VL, and SSSE3. Median of repeated runs.
+The buffers are clean: letters and dots, no tab, no byte under
+a space. The other tables in this post are the same run. The
+byte loops are the scalar code GCC emits. For these scans it
+does not vectorize them. The early `return` is still in the
+assembly.
+
+| Clean host | 8 B | 15 B | 1024 B |
+| --- | ---: | ---: | ---: |
+| 256-byte table | 4.3 ns | 7.5 ns | 3.8 GB/s |
+| SWAR ranges | 4.1 ns | 5.7 ns | 4.4 GB/s |
+
+At 8 bytes they tie, about 4 ns. At 15 bytes the word loop is
+5.7 ns and the table is 7.5 ns. A kilobyte is 3.8 GB/s against
+4.4 GB/s, about 15 percent. Six range tests were never going to
+beat one load from a hot table by a lot. I would keep the
+table. The word loop is there so `foo_^bar` stays illegal.
+Has-zero is a similar speed and accepts it.
+
+## A tab is a yes or no
+
+The portable build of the tab scan has no SSSE3 and no NEON.
+It looks for `\t`, `\n`, and `\r` eight bytes at a time, and
+it only needs to know that one of them appeared. Has-zero is
+the right question there. XOR with a splatted tab, newline,
+and carriage return. OR the three masks. Ask whether the
+register is nonzero. The positions are never read. The code
+is in [`unicode.cpp`][unicode].
+
+| Check for a tab | 8 B | 32 B | 1024 B |
+| --- | ---: | ---: | ---: |
+| Byte loop | 5.4 ns | 20 ns | 1.6 GB/s |
+| SWAR has-zero | 3.5 ns | 3.5 ns | 33 GB/s |
+| SSSE3 `pshufb` | 5.5 ns | 2.2 ns | 39 GB/s |
+
+The input is a clean buffer, which is the common URL. At 8
+and 15 bytes the SSSE3 column is the byte loop. We only
+shuffle once the string is at least 16 bytes, so those rows
+are 5.5 ns and 9.9 ns of scalar code. SWAR is 3.5 ns and
+7.1 ns there.
+
+At 32 bytes the shuffle is 2.2 ns and SWAR is 3.5 ns. A
+kilobyte is 650 ns in the byte loop, 31 ns in SWAR, 26 ns in
+the shuffle: 1.6 GB/s, 33 GB/s, 39 GB/s. About 20 times the
+byte loop. The portable word loop and the 16-byte shuffle
+are in the same range once the string is long.
+
+A short tail is a zeroed register with the live bytes copied
+in. Zero XOR a tab is a tab, not zero, so the padding does
+not look like a match. `"hello"` is five bytes and reports
+no tab.
+
+## A slash is an index
+
+The URL pattern matcher splits a pathname and records the
+index of every `/`. A false lane would invent a segment.
+Has-zero will not do. The scan uses a zero test that does
+not carry. Keep the low seven bits, add `0x7F`, and the high
+bit comes on exactly when those seven bits were not zero.
+`0x7F + 0x7F` is `0xFE`, so nothing spills into the next
+byte. OR the original byte, so a value at or above `0x80`
+counts as nonzero too. OR `0x7F`, then invert. The only bit
+that can still be set is the high bit, and it is set only
+when the byte was `0x00`.
+
+```cpp title="High bit set in exactly the lanes that are zero"
+constexpr uint64_t kLow7 = 0x7F7F7F7F7F7F7F7Full;
+
+uint64_t zero_lanes(uint64_t x) {
+  return ~(((x & kLow7) + kLow7) | x | kLow7);
+}
+```
+
+XOR the word with eight slashes first, so a `/` is the zero
+we look for. `countr_zero` of that mask, shifted down by 3,
+is the byte index inside the window. `lanes &= lanes - 1`
+clears the lowest set bit and walks the rest. I checked
+every byte value in every lane. The bit is set only for
+zero.
+
+The tail is one to seven bytes, gathered into a zeroed
+register. A zero pad XOR `/` is `0x2F`, which is not zero,
+so the pad is not a segment. We never read past the end of
+the string. The scan is `scan_segments_swar` in the
+[pattern-list header][segments].
+
+On AArch64 a pathname of 16 bytes or more takes the NEON
+compare. The comment on that function says it is faster at
+every length they measured, and three to four times faster
+past a kilobyte. I did not retime it. On this Xeon the SSE2
+compare is the same shape.
+
+| Find every `/` | 32 B, no slash | 1024 B, no slash | 1024 B, a slash every 16 |
+| --- | ---: | ---: | ---: |
+| Byte loop | 17 ns | 1.9 GB/s | 1.9 GB/s |
+| SWAR | 6.1 ns | 9.9 GB/s | 7.7 GB/s |
+| SSE2 | 9.6 ns | 25 GB/s | 12 GB/s |
+
+At 32 bytes with nothing to record, SWAR is 6.1 ns and SSE2
+is 9.6 ns. At a kilobyte with nothing to record, SSE2 is
+25 GB/s and SWAR is 9.9 GB/s, about 2.5 times. A slash
+every 16 bytes slows both of them down, because
+every hit writes an index. That column is 7.7 GB/s and
+12 GB/s. The byte loop stays near 1.9 GB/s either way. SWAR
+is what the portable build runs, and what the short paths
+run on every machine.
+
+## Bytes under a space
+
+A wildcard tail in the same matcher may contain a tab. It
+may not contain a newline. The filter is [has-less][hasless]:
+subtract a splatted threshold and keep the high bits that
+underflowed.
+
+```cpp title="Is any byte under n?"
+uint64_t hasless(uint64_t v, uint8_t n) {
+  return (v - splat(n)) & ~v & kHigh;
+}
+```
+
+The borrow is the same one. A byte that really is under
+`0x20` can light the next lane when that next byte equals
+the threshold. `0x00` followed by a space lights both
+lanes. `0x00` followed by `0x21` lights only the first.
+Every byte under `0x20`, followed by a space, does this. I
+checked every pair, with the other lanes filled with
+spaces. "Is any byte under the threshold?" was right in all
+of them.
+
+That is the question the tail asks. A clear mask means there
+is no newline, and we accept. A set mask falls through to a
+byte loop that looks for `\n` and `\r` only. A tab is under
+the space character, so it takes the slow path and is then
+allowed. The fast path is a tail with no controls at all.
+
+The bytes past the end are filled with spaces, not zeros.
+Zero is under `0x20` and would look like a hit. The slash
+scan wanted the opposite pad. The pad is part of the test.
+The function is `wildcard_tail_ok` in
+[`url_pattern_list.cpp`][wildcard].
+
+On a kilobyte of letters and spaces the byte loop does
+3.8 GB/s and this filter does 56 GB/s. At 8 bytes it is
+4.8 ns against 1.8 ns. The body is one subtract and two
+ANDs, so a single word is already worth it.
+
+## Writing `A` down to `a`
+
+`to_lower_ascii` writes the bytes back. A lane is `A` to `Z`
+when adding `128 - 'A'` sets the high bit and adding
+`128 - 'Z' - 1` does not. XOR those two high bits, shift
+right by 2, and the bit lands on `0x20`. XOR that into the
+original word. `A` becomes `a`.
+
+```cpp title="Lowercase A-Z in every lane"
+uint64_t lower_word(uint64_t word) {
+  uint64_t hi_a = word + splat(128 - 'A');
+  uint64_t hi_z = word + splat(128 - 'Z' - 1);
+  return word ^ (((hi_a ^ hi_z) & kHigh) >> 2);
+}
+```
+
+`'A'` is `0x41`. `0x41 + 0x3F` is `0x80`. `0x41 + 0x25` is
+`0x66`. One high bit, shifted, is `0x20`. `0x41 ^ 0x20` is
+`'a'`. `'['` sets both high bits, the XOR is zero, and the
+byte stays. An ASCII byte plus `0x3F` never carries out of
+its lane. `0x7F + 0x3F` is `0xBE`.
+
+I checked every pair of ASCII bytes. They matched. A byte at
+or above `0x80` can carry. `0xC1` next to `@` overflows, the
+carry sets the high bit of `@`, and `@` becomes `0x60`. The
+function ORs every high bit into a flag and returns false
+when any lane was outside ASCII. We call it only after the
+host scan has already kept those bytes out, and only when
+that scan saw an uppercase letter.
+
+| Lowercase ASCII | 7 B | 32 B | 1024 B |
+| --- | ---: | ---: | ---: |
+| Byte loop | 5.6 ns | 18 ns | 1.9 GB/s |
+| SWAR | 12.5 ns | 8.8 ns | 46 GB/s |
+| GCC, AVX-512 |  |  | 76 GB/s |
+
+Seven bytes are the wrong length. The byte loop is 5.6 ns
+and SWAR is 12.5 ns, most of it the tail. At 32 bytes SWAR
+is ahead, 8.8 ns against 18 ns. A kilobyte is 1.9 GB/s
+against 46 GB/s.
+
+This is the one loop GCC will vectorize on its own. There is
+no early return. The same source at `-O3 -march=native` is
+an AVX-512 masked update, about 76 GB/s here. The SWAR loop
+is what we ship when the build cannot ask for that ISA.
+
+## What I leave as a byte loop
+
+An IPv4 octet is two or three digits. In the [IPv4 post][ipv4]
+I folded three digits with the weights `1, 10, 100`. That was
+35 ns per address. The unrolled scalar parser, multiplying by
+ten as it goes, was 16 ns. SWAR wants a full register. Three
+digits do not fill one. Keep the `* 10`.
+
+Percent-encoding is the other one, for a different reason. In
+the [last post][space] the output of a lane was either one
+byte or three, so there was nothing to store at a fixed
+width. A 16-byte `pshufb` finds the bytes that need `%XX`, and
+the writes stay scalar. A kilobyte that is almost clean goes
+from 1.0 GB/s to 9.6 GB/s. A string of spaces gets slower.
+A `uint64_t` does not change that.
+
+## Which one should you use?
+
+It depends on the question, and on how many bytes you have.
+
+1. **One integer compare** when the bytes are a fixed prefix
+   such as `https://`. Write the constant in little-endian
+   order, or `memcpy` it out of a string and let the compiler
+   do it. Mask the byte you do not have.
+2. **Has-zero or has-less** when you only need to know that
+   some lane matched. The lane after a real hit can light up
+   too. Pad a short word with a byte that fails the test.
+   Zero fails "is this zero?" and "is this under a space?".
+   It passes "is this a slash?".
+3. **The `0x7F` add** when every match is an index, as with
+   the slashes in a path. A SIMD compare is faster once the
+   string is long and the build can require it. At 32 bytes
+   with nothing to record, the word loop was still ahead.
+4. **Force the high bit, then subtract**, when every ASCII
+   lane needs a closed range. That is the host check. Keep
+   the 256-byte table for the tail. On this machine the table
+   is within about 15 percent of the word loop.
+5. **The case bit** when you are writing `A` to `Z` down to
+   `a` to `z` and the word is ASCII. Under about 16 bytes, do
+   it one byte at a time. If the compiler is allowed to emit
+   AVX-512, read the assembly before you keep the masks.
+6. **The byte loop** when the group is shorter than a lane.
+   An IPv4 octet is that case.
+
+Compilers will turn a `memcpy` of eight bytes into one load.
+They will not notice that `./` is `0x00` then `0x01`, and they
+will not pad a short word with a space instead of a zero.
+
+[ada]: https://github.com/ada-url/ada
+[impl]: https://github.com/ada-url/ada/blob/main/src/implementation.cpp
+[unicode]: https://github.com/ada-url/ada/blob/main/src/unicode.cpp
+[segments]: https://github.com/ada-url/ada/blob/main/include/ada/url_pattern_list-inl.h
+[wildcard]: https://github.com/ada-url/ada/blob/main/src/url_pattern_list.cpp
+[branches]: https://www.yagiz.co/eliminating-branches-in-cpp-loops
+[ipv4]: https://www.yagiz.co/simd-is-the-wrong-way-to-parse-ipv4
+[space]: https://www.yagiz.co/a-space-is-a-bit-in-a-32-byte-table
+[swar]: https://lemire.me/blog/2022/01/21/swar-explained-parsing-eight-digits/
+[swar-json]: https://lemire.me/blog/2025/04/13/detect-control-characters-quotes-and-backslashes-efficiently-using-swar/
+[bithacks]: https://graphics.stanford.edu/~seander/bithacks.html#ZeroInWord
+[hasless]: https://graphics.stanford.edu/~seander/bithacks.html#HasLessInWord
