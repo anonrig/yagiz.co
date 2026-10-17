@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-import { websiteUrl } from './content.ts'
+import { articleOpenGraphImages, websiteTitle, websiteUrl } from './content.ts'
 
 function stripSlash(url: string): string {
   return url.replace(/\/+$/u, '')
@@ -18,9 +18,20 @@ function frontmatterField(source: string, name: string): string | undefined {
   return value === undefined ? undefined : value.trim()
 }
 
-export function loadSitemapLastmods(): Map<string, string> {
+export interface SitemapImageRef {
+  url: string
+  title: string
+}
+
+export interface SitemapExtras {
+  lastmods: Map<string, string>
+  images: Map<string, SitemapImageRef[]>
+}
+
+export function loadSitemapExtras(): SitemapExtras {
   const blogDir = join(import.meta.dirname, '../content/blog')
   const lastmods = new Map<string, string>()
+  const images = new Map<string, SitemapImageRef[]>()
   const latestByTag = new Map<string, Date>()
   let latestPost: Date | undefined
 
@@ -44,7 +55,16 @@ export function loadSitemapLastmods(): Map<string, string> {
     const updated = updatedValue ? new Date(`${updatedValue}T00:00:00.000Z`) : undefined
     const modified = updated && !Number.isNaN(updated.getTime()) && updated > date ? updated : date
     const id = file.replace(/\.mdx?$/u, '')
-    lastmods.set(stripSlash(`${websiteUrl}/${id}`), modified.toISOString())
+    const pageUrl = stripSlash(`${websiteUrl}/${id}`)
+    const title = frontmatterField(source, 'title') ?? id
+    lastmods.set(pageUrl, modified.toISOString())
+    images.set(
+      pageUrl,
+      articleOpenGraphImages.map((variant) => ({
+        url: `${websiteUrl}/${id}/${variant.file}`,
+        title,
+      })),
+    )
     if (!latestPost || modified > latestPost) {
       latestPost = modified
     }
@@ -67,6 +87,9 @@ export function loadSitemapLastmods(): Map<string, string> {
   if (latestPost) {
     lastmods.set(stripSlash(websiteUrl), latestPost.toISOString())
   }
+  images.set(stripSlash(websiteUrl), [
+    { url: `${websiteUrl}/opengraph-image.png`, title: websiteTitle },
+  ])
   for (const [key, date] of latestByTag) {
     if (key.startsWith('series:')) {
       lastmods.set(stripSlash(`${websiteUrl}/${key.slice('series:'.length)}`), date.toISOString())
@@ -75,5 +98,9 @@ export function loadSitemapLastmods(): Map<string, string> {
     lastmods.set(stripSlash(`${websiteUrl}/tag/${key}`), date.toISOString())
   }
 
-  return lastmods
+  return { lastmods, images }
+}
+
+export function loadSitemapLastmods(): Map<string, string> {
+  return loadSitemapExtras().lastmods
 }

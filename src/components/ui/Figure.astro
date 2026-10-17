@@ -1,6 +1,8 @@
 ---
 import { Image } from 'astro:assets'
 import type { ImageMetadata } from 'astro'
+import { authorFullName } from '@/lib/content'
+import { absoluteUrl, imageMime } from '@/lib/schema'
 
 interface Props {
   caption?: string | undefined
@@ -10,6 +12,7 @@ interface Props {
 }
 
 const { caption, src, alt, itemprop }: Props = Astro.props
+const contentUrl = absoluteUrl(src.src)
 ---
 <figure
   class="mt-6 col-wide"
@@ -26,9 +29,14 @@ const { caption, src, alt, itemprop }: Props = Astro.props
     loading="eager"
     fetchpriority="high"
     class="duration-300 ease-in-out bg-gray-100 dark:bg-gray-900 aspect-[2/1] w-full object-cover object-center"
-    itemprop="contentUrl"
   />
+  <link itemprop="contentUrl" href={contentUrl} />
+  <link itemprop="url" href={contentUrl} />
   <meta itemprop="name" content={alt} />
+  <meta itemprop="width" content={String(src.width)} />
+  <meta itemprop="height" content={String(src.height)} />
+  <meta itemprop="encodingFormat" content={imageMime(src.format)} />
+  <meta itemprop="creditText" content={authorFullName} />
   {
     caption && (
       <figcaption class="mt-4 text-sm text-neutral-400" itemprop="caption">

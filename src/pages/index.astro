@@ -6,7 +6,7 @@ import BlogRow from '@/components/BlogRow.astro'
 import SubscribeButton from '@/components/SubscribeButton.astro'
 import Container from '@/components/ui/Container.astro'
 import Layout from '@/layouts/Layout.astro'
-import { websiteDescription, websiteTitle, websiteUrl } from '@/lib/content'
+import { homepageTitle, websiteDescription, websiteTitle, websiteUrl } from '@/lib/content'
 import { homeJsonLd, schemaIds } from '@/lib/schema'
 
 const collected = await getCollection('blog', ({ data }) => data.status === 'published')
@@ -27,10 +27,21 @@ const years = [...postsByYear.keys()]
 const markdownUrl = `${websiteUrl}/index.md`
 ---
 
-<Layout markdownUrl={markdownUrl} jsonLd={homeJsonLd(posts)}>
-  <div itemscope itemtype="https://schema.org/WebPage" itemid={schemaIds.webpage}>
+<Layout
+  markdownUrl={markdownUrl}
+  jsonLd={homeJsonLd(posts)}
+  documentTitle={homepageTitle}
+  microdataName={false}
+  schemaId={schemaIds.webpage}
+>
+  <div>
     <div class="-mt-8 mx-auto mb-4 flex max-w-lg flex-col items-center text-center">
-      <div class="relative mb-8" itemscope itemtype="https://schema.org/ImageObject">
+      <div
+        class="relative mb-8"
+        itemscope
+        itemtype="https://schema.org/ImageObject"
+        itemprop="image"
+      >
         <Image
           alt="Yagiz Nizipli"
           src={familyImg}
@@ -47,12 +58,14 @@ const markdownUrl = `${websiteUrl}/index.md`
       <h1 class="mb-3 text-2xl font-extrabold text-slate-800 dark:text-white">
         Yagiz Nizipli
       </h1>
-      <meta itemprop="name" content={websiteTitle} />
-      <meta itemprop="description" content={websiteDescription} />
+      <meta itemprop="name" content={homepageTitle} />
       <div class="text-lg dark:text-zinc-200">
-        Here's a collection of posts about my thoughts, stories, ideas and
-        experiences as a human, and an engineer working with different
-        technologies.
+        Here's a collection of posts about <a
+          href="/tag/performance"
+          class="text-orange-400 hover:text-orange-300">software performance</a>, Node.js, and <a
+          href="/url-parsing"
+          class="text-orange-400 hover:text-orange-300">URL parsing</a>, along with the stories and
+        ideas behind the work.
       </div>
 
       <SubscribeButton />

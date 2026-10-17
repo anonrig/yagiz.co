@@ -7,7 +7,7 @@ import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import Container from '@/components/ui/Container.astro'
 import Layout from '@/layouts/Layout.astro'
 import { websiteUrl } from '@/lib/content'
-import { absoluteUrl, tagBreadcrumbs, tagCollectionJsonLd } from '@/lib/schema'
+import { tagBreadcrumbs, tagCollectionJsonLd } from '@/lib/schema'
 
 interface Props {
   tag: CollectionEntry<'tags'>
@@ -29,7 +29,6 @@ const collectedPosts = await getCollection(
 )
 const posts = collectedPosts.toSorted((a, b) => b.data.date.getTime() - a.data.date.getTime())
 const markdownUrl = `${websiteUrl}/tag/${tag.id}.md`
-const url = absoluteUrl(`/tag/${tag.id}`)
 const crumbs = tagBreadcrumbs(tag)
 ---
 
@@ -38,14 +37,15 @@ const crumbs = tagBreadcrumbs(tag)
   description={tag.data.description}
   markdownUrl={markdownUrl}
   jsonLd={tagCollectionJsonLd(tag, posts)}
+  schemaType="https://schema.org/CollectionPage"
+  microdataName={false}
 >
-  <section itemscope itemtype="https://schema.org/CollectionPage" itemid={url}>
-    <link itemprop="url" href={url} />
+  <section>
     <Container size="tight" class="mx-auto -mt-6 flex flex-col gap-8 px-[4vw] text-center">
-      <Breadcrumbs items={crumbs} />
+      <Breadcrumbs items={crumbs} itemprop="breadcrumb" />
       <h1 class="text-2xl font-extrabold text-orange-400" itemprop="name">#{tag.data.title}</h1>
 
-      <div class="leading-6 dark:text-white" itemprop="description">{tag.data.description}</div>
+      <div class="leading-6 dark:text-white">{tag.data.description}</div>
 
       <div>
         <span class="mr-2 mt-2 font-bold dark:text-white">More:</span>
@@ -77,7 +77,7 @@ const crumbs = tagBreadcrumbs(tag)
           posts.map((post, index) => (
             <div itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
               <meta itemprop="position" content={String(index + 1)} />
-              <BlogRow {post} itemprop="item" />
+              <BlogRow {post} itemprop="item" headingItemprop="name" />
             </div>
           ))
         }

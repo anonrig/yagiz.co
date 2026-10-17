@@ -2,7 +2,7 @@
 import { getEntry } from 'astro:content'
 import Page from '@/components/Page.astro'
 import Layout from '@/layouts/Layout.astro'
-import { authorFullName, websiteUrl } from '@/lib/content'
+import { authorDescription, authorFullName, profileUrls, websiteUrl } from '@/lib/content'
 import { aboutPageJsonLd, absoluteUrl, pageBreadcrumbs, schemaIds } from '@/lib/schema'
 
 const page = await getEntry('pages', 'about')
@@ -15,14 +15,16 @@ const breadcrumbs = pageBreadcrumbs(page.data.title, '/about')
 ---
 <Layout
   title={page.data.title}
+  documentTitle={page.data.title}
   description={page.data.description}
   markdownUrl={markdownUrl}
   jsonLd={aboutPageJsonLd(page.data.title, page.data.description)}
+  schemaType="https://schema.org/ProfilePage"
+  microdataName={false}
 >
   <Page
     {page}
     itemtype="https://schema.org/ProfilePage"
-    itemid={absoluteUrl('/about')}
     breadcrumbs={breadcrumbs}
   >
     <div
@@ -32,7 +34,9 @@ const breadcrumbs = pageBreadcrumbs(page.data.title, '/about')
       itemid={schemaIds.person}
     >
       <meta itemprop="name" content={authorFullName} />
-      <link itemprop="url" href={websiteUrl} />
+      <meta itemprop="description" content={authorDescription} />
+      <link itemprop="url" href={absoluteUrl('/about')} />
+      {profileUrls.map((href) => <link itemprop="sameAs" href={href} />)}
     </div>
   </Page>
 </Layout>

@@ -14,13 +14,18 @@ import {
   transformerInlineStylesToClasses,
   transformerMetaTitle,
 } from './src/lib/shiki-transformers.ts'
-import { loadSitemapLastmods } from './src/lib/sitemap-dates.ts'
+import { loadSitemapExtras } from './src/lib/sitemap-dates.ts'
 
-function isMarkdownOrLlmsAsset(page: string): boolean {
-  return page.endsWith('.md') || page.endsWith('/llms.txt') || page.endsWith('/llms-full.txt')
+function isExcludedFromSitemap(page: string): boolean {
+  return (
+    page.endsWith('.md') ||
+    page.endsWith('.png') ||
+    page.endsWith('/llms.txt') ||
+    page.endsWith('/llms-full.txt')
+  )
 }
 
-const sitemapLastmods = loadSitemapLastmods()
+const sitemapExtras = loadSitemapExtras()
 
 const pageCache = { maxAge: 3600, swr: 86_400, tags: ['page'] }
 
@@ -117,10 +122,17 @@ export default defineConfig({
     sitemap({
       // Markdown / llms endpoints are for agents; keep them out of the HTML sitemap.
       // lastmod comes from each post's frontmatter date, not the build clock.
-      filter: (page) => !isMarkdownOrLlmsAsset(page),
+      filter: (page) => !isExcludedFromSitemap(page),
       serialize(item) {
-        const lastmod = sitemapLastmods.get(item.url.replace(/\/+$/u, ''))
-        return lastmod ? { ...item, lastmod } : item
+        const url = item.url.replace(/\/+$/u, '')
+        const lastmod = sitemapExtras.lastmods.get(url)
+        const images = sitemapExtras.images.get(url)
+        const next = { ...item, ...(lastmod ? { lastmod } : {}) }
+        if (!images) {
+          return next
+        }
+        // Astro's SitemapItem type omits image entries. The sitemap writer still emits `img`.
+        return Object.assign(next, { img: images })
       },
     }),
   ],
