@@ -20,8 +20,11 @@ import { countWords, readingTimeLabel } from '@/lib/reading-time'
 import { relatedPosts } from '@/lib/related-posts'
 import {
   absoluteUrl,
+  articleKeywords,
+  articlePrimaryImageUrl,
   blogBreadcrumbs,
   blogPostingJsonLd,
+  crawlableArticleImage,
   imageMime,
   isoDateTime,
   postModifiedDate,
@@ -77,6 +80,9 @@ const hero: CrawlableImage | undefined = post.data.image
       encodingFormat: imageMime(post.data.image.src.format),
     }
   : undefined
+const crawlableHero = crawlableArticleImage(hero)
+const primaryImage = articlePrimaryImageUrl(post, hero)
+const keywords = articleKeywords(post, tag)
 ---
 
 <Layout
@@ -86,6 +92,7 @@ const hero: CrawlableImage | undefined = post.data.image
   imageAlt={post.data.title}
   imageWidth={articleSocialImage.width}
   imageHeight={articleSocialImage.height}
+  primaryImage={primaryImage}
   markdownUrl={markdownUrl}
   jsonLd={blogPostingJsonLd(post, tag, { hero, related: suggestions })}
   canonical={post.data.canonical_url}
@@ -106,7 +113,7 @@ const hero: CrawlableImage | undefined = post.data.image
     <link itemprop="mainEntityOfPage" href={articleUrl} />
     <meta itemprop="description" content={post.data.description} />
     <meta itemprop="inLanguage" content="en-US" />
-    <meta itemprop="keywords" content={tag.data.title} />
+    <meta itemprop="keywords" content={keywords} />
     <meta itemprop="wordCount" content={String(words)} />
     <meta itemprop="isAccessibleForFree" content="true" />
     {
@@ -178,7 +185,7 @@ const hero: CrawlableImage | undefined = post.data.image
             alt={post.data.image.alt}
             src={post.data.image.src}
             caption={post.data.title}
-            itemprop="image"
+            itemprop={crawlableHero === undefined ? undefined : 'image'}
           />
         )
       }

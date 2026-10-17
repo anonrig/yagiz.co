@@ -32,6 +32,8 @@ interface Props {
   schemaId?: string
   imageWidth?: number
   imageHeight?: number
+  /** Microdata primaryImageOfPage. Defaults to the social image. */
+  primaryImage?: string
   article?: {
     authors?: string[]
     publishedTime?: string
@@ -55,6 +57,7 @@ const {
   schemaId,
   imageWidth = openGraphImage.width,
   imageHeight = openGraphImage.height,
+  primaryImage,
   article,
 } = Astro.props
 
@@ -171,7 +174,7 @@ const schemaItemId = schemaId ?? selfUrl
           <meta itemprop="inLanguage" content="en-US" />
           <meta itemprop="isAccessibleForFree" content="true" />
           <link itemprop="url" href={selfUrl} />
-          <link itemprop="primaryImageOfPage" href={image} />
+          <link itemprop="primaryImageOfPage" href={primaryImage ?? image} />
         </>
       )
     }

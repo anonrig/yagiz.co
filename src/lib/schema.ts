@@ -399,16 +399,42 @@ function generatedArticleImages(post: SchemaPost): [JsonLd, ...JsonLd[]] {
   ]
 }
 
+/** Heroes smaller than Google's article guidance stay visible, but are not structured images. */
+export function crawlableArticleImage(hero?: CrawlableImage): CrawlableImage | undefined {
+  if (hero === undefined || hero.width * hero.height < MIN_ARTICLE_IMAGE_PIXELS) {
+    return undefined
+  }
+  return hero
+}
+
+/** Same URL JSON-LD uses for WebPage.primaryImageOfPage. */
+export function articlePrimaryImageUrl(post: SchemaPost, hero?: CrawlableImage): string {
+  const crawlable = crawlableArticleImage(hero)
+  if (crawlable !== undefined) {
+    return crawlable.url
+  }
+  return absoluteUrl(`/${post.id}/${articleWideImage.file}`)
+}
+
+/** Tag title, plus the series title when the post belongs to one. */
+export function articleKeywords(post: SchemaPost, tag: SchemaTag): string {
+  if (post.data.series === undefined) {
+    return tag.data.title
+  }
+  return `${tag.data.title}, ${SERIES[post.data.series].title}`
+}
+
 function articleImages(post: SchemaPost, hero?: CrawlableImage): [JsonLd, ...JsonLd[]] {
   const generated = generatedArticleImages(post)
-  if (hero === undefined || hero.width * hero.height < MIN_ARTICLE_IMAGE_PIXELS) {
+  const crawlable = crawlableArticleImage(hero)
+  if (crawlable === undefined) {
     return generated
   }
   return [
-    imageObject(hero.url, hero.alt, {
-      width: hero.width,
-      height: hero.height,
-      encodingFormat: hero.encodingFormat,
+    imageObject(crawlable.url, crawlable.alt, {
+      width: crawlable.width,
+      height: crawlable.height,
+      encodingFormat: crawlable.encodingFormat,
       copyrightNotice: `© ${post.data.date.getUTCFullYear()} ${authorFullName}`,
     }),
     ...generated,
@@ -435,9 +461,7 @@ export function blogPostingJsonLd(
   const related = (options?.related ?? [])
     .filter((item) => item.id !== post.id)
     .map((item) => postUrl(item))
-  const keywords = post.data.series
-    ? `${tag.data.title}, ${SERIES[post.data.series].title}`
-    : tag.data.title
+  const keywords = articleKeywords(post, tag)
 
   return graph(
     breadcrumbsJsonLd(localUrl, crumbs),

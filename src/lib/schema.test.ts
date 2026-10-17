@@ -16,6 +16,8 @@ import {
 } from './content.ts'
 import {
   aboutPageJsonLd,
+  articleKeywords,
+  articlePrimaryImageUrl,
   blogPostingJsonLd,
   breadcrumbsJsonLd,
   homeJsonLd,
@@ -156,27 +158,33 @@ test('article JSON-LD follows Google article guidance', () => {
   ])
   const page = findNode(nodes, 'WebPage')
   assert.deepEqual(page.relatedLink, [`${websiteUrl}/related-post`])
+  assert.equal(imageFields(page.primaryImageOfPage).url, hero.url)
+  assert.equal(articlePrimaryImageUrl(post, hero), hero.url)
+  assert.equal(article.keywords, 'Performance, URL parsing')
+  assert.equal(article.keywords, articleKeywords(post, performanceTag))
   assert.equal(JSON.stringify(nodes).includes('BlogPosting'), true)
 })
 
 test('tiny heroes do not replace the generated article images', () => {
-  const nodes = graphNodes(
-    blogPostingJsonLd(blogPost(), performanceTag, {
-      hero: {
-        url: `${websiteUrl}/_astro/tiny.png`,
-        width: 100,
-        height: 100,
-        alt: 'Tiny',
-      },
-    }),
-  )
+  const post = blogPost()
+  const tiny = {
+    url: `${websiteUrl}/_astro/tiny.png`,
+    width: 100,
+    height: 100,
+    alt: 'Tiny',
+  }
+  const nodes = graphNodes(blogPostingJsonLd(post, performanceTag, { hero: tiny }))
   const article = findNode(nodes, 'BlogPosting')
   const images = article.image
   if (!Array.isArray(images)) {
     assert.fail('article images')
   }
+  const wide = `${websiteUrl}/example-post/opengraph-16x9.png`
   assert.equal(images.length, articleOpenGraphImages.length)
-  assert.equal(imageFields(images[0]).url, `${websiteUrl}/example-post/opengraph-16x9.png`)
+  assert.equal(imageFields(images[0]).url, wide)
+  assert.equal(imageFields(findNode(nodes, 'WebPage').primaryImageOfPage).url, wide)
+  assert.equal(articlePrimaryImageUrl(post, tiny), wide)
+  assert.equal(articleKeywords(post, performanceTag), 'Performance')
 })
 
 test('syndicated posts point the article at the canonical URL', () => {
