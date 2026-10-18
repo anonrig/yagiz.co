@@ -16,4 +16,4 @@ updates:
     ignore:
       - dependency-name: '@biomejs/biome'
       - dependency-name: '@astrojs/compiler-rs'
-        versions: ['>=0.4.0']
+        versions: ['>=0.6.0']
