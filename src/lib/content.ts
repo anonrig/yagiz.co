@@ -15,7 +15,8 @@ export const authorDescription =
   'Yagiz Nizipli is a V8 committer and Node.js Technical Steering Committee member. He writes about software performance, URL parsing, and Node.js internals.'
 export const websiteUrl = 'https://www.yagiz.co'
 export const authorFullName = 'Yagiz Nizipli'
-export const authorJobTitle = 'Software Engineer'
+// Baked into public/opengraph-image.png. Regenerate that file when this changes.
+export const authorJobTitle = 'Principal Engineer'
 // public/opengraph-image.png — measured, not the article-card size.
 export const openGraphImage = {
   width: 1920,
