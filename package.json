@@ -16,40 +16,40 @@
     "presentation": "marp --allow-local-files -s ./presentations"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^14.2.3",
-    "@astrojs/compiler-rs": "^0.3.2",
-    "@astrojs/markdown-satteri": "^0.3.7",
-    "@astrojs/mdx": "^7.0.7",
-    "@astrojs/sitemap": "^3.7.3",
-    "@clack/prompts": "^1.7.0",
-    "@lucide/astro": "^1.33.0",
-    "@shikijs/transformers": "^4.4.3",
-    "@shikijs/types": "^4.4.3",
+    "@astrojs/cloudflare": "^14.4.0",
+    "@astrojs/compiler-rs": "^0.5.2",
+    "@astrojs/markdown-satteri": "^0.4.4",
+    "@astrojs/mdx": "^8.1.0",
+    "@astrojs/sitemap": "^3.7.4",
+    "@clack/prompts": "^1.8.1",
+    "@lucide/astro": "^1.59.0",
+    "@shikijs/transformers": "^4.5.0",
+    "@shikijs/types": "^4.5.0",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.3",
-    "astro": "^7.2.8",
-    "handlebars": "^4.7.9",
-    "mjml": "^5.4.0",
+    "astro": "^7.4.0",
+    "handlebars": "^4.7.10",
+    "mjml": "^5.4.1",
     "node-mailjet": "^6.0.11",
-    "satori": "^0.33.3",
+    "satori": "^0.62.0",
     "satteri": "^0.10.5",
-    "sharp": "^0.35.4",
+    "sharp": "^0.35.5",
     "tailwindcss": "^4.3.3",
-    "wrangler": "^4.125.0"
+    "wrangler": "^4.151.1"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@astrojs/rss": "^4.0.19",
-    "@marp-team/marp-cli": "^4.5.0",
-    "@types/node": "^26.2.0",
-    "oxfmt": "^0.65.0",
-    "oxlint": "^1.80.0",
-    "oxlint-tsgolint": "^7.0.2001",
+    "@marp-team/marp-cli": "^4.5.1",
+    "@types/node": "^26.6.5",
+    "oxfmt": "^0.73.0",
+    "oxlint": "^1.88.0",
+    "oxlint-tsgolint": "^7.0.2004",
     "to-vfile": "^8.0.0",
     "typescript": "^6.0.3",
     "vfile-matter": "^5.0.1"
   },
-  "packageManager": "pnpm@10.34.5",
+  "packageManager": "pnpm@10.34.7",
   "pnpm": {
     "onlyBuiltDependencies": [
       "@tailwindcss/oxide",
@@ -59,7 +59,7 @@
       "workerd"
     ],
     "overrides": {
-      "@cloudflare/vite-plugin": "^1.53.1"
+      "@cloudflare/vite-plugin": "^1.63.1"
     }
   }
 }

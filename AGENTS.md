@@ -77,11 +77,14 @@ must include the LLM surfaces: `/llms.txt`, `/llms-full.txt`, `Accept: text/mark
   Stay on TS 6 until Astro check supports TS 7. Peer warnings about `typescript@^5`
   are cosmetic. Oxlint type-aware rules use `oxlint-tsgolint`, which bundles
   TypeScript 7 separately — do not upgrade the `typescript` package for that.
-- Stay on `@astrojs/compiler-rs` 0.3.2. Astro 7.2.4 still depends on `^0.3.2`;
-  forcing 0.4.0 via a pnpm override broke Workers Builds.
-- Keep the `@cloudflare/vite-plugin` override at `^1.53.1` so `astro dev` and
-  `wrangler preview` share Wrangler 4.125's Miniflare 5 / workerd runtime.
-  `@astrojs/cloudflare` 14.2.3 otherwise resolves vite-plugin 1.47 (Miniflare 4).
+- Stay on `@astrojs/compiler-rs` 0.5, the range Astro 7.4 depends on
+  (`^0.5.1`). Do not force a newer major ahead of Astro: pinning 0.4.0 while
+  Astro 7.2 still wanted `^0.3.2` broke Workers Builds. Dependabot ignores
+  `>=0.6.0`.
+- Keep the `@cloudflare/vite-plugin` override at `^1.63.1` so `astro dev` and
+  `wrangler preview` share Wrangler 4.151's Miniflare 5 / workerd runtime.
+  `@astrojs/cloudflare` 14.4 declares that same range. A lower floor (1.53,
+  Wrangler 4.125, or 1.47, Miniflare 4) splits the runtime.
 
 ## Astro-specific
 
